@@ -1,0 +1,1159 @@
+/* ==========================================================================
+   CAPTUREDBYTIFFANY
+   Styled after ansonsmart.com — tokens below are the reference site's real
+   values, read from its Photofolio layout.json / settings.json config.
+   Palette: a white ground with a deep navy ink. The reference's cream
+   survives as the type colour over photographs (--on-photo).
+
+   01  TOKENS
+   02  RESET & BASE
+   03  HEADER
+   04  NAV TOGGLE
+   05  NAV OVERLAY
+   06  HERO
+   07  CHAPTERS
+   08  ROWS & FRAMES
+   09  BEHIND THE LENS
+   10  CONTACT
+   11  PROJECTS
+   12  LOADER
+   13  PAGE FADE
+   14  RESPONSIVE
+   15  A11Y
+   ========================================================================== */
+
+
+/* ==========================================================================
+   01  TOKENS
+   ========================================================================== */
+
+:root {
+	/* Palette — a white ground, so the photographs carry all the colour, with
+	   a deep navy ink. Each ink tone's alpha keeps the contrast ratio it had
+	   in the original cream-on-near-black palette (dim 5.3:1, quiet 6.4:1,
+	   soft 8.2:1), so the typographic hierarchy reads exactly as it did. */
+	--bg:            #FFFFFF;
+	--bg-raise:      #F1F3F5;                     /* plate ground, just off the page */
+	--ink:           #172330;
+	--ink-dim:       rgba(23, 35, 48, 0.67);
+	--ink-quiet:     rgba(23, 35, 48, 0.72);      /* credit labels */
+	--ink-soft:      rgba(23, 35, 48, 0.80);      /* credit values */
+
+	/* Type set over photographs — the hero and the hover notes. Navy would
+	   sink into an image; this is ansonsmart's cream (#ECEAE3), carried by
+	   the same text-shadows as before. Never use it on the white ground,
+	   where it all but disappears (1.2:1). */
+	--on-photo:      #ECEAE3;
+	--on-photo-dim:  rgba(236, 234, 227, 0.55);
+
+	/* Type — Tenor Sans 400: reference logoFont / menuFont / thumbnailTitleFont */
+	--font: 'Tenor Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	--logo-size:    clamp(19px, 2vw, 36px);       /* reference logoFontSize: 36 */
+	--nav-size:     clamp(1.75rem, 5.2vw, 3.5rem);
+	--cap-size:     clamp(0.68rem, 1.05vw, 0.85rem);
+	/* CAPTUREDBYTIFFANY is 17 capitals — ~11.4em of advance before tracking,
+	   against ~6.2em for the 9-letter mark this layout was first sized around.
+	   5.7vw keeps that ~85% gutter-to-gutter footprint from 769px to 1440px;
+	   the cap holds it at ~1220px beyond. */
+	--hero-size:    clamp(2rem, 5.7vw, 5.5rem);
+	--tag-size:     clamp(0.6rem, 1.4vw, 0.82rem);
+	--pos-size:     clamp(0.72rem, 1.1vw, 0.95rem);
+	--credit-size:  clamp(0.56rem, 0.72vw, 0.68rem);
+	--spec-size:    clamp(0.5rem, 0.6vw, 0.58rem);
+	--chapter-size: clamp(0.62rem, 0.85vw, 0.78rem);
+	--about-size:   clamp(0.95rem, 1.5vw, 1.2rem);
+
+	/* Editorial tracking — labels and credits, magazine-wide */
+	--track-wide: 0.22em;
+
+	/* Caption band beneath each plate. FIXED, not auto: an auto height would
+	   let a two-line credit shorten only one frame and knock the pair out of
+	   alignment. */
+	--credit-h: clamp(96px, 11vh, 124px);
+
+	/* Spacing — reference sitePadding (10 L/R) and pageHorizontalMargin (70) */
+	--inset:  clamp(10px, 1.6vw, 22px);
+	--gutter: clamp(20px, 3.4vw, 70px);
+	--edge:   clamp(18px, 2.6vw, 44px);
+
+	/* Motion — reference transitionDuration 0.5, landingMediaTransitionDuration 1.8 */
+	--dur:       0.5s;
+	--dur-slow:  1.8s;
+	--dur-intro: 0.9s;
+	--ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+	/* Loader (index.html only) — 17 letters, 100ms apart, 0.9s each, after a
+	   200ms beat of bare ground. The last letter lands at 2.7s and holds
+	   (main.js loaderHold); at 3.1s they leave in reverse on the same timings,
+	   the page comes up as the C goes (4.7s), and it is fully in by 5.6s.
+	   main.js reads these to time the letters both ways, so this is the one
+	   place to tune them. */
+	--loader-size:    clamp(1.4rem, 6.4vw, 3.75rem);
+	--loader-track:   0.06em;
+	--loader-lead:    200ms;
+	--loader-stagger: 100ms;
+	--loader-fade:    0.9s;
+	--ease-soft: cubic-bezier(0.37, 0, 0.63, 1);   /* sine in-out: letters surface, never pop */
+
+	/* Last resort if main.js never runs — see 12 LOADER and 13 PAGE FADE */
+	--intro-failsafe: 11s;
+
+	/* Interaction — reference thumbnailHoverAlpha: 0.75 */
+	--hover-alpha: 0.75;
+}
+
+
+/* ==========================================================================
+   02  RESET & BASE
+   ========================================================================== */
+
+/* Tenor Sans, self-hosted — the latin subset Google Fonts serves to Windows
+   (hinted; macOS and iOS ignore hints, so it renders as it did from their CDN
+   everywhere). No render-blocking third-party stylesheet, no extra
+   connections. swap, as before. On the homepage the loader waits (up to 2s)
+   for this face before setting a single letter. Licence: fonts/OFL.txt */
+@font-face {
+	font-family: 'Tenor Sans';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('fonts/tenor-sans-latin.woff2') format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+* { margin: 0; padding: 0; }
+
+html {
+	scroll-behavior: smooth;
+	background: var(--bg);
+}
+
+body {
+	min-height: 100%;
+	background: var(--bg);
+	color: var(--ink);
+	font-family: var(--font);
+	font-weight: 400;
+	overflow-x: hidden;
+
+	/* Reference fontRenderingOptions — the 0.3 stroke is what gives the
+	   original its hairline refinement at small sizes */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-stroke-width: 0.3px;
+	text-rendering: optimizeLegibility;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+img {
+	display: block;
+	max-width: 100%;
+}
+
+button {
+	background: none;
+	border: none;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
+figure { margin: 0; }
+ul { list-style: none; }
+
+
+/* ==========================================================================
+   03  HEADER
+   ========================================================================== */
+
+.site-header {
+	position: fixed;
+	top: 0;
+	right: 0;
+	z-index: 120;
+	display: flex;
+	align-items: center;
+	gap: clamp(16px, 2vw, 30px);
+	padding: var(--edge) var(--gutter);
+}
+
+.brand {
+	font-size: var(--logo-size);
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	line-height: 1;
+	white-space: nowrap;
+
+	/* Opacity is written per frame by the scroll handoff — no transition here,
+	   or it would lag a frame behind the wheel. The layout box is always
+	   present, so the hamburger never shifts as the name fades in. */
+	pointer-events: none;
+}
+
+/* Deliberately NOT scoped to .js: with no JS nothing sets --brand-op, so this
+   falls back to 0 and the corner name stays hidden while the hero mark carries
+   it — correct, just static. Safe to hide because the name is never lost. */
+.brand { opacity: var(--brand-op, 0); }
+
+body.past-hero .brand { pointer-events: auto; }
+
+/* It is still a tab stop at the top of the page, where it sits at opacity 0 —
+   show it while it has keyboard focus, or the focus ring is invisible */
+.brand:focus-visible { opacity: 1; }
+
+
+/* ==========================================================================
+   04  NAV TOGGLE — two bars that rotate into an X
+   ========================================================================== */
+
+.nav-toggle {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	margin-right: -10px;   /* optical alignment with the brand's right edge */
+	flex: none;
+}
+
+.nav-toggle__box {
+	position: relative;
+	display: block;
+	width: 26px;
+	height: 14px;
+	/* Rotating the wrapper while the bars converge is what sells it as a
+	   rotation rather than a plain morph */
+	transition: transform 0.55s var(--ease);
+}
+
+.nav-toggle__bar {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 1px;
+	background: var(--ink);
+	transition:
+		transform        0.55s var(--ease),
+		width            0.55s var(--ease),
+		background-color var(--dur) var(--ease);
+}
+
+.nav-toggle__bar:nth-child(1) { top: 4px; }
+.nav-toggle__bar:nth-child(2) { top: 10px; }
+
+/* The bars sit over the hero photograph at the top of the homepage, so they
+   start in the photo colour and turn to ink at the same threshold that
+   wakes the corner name — and whenever the menu is open over the ground.
+   The projects page is past-hero from the start, so it is always ink. */
+body:not(.past-hero) .nav-toggle__bar { background: var(--on-photo); }
+body.nav-open .nav-toggle__bar { background: var(--ink); }
+
+/* Open state — bars converge to centre and cross */
+body.nav-open .nav-toggle__box { transform: rotate(180deg); }
+
+body.nav-open .nav-toggle__bar:nth-child(1) { transform: translateY(3px)  rotate(45deg); }
+body.nav-open .nav-toggle__bar:nth-child(2) { transform: translateY(-3px) rotate(-45deg); }
+
+
+/* ==========================================================================
+   05  NAV OVERLAY
+   ========================================================================== */
+
+.nav-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 110;
+	display: grid;
+	place-items: center;
+
+	/* The ground, translucent. Denser than a dark veil needs to be: navy links
+	   must hold their contrast over whatever photograph is blurred behind. */
+	background: rgba(255, 255, 255, 0.72);
+	-webkit-backdrop-filter: blur(28px) saturate(120%);
+	backdrop-filter: blur(28px) saturate(120%);
+
+	/* visibility (not opacity alone) keeps links out of the tab order */
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition:
+		opacity    var(--dur) var(--ease),
+		visibility 0s linear var(--dur);
+}
+
+body.nav-open .nav-overlay {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+	transition:
+		opacity    var(--dur) var(--ease),
+		visibility 0s linear 0s;
+}
+
+.nav-overlay__inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: var(--gutter);
+}
+
+.nav-list {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: clamp(0.55rem, 1.6vh, 1.1rem);
+}
+
+.nav-list a {
+	display: inline-block;
+	font-size: var(--nav-size);
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	line-height: 1.3;
+	color: var(--ink);
+
+	opacity: 0;
+	transform: translateY(18px);
+	transition:
+		opacity   0.7s var(--ease),
+		transform 0.7s var(--ease);
+}
+
+body.nav-open .nav-list a {
+	opacity: 1;
+	transform: translateY(0);
+	transition-delay: calc(var(--i) * 70ms + 90ms);
+}
+
+/* Hovering the list dims the siblings */
+@media (hover: hover) and (pointer: fine) {
+	.nav-list:hover a { opacity: 0.45; }
+	.nav-list a:hover { opacity: 1; }
+}
+
+.nav-ig {
+	display: inline-grid;
+	place-items: center;
+	margin-top: clamp(28px, 5vh, 60px);
+	color: var(--ink);
+
+	opacity: 0;
+	transform: translateY(18px);
+	transition:
+		opacity   0.7s var(--ease),
+		transform 0.7s var(--ease),
+		color     var(--dur) var(--ease);
+}
+
+body.nav-open .nav-ig {
+	opacity: 1;
+	transform: translateY(0);
+	transition-delay: 340ms;
+}
+
+.nav-ig:hover { color: var(--ink-dim); }
+
+
+/* ==========================================================================
+   06  HERO
+   One inset full-viewport image with the wordmark centred over it. Same box
+   as .row, so the gap rhythm carries straight through into the grid below.
+
+   .hero__title positions the wordmark; .hero__title-in carries its scroll
+   fade (JS, rewritten every frame). The intro lives on main — 13 PAGE FADE —
+   so the scroll handler never has an intro opacity to stomp.
+   ========================================================================== */
+
+/* The whole hero — photograph and text together — fades as you scroll off it.
+   Two nested opacities do the work: this one carries the image and lingers
+   longer, the inner title fades faster. They multiply, so the text leads and
+   the picture follows it out. */
+.hero { opacity: var(--hero-media-op, 1); }
+
+.hero {
+	position: relative;
+	/* One inset TALLER than the viewport, so after the padding is removed the
+	   image itself measures a true 100vh — the gaps live in the extra height
+	   rather than eating into the picture */
+	height: calc(100vh + var(--inset));    /* fallback first… */
+	height: calc(100svh + var(--inset));   /* …then the small-viewport unit */
+	padding: calc(var(--inset) / 2) var(--inset);
+}
+
+.hero__media {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: var(--bg-raise);
+}
+
+.hero__media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	/* travel.jpg is 1.5:1 against a ~1.6:1 hero, so it crops barely at all.
+	   Sits low to put the ridges and outcrop under the wordmark. */
+	object-position: 50% 58%;
+}
+
+.hero__title {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	text-align: center;
+	padding: 0 var(--gutter);
+	pointer-events: none;
+	color: var(--on-photo);
+	text-shadow: 0 2px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Scroll-driven — deliberately no transition.
+   width:100% matters: as a grid child under place-items:center this would
+   otherwise size to max-content and the tagline would never wrap. */
+.hero__title-in {
+	width: 100%;
+	opacity: var(--hero-op, 1);
+}
+
+.hero__mark {
+	font-size: var(--hero-size);
+	font-weight: 400;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	line-height: 1;
+	/* letter-spacing adds a trailing space on the last glyph — pull it back
+	   so the wordmark sits optically centred */
+	text-indent: 0.14em;
+}
+
+.hero__tagline {
+	margin-top: clamp(14px, 2.2vh, 26px);
+	font-size: var(--tag-size);
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	line-height: 1.9;
+	/* Brighter than --on-photo-dim: the tagline sits over the lit part of the
+	   photograph, where 0.55 alpha loses legibility */
+	color: rgba(236, 234, 227, 0.78);
+	text-indent: 0.22em;
+	text-wrap: balance;
+}
+
+/* Categories stay whole — the line may only break at the em-dashes */
+.hero__tagline span { white-space: nowrap; }
+
+/* Positioning line — a sentence, so normal tracking and sentence case. The
+   max-width is what stops it running to one over-long line on a wide screen. */
+.hero__positioning {
+	max-width: 46ch;
+	margin: clamp(16px, 2.4vh, 30px) auto 0;
+	font-size: var(--pos-size);
+	letter-spacing: 0.02em;
+	line-height: 1.75;
+	color: var(--on-photo-dim);
+	text-wrap: balance;
+}
+
+
+/* ==========================================================================
+   07  CHAPTERS
+   Numerals live here, in the page — never in the nav. They turn the
+   categories into chapters you come across while scrolling rather than a
+   numbered menu.
+   ========================================================================== */
+
+.chapter {
+	display: flex;
+	align-items: baseline;
+	gap: clamp(14px, 1.6vw, 26px);
+
+	/* Same --inset as the plates below, so it reads as part of the grid */
+	padding: clamp(56px, 9vh, 104px) var(--inset) clamp(20px, 3vh, 38px);
+	margin: 0;
+
+	/* Without this a nav jump lands the heading flush to the viewport edge */
+	scroll-margin-top: clamp(24px, 6vh, 64px);
+
+	font-size: var(--chapter-size);
+	font-weight: 400;
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	line-height: 1;
+}
+
+.chapter__num  { color: var(--ink-quiet); }
+.chapter__name { color: var(--ink); }
+
+
+/* ==========================================================================
+   08  ROWS & FRAMES
+   A row is one viewport tall and holds two plates side by side. The half
+   inset on the row, doubled where two rows meet, keeps every gap on the
+   page — edges, between the pair, between rows — exactly --inset wide.
+
+   Each plate is a two-row grid: photograph, then its credit band beneath.
+   ========================================================================== */
+
+main {
+	position: relative;
+	z-index: 1;
+	padding: calc(var(--inset) / 2) 0;
+}
+
+.row {
+	/* Same +1 inset as .hero, so each image is a true 100vh tall */
+	height: calc(100vh + var(--inset));    /* fallback first… */
+	height: calc(100svh + var(--inset));   /* …then the small-viewport unit, so
+	                                          mobile chrome can't clip the pair */
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--inset);
+	padding: calc(var(--inset) / 2) var(--inset);
+}
+
+/* The plate: photograph on top, credit band beneath. overflow / background /
+   position all live on .frame__media, NOT here — leaving overflow on the
+   outer element would clip the credit band, and leaving position here would
+   centre the poetic note on the photograph-plus-caption box, sitting it low. */
+.frame {
+	display: grid;
+	/* minmax(0, …) is load-bearing: a bare 1fr carries an implicit min-content
+	   floor, so a portrait photograph's intrinsic height (architecture.jpg is
+	   ~1035px tall at this width) blows the track out and pushes the frame
+	   past its row — dropping the caption on top of the picture below. */
+	grid-template-rows: minmax(0, 1fr) var(--credit-h);
+}
+
+.frame__media {
+	position: relative;
+	overflow: hidden;
+	min-height: 0;
+	background: var(--bg-raise);
+}
+
+/* Absolutely positioned so the photograph can never contribute its intrinsic
+   size to track sizing, whatever aspect ratio gets dropped in later */
+.frame img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: var(--pos, 50% 50%);
+	transition:
+		opacity   var(--dur) var(--ease),
+		transform var(--dur-slow) var(--ease);
+}
+
+/* The poetic line — lives over the photograph, on hover only */
+.frame__note {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%) translateY(10px);
+	width: min(84%, 26ch);
+
+	font-size: var(--cap-size);
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	text-align: center;      /* half-width frames wrap — keep both lines centred */
+	text-wrap: balance;
+	line-height: 1.7;
+	color: var(--on-photo);
+	text-shadow: 0 1px 24px rgba(0, 0, 0, 0.55);
+	pointer-events: none;
+
+	opacity: 0;
+	transition:
+		opacity   var(--dur) var(--ease),
+		transform var(--dur) var(--ease);
+}
+
+/* --- Pointer devices: reveal on hover ------------------------------------ */
+@media (hover: hover) and (pointer: fine) {
+	.frame:hover img {
+		opacity: var(--hover-alpha);   /* 0.75, from the reference */
+		transform: scale(1.03);
+	}
+
+	.frame:hover .frame__note {
+		opacity: 1;
+		transform: translate(-50%, -50%) translateY(0);
+	}
+}
+
+/* --- Touch devices ------------------------------------------------------
+   The poetic line stays hidden here. It used to show permanently on touch,
+   back when it was the only caption — but every plate now carries a credit
+   band, and forcing both on would put two blocks of text over every image on
+   a phone. The credit carries the information; the poetic line is a
+   pointer-device grace note. */
+
+
+/* --- Credit band — the factual caption, always visible ------------------- */
+
+.frame__credit {
+	overflow: hidden;           /* fixed band height — never let text spill */
+	padding-top: clamp(9px, 1.2vh, 14px);
+	font-size: var(--credit-size);
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	line-height: 1.5;
+}
+
+.frame__line {
+	display: flex;
+	align-items: baseline;
+	gap: 0.85em;
+}
+
+/* Project credits, per plate. Three columns hold one line each at half-width;
+   they stack on narrow screens where the columns would be too tight to read. */
+.frame__specs {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: clamp(8px, 1vw, 22px);
+	margin-top: clamp(10px, 1.4vh, 18px);
+}
+
+.frame__spec dt {
+	font-size: var(--spec-size);
+	letter-spacing: var(--track-wide);
+	color: var(--ink-quiet);
+}
+
+.frame__spec dd {
+	margin-top: 0.5em;
+	font-size: var(--credit-size);
+	letter-spacing: 0.1em;
+	color: var(--ink-soft);
+}
+
+/* A project name must never split mid-title */
+.frame__project,
+.frame__meta { white-space: nowrap; }
+
+.frame__project { color: var(--ink); }
+.frame__meta    { color: var(--ink-quiet); }
+
+/* Hairline separator between project and place/year */
+.frame__meta::before {
+	content: '/';
+	margin-right: 0.85em;
+	color: var(--ink-quiet);
+}
+
+
+/* ==========================================================================
+   09  BEHIND THE LENS
+   ========================================================================== */
+
+.about {
+	padding: 0 var(--inset) clamp(80px, 16vh, 180px);
+}
+
+/* Left-aligned, so it sits in the same column as the chapter marker above */
+.about__body {
+	max-width: 62ch;
+	font-size: var(--about-size);
+	line-height: 1.75;
+	/* Stronger than --ink-dim: this is body copy meant to be read, not a
+	   caption. --ink-dim is a label weight and sits too low for paragraphs.
+	   0.83 keeps the 9.4:1 contrast the original body copy had. */
+	color: rgba(23, 35, 48, 0.83);
+}
+
+.about__body p + p { margin-top: 1.5em; }
+
+
+/* ==========================================================================
+   10  CONTACT — full-viewport close, left-aligned to the same editorial
+   column as everything above it.
+   ========================================================================== */
+
+.contact {
+	/* Deliberately not a full viewport. The section holds ~130px of content
+	   between a marker on top and a footer pinned to the bottom, so a taller
+	   box just distributes slack into the gaps. Full height and tight
+	   spacing are mutually exclusive here; this trades the former. */
+	min-height: 62vh;
+	min-height: 62svh;
+	display: grid;
+	/* marker up top · contact block centred in the slack · colophon pinned
+	   to the bottom. The 1fr row absorbs all leftover height, so there is no
+	   dead space under the footer. */
+	grid-template-rows: auto 1fr auto;
+	padding-bottom: clamp(26px, 5vh, 56px);
+	scroll-margin-top: clamp(24px, 6vh, 64px);
+}
+
+/* The marker lives inside this section, so it drops the leading space that
+   free-standing chapter markers use to separate themselves from the row above */
+.chapter--flush { padding-top: clamp(40px, 7vh, 88px); }
+
+.contact__inner {
+	align-self: center;
+	padding: 0 var(--inset);
+}
+
+.contact__email {
+	display: inline-block;
+	font-size: clamp(1.3rem, 4vw, 3rem);
+	letter-spacing: 0.04em;
+	line-height: 1.1;
+	color: var(--ink);
+	transition: opacity var(--dur) var(--ease);
+}
+
+.contact__email:hover { opacity: var(--hover-alpha); }
+
+.contact__details {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: clamp(20px, 2.6vw, 48px);
+	max-width: 840px;
+	margin-top: clamp(44px, 8vh, 96px);
+}
+
+.contact__item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.7em;
+}
+
+.contact__item dt {
+	font-size: var(--credit-size);
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	color: var(--ink-quiet);
+}
+
+.contact__item dd {
+	font-size: var(--chapter-size);
+	letter-spacing: 0.06em;
+	line-height: 1.6;
+	color: var(--ink);
+}
+
+.contact__item dd a { transition: opacity var(--dur) var(--ease); }
+.contact__item dd a:hover { opacity: var(--hover-alpha); }
+
+/* Centred and bottom-aligned — the one element on the page that breaks the
+   left editorial column, which is what makes it read as a footer */
+.contact__colophon {
+	max-width: 82ch;        /* wide enough to hold two clean lines, not three ragged ones */
+	margin: clamp(18px, 2.6vh, 34px) auto 0;
+	padding: 0 var(--inset);
+	font-size: var(--credit-size);
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	text-align: center;
+	text-wrap: balance;
+	line-height: 1.9;
+	color: var(--ink-quiet);
+}
+
+
+/* ==========================================================================
+   11  PROJECTS  (projects/index.html)
+   One repeating six-plate module per commission. Every project uses the same
+   markup; nth-child places each plate, so adding a project is adding six
+   <img> tags and nothing else.
+
+        [        1  span 12        ]  78vh
+        [   2  span 7 ][ 3 span 5 ]  56vh
+        [ 4 span 5 ][   5  span 7 ]  56vh
+        [        6  span 12        ]  78vh
+   ========================================================================== */
+
+.project {
+	padding-bottom: clamp(44px, 7vh, 88px);
+	/* Deep links from the homepage land here — without this the title sits
+	   flush against the viewport edge with no air above it */
+	scroll-margin-top: clamp(24px, 6vh, 64px);
+}
+
+.project__title {
+	padding: clamp(40px, 7vh, 90px) var(--inset) clamp(18px, 2.6vh, 34px);
+	font-size: var(--chapter-size);
+	font-weight: 400;
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	line-height: 1;
+	color: var(--ink);
+}
+
+.project__grid {
+	display: grid;
+	/* minmax(0, …) is load-bearing: a bare 1fr carries a min-content floor,
+	   which lets a portrait photograph's intrinsic height blow out its track */
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	gap: var(--inset);
+	padding: 0 var(--inset);
+}
+
+.plate {
+	position: relative;
+	overflow: hidden;
+	background: var(--bg-raise);
+}
+
+/* Absolutely positioned for the same reason as the homepage plates: the
+   photograph must never contribute its intrinsic size to track sizing */
+.plate img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: var(--pos, 50% 50%);
+	transition: opacity var(--dur) var(--ease);
+}
+
+.plate:nth-child(1),
+.plate:nth-child(6) { grid-column: span 12; height: 78vh; height: 78svh; }
+
+.plate:nth-child(2),
+.plate:nth-child(5) { grid-column: span 7;  height: 56vh; height: 56svh; }
+
+.plate:nth-child(3),
+.plate:nth-child(4) { grid-column: span 5;  height: 56vh; height: 56svh; }
+
+@media (hover: hover) and (pointer: fine) {
+	.plate:hover img { opacity: var(--hover-alpha); }
+}
+
+/* --- Scroll reveal, scoped to .plate ------------------------------------
+   The homepage's reveal was deliberately removed and must stay gone. .plate
+   exists only on this page, so these rules cannot reach index.html.
+
+   Hidden with visibility and a near-zero opacity rather than opacity: 0, for
+   the reason given in 13 PAGE FADE. */
+
+.js .plate {
+	opacity: 0.001;
+	visibility: hidden;
+	transform: translateY(28px);
+}
+
+.plate {
+	transition:
+		opacity   1s var(--ease),
+		transform 1.1s var(--ease);
+}
+
+.plate.is-visible {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+}
+
+/* Closes the projects page. On the homepage the contact section supplies the
+   space beneath the colophon; as a direct child of main it needs its own. */
+main > .contact__colophon {
+	padding-bottom: clamp(28px, 5vh, 56px);
+}
+
+
+/* ==========================================================================
+   12  LOADER  (index.html only)
+   The name, set letter by letter before every homepage load, then taken
+   away in reverse. It hands straight into 13 PAGE FADE: the same .is-ready
+   that brings the page up takes the loader down, over the same --dur-intro,
+   so it is one crossfade — timed to land as the last letter, the C, goes.
+
+   The letters are faded by main.js with the Web Animations API, timed from
+   the --loader-* tokens. Not CSS transitions: the web font's swap restyles
+   the text a frame or two after it loads, and Chrome drops any transition
+   running at that moment, so every letter would snap on at once. Not CSS
+   keyframes either: under reduced motion the A11Y section forces
+   animation-duration to 0.01ms. The single CSS animation here is the
+   failsafe, which only needs its delay.
+   ========================================================================== */
+
+/* Nothing would ever take it down without JS */
+.loader { display: none; }
+
+.js .loader {
+	position: fixed;
+	inset: 0;
+	z-index: 200;               /* above the header (120) and nav (110) */
+	display: grid;
+	place-items: center;
+	padding: 0 var(--gutter);
+	/* Opaque, on the page's own ground. As the two cross, the letters clear
+	   before the photograph comes up underneath them. */
+	background: var(--bg);
+
+	transition:
+		opacity    var(--dur-intro) var(--ease),
+		visibility 0s linear var(--dur-intro);
+
+	/* CSS-only failsafe: if main.js fails or throws before .is-ready, the
+	   loader still leaves. It runs from first style rather than from the JS
+	   cap's start, so it sits well behind that cap on any normal load; only a
+	   script several seconds late would see this one fire first. */
+	animation: loader-failsafe var(--dur-intro) var(--ease) var(--intro-failsafe) forwards;
+}
+
+/* animation: none detaches the failsafe once it is no longer needed */
+body.is-ready .loader {
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	animation: none;
+}
+
+/* pointer-events as well as visibility: under reduced motion the A11Y section
+   crushes this to 0.01ms, and Chrome parks the finished animation a hair
+   short of its end, where visibility has not yet flipped. pointer-events
+   flips at the midpoint, so the page underneath still takes clicks. */
+@keyframes loader-failsafe {
+	to { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+/* Mixed case, as the name is written — the one place it isn't set in
+   capitals. Light tracking only: lowercase spaced wide falls apart. */
+.loader__word {
+	font-size: var(--loader-size);
+	letter-spacing: var(--loader-track);
+	text-indent: var(--loader-track);   /* same trailing-space fix as .hero__mark */
+	line-height: 1;
+	white-space: nowrap;
+	color: var(--ink);
+}
+
+/* Hidden until main.js animates each one in. Its animations fill forwards,
+   so they hold the letters at full opacity from then on. 0.001, not 0:
+   Chrome records no first contentful paint for text at exactly 0, and this
+   is the first thing the visitor sees. It rounds to the ground colour. */
+.loader__word span { opacity: 0.001; }
+
+
+/* ==========================================================================
+   13  PAGE FADE
+   The entire opening. JS adds .is-ready once the hero photograph has
+   decoded — and, on the homepage, once the loader has set the name — and
+   the page arrives as one.
+
+   .site-header and main fade separately rather than fading <body>: opacity
+   below 1 on body would make its position:fixed children resolve against
+   body instead of the viewport, so the header would scroll with the page
+   for the duration of the fade. .nav-overlay needs nothing — it is
+   visibility:hidden until opened.
+   ========================================================================== */
+
+/* Hidden with visibility and a near-zero opacity, not opacity: 0. Chrome
+   ignores anything painted at opacity 0, and an opacity transition never
+   repaints — so a page revealed from 0 never records a first contentful or
+   largest contentful paint, and Lighthouse / PageSpeed can't score it at all.
+   Flipping visibility on .is-ready forces the paint at the moment of reveal,
+   which is also the honest time for it. It keeps the hidden page out of the
+   tab order under the loader, too.
+
+   The failsafe pairs with the loader's: if JS never adds .is-ready the page
+   still comes up, on the same delay, so the two still cross. .is-ready
+   detaches it. */
+.js .site-header,
+.js main {
+	opacity: 0.001;
+	visibility: hidden;
+	animation: page-failsafe var(--dur-intro) var(--ease) var(--intro-failsafe) forwards;
+}
+
+@keyframes page-failsafe {
+	to { opacity: 1; visibility: visible; }
+}
+
+.site-header,
+main { transition: opacity var(--dur-intro) var(--ease); }
+
+body.is-ready .site-header,
+body.is-ready main {
+	opacity: 1;
+	visibility: visible;
+	animation: none;
+}
+
+
+/* ==========================================================================
+   14  RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	/* Sized so the longest label ("Lifestyle & People") holds a single line —
+	   three clean lines read far better than five wrapped ones */
+	:root {
+		--nav-size:  clamp(1.15rem, 5.6vw, 1.9rem);
+		--cap-size:  clamp(0.62rem, 2.5vw, 0.78rem);
+		/* The old 1.6rem floor would run the 17-letter mark off a 375px screen.
+		   6vw gives it the same ~296px footprint the original 9-letter mark had. */
+		--hero-size: clamp(1rem, 6vw, 2.8rem);
+		--tag-size:  clamp(0.58rem, 2.4vw, 0.72rem);
+
+		/* The corner name plus the hamburger must fit a 320px phone; 19px would
+		   clip it by ~21px. Back to the desktop floor from ~414px up. */
+		--logo-size: clamp(14px, 4.6vw, 19px);
+
+		/* Taller band: the project line stacks to two lines and the three
+		   credit columns collapse to one, so the band has more to hold */
+		--credit-h: clamp(112px, 14vh, 140px);
+	}
+
+	/* Three columns would be ~120px each on a phone — too tight to read */
+	.frame__specs {
+		grid-template-columns: 1fr;
+		gap: clamp(6px, 1vh, 10px);
+	}
+
+	.frame__spec {
+		display: flex;
+		align-items: baseline;
+		gap: 0.9em;
+	}
+
+	.frame__spec dt { flex: 0 0 auto; min-width: 7em; }
+	.frame__spec dd { margin-top: 0; }
+
+	.frame__credit { letter-spacing: 0.16em; }
+
+	/* The project line stacks rather than running off the edge. These belong on
+	   .frame__line, not .frame__credit — the credit band is a block now, so
+	   flex properties on it would be inert. */
+	.frame__line {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.35em;
+	}
+
+	.frame__meta::before { content: none; }
+
+	/* The page tail was ~145px of near-empty space around a single 17px line
+	   of copyright — 17% of a phone screen. Four values stacked up: the last
+	   project's bottom padding, the colophon's top margin, its bottom
+	   padding, and main's. All tightened here; between projects the title's
+	   own top padding still keeps them clearly separated. */
+	.project { padding-bottom: clamp(24px, 3.5vh, 44px); }
+
+	.contact__colophon { margin-top: clamp(14px, 2vh, 24px); }
+
+	main > .contact__colophon { padding-bottom: clamp(16px, 2.2vh, 26px); }
+
+	/* Twelve columns is meaningless at this width — every plate goes full */
+	.plate:nth-child(n) {
+		grid-column: span 12;
+		height: 46vh;
+		height: 46svh;
+	}
+
+	.contact__details {
+		grid-template-columns: 1fr;
+		gap: clamp(18px, 3vh, 28px);
+	}
+
+	/* An email address can't wrap, and the 1.3rem floor would clip this one at
+	   320px. The max() hands back to the desktop 4vw from 520px, so it matches
+	   the desktop size at every width from ~400px and doesn't jump at 769px. */
+	.contact__email { font-size: clamp(0.9rem, 5.2vw, max(1.3rem, 4vw)); }
+
+	/* "CAPTUREDBYTIFFANY" is one unbreakable word — tighten the tracking so it
+	   holds a single line inside the gutters rather than running off the edges */
+	.hero__mark {
+		letter-spacing: 0.1em;
+		text-indent: 0.1em;
+	}
+
+	/* Let the tagline wrap to two centred lines rather than shrink further */
+	.hero__tagline {
+		letter-spacing: 0.14em;
+		text-indent: 0.14em;
+	}
+
+	.brand { letter-spacing: 0.12em; }
+
+	.nav-list { gap: clamp(0.8rem, 2.4vh, 1.4rem); }
+	.nav-list a { letter-spacing: 0.12em; }
+
+	/* Side by side would leave two slivers — stack instead, each image
+	   keeping the full viewport height */
+	.row {
+		height: auto;
+		grid-template-columns: 1fr;
+	}
+
+	.frame {
+		height: 100vh;
+		height: 100svh;
+	}
+
+
+	.frame__note {
+		width: min(84%, 28ch);
+		letter-spacing: 0.12em;
+	}
+}
+
+
+@media (max-width: 380px) {
+	.site-header { gap: 12px; }
+}
+
+/* Short landscape viewports — keep the nav from overflowing */
+@media (max-height: 480px) {
+	:root { --nav-size: clamp(1.2rem, 6vh, 2rem); }
+	.nav-ig { margin-top: 20px; }
+}
+
+
+/* ==========================================================================
+   15  A11Y
+   ========================================================================== */
+
+:focus-visible {
+	outline: 1px solid var(--ink);
+	outline-offset: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+
+	/* The loader's letters arrive together, as one fade. A left-to-right sweep
+	   reads as movement even when it is built from opacity. */
+	:root { --loader-stagger: 0ms; }
+
+	/* Keep fades, drop all movement. The wordmark crossfade stays — opacity
+	   is not a vestibular trigger. */
+	.nav-list a,
+	.nav-ig,
+	.frame img,
+	.plate {
+		transform: none !important;
+	}
+
+	.frame__note {
+		transform: translate(-50%, -50%) !important;
+	}
+
+	.nav-toggle__box,
+	.nav-toggle__bar {
+		transition-duration: 0.01ms;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+	}
+}
