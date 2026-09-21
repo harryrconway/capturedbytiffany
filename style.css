@@ -16,10 +16,9 @@
    09  BEHIND THE LENS
    10  CONTACT
    11  PROJECTS
-   12  LOADER
-   13  PAGE FADE
-   14  RESPONSIVE
-   15  A11Y
+   12  PAGE FADE
+   13  RESPONSIVE
+   14  A11Y
    ========================================================================== */
 
 
@@ -39,29 +38,34 @@
 	--ink-quiet:     rgba(23, 35, 48, 0.72);      /* credit labels */
 	--ink-soft:      rgba(23, 35, 48, 0.80);      /* credit values */
 
-	/* Type set over photographs — the hero and the hover notes. Navy would
-	   sink into an image; this is ansonsmart's cream (#ECEAE3), carried by
-	   the same text-shadows as before. Never use it on the white ground,
-	   where it all but disappears (1.2:1). */
+	/* Colour over photographs — the hamburger while it sits on the hero's
+	   corner tile, and the hover notes. Navy would sink into an image; this
+	   is ansonsmart's cream (#ECEAE3), carried by the notes' text-shadow.
+	   Never use it on the white ground, where it all but disappears (1.2:1). */
 	--on-photo:      #ECEAE3;
-	--on-photo-dim:  rgba(236, 234, 227, 0.55);
 
 	/* Type — Tenor Sans 400: reference logoFont / menuFont / thumbnailTitleFont */
 	--font: 'Tenor Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	--logo-size:    clamp(19px, 2vw, 36px);       /* reference logoFontSize: 36 */
 	--nav-size:     clamp(1.75rem, 5.2vw, 3.5rem);
 	--cap-size:     clamp(0.68rem, 1.05vw, 0.85rem);
-	/* CAPTUREDBYTIFFANY is 17 capitals — ~11.4em of advance before tracking,
-	   against ~6.2em for the 9-letter mark this layout was first sized around.
-	   5.7vw keeps that ~85% gutter-to-gutter footprint from 769px to 1440px;
-	   the cap holds it at ~1220px beyond. */
-	--hero-size:    clamp(2rem, 5.7vw, 5.5rem);
-	--tag-size:     clamp(0.6rem, 1.4vw, 0.82rem);
-	--pos-size:     clamp(0.72rem, 1.1vw, 0.95rem);
 	--credit-size:  clamp(0.56rem, 0.72vw, 0.68rem);
 	--spec-size:    clamp(0.5rem, 0.6vw, 0.58rem);
 	--chapter-size: clamp(0.62rem, 0.85vw, 0.78rem);
 	--about-size:   clamp(0.95rem, 1.5vw, 1.2rem);
+
+	/* Hero type plate (06 HERO). cqi is 1% of the PLATE's width — it is the
+	   size container — so the type is sized to its module, not the window.
+	   CAPTURED is the widest line: 5.58em of capitals plus eight 0.14em
+	   tracks, 6.70em. At 12.5cqi that is 84% of the plate, inside the 6cqi
+	   padding either side (88%). The vh term only bites on short, wide
+	   windows, where it hands height back to the top row of photographs; the
+	   rem cap stops a 2560px plate from shouting. Browsers without container
+	   units fall back to 16px type with no padding — plain, but it fits. */
+	--mark-size: min(12.5cqi, 7.5vh, 6.5rem);
+	--tag-size:  clamp(0.6rem, 2.9cqi, 0.82rem);
+	--pos-size:  clamp(0.72rem, 3.4cqi, 0.95rem);
+	--plate-pad: clamp(14px, 6cqi, 40px);
 
 	/* Editorial tracking — labels and credits, magazine-wide */
 	--track-wide: 0.22em;
@@ -82,21 +86,9 @@
 	--dur-intro: 0.9s;
 	--ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-	/* Loader (index.html only) — 17 letters, 100ms apart, 0.9s each, after a
-	   200ms beat of bare ground. The last letter lands at 2.7s and holds
-	   (main.js loaderHold); at 3.1s they leave in reverse on the same timings,
-	   the page comes up as the C goes (4.7s), and it is fully in by 5.6s.
-	   main.js reads these to time the letters both ways, so this is the one
-	   place to tune them. */
-	--loader-size:    clamp(1.4rem, 6.4vw, 3.75rem);
-	--loader-track:   0.06em;
-	--loader-lead:    200ms;
-	--loader-stagger: 100ms;
-	--loader-fade:    0.9s;
-	--ease-soft: cubic-bezier(0.37, 0, 0.63, 1);   /* sine in-out: letters surface, never pop */
-
-	/* Last resort if main.js never runs — see 12 LOADER and 13 PAGE FADE */
-	--intro-failsafe: 11s;
+	/* Last resort if main.js never runs — see 12 PAGE FADE. Behind the JS
+	   cap (main.js fadeFailsafe, 2s), so it never races a working script. */
+	--intro-failsafe: 4s;
 
 	/* Interaction — reference thumbnailHoverAlpha: 0.75 */
 	--hover-alpha: 0.75;
@@ -110,8 +102,7 @@
 /* Tenor Sans, self-hosted — the latin subset Google Fonts serves to Windows
    (hinted; macOS and iOS ignore hints, so it renders as it did from their CDN
    everywhere). No render-blocking third-party stylesheet, no extra
-   connections. swap, as before. On the homepage the loader waits (up to 2s)
-   for this face before setting a single letter. Licence: fonts/OFL.txt */
+   connections. swap, as before. Licence: fonts/OFL.txt */
 @font-face {
 	font-family: 'Tenor Sans';
 	font-style: normal;
@@ -183,6 +174,12 @@ ul { list-style: none; }
 	align-items: center;
 	gap: clamp(16px, 2vw, 30px);
 	padding: var(--edge) var(--gutter);
+
+	/* The header's box — padding and the still-invisible corner name
+	   included — lies over the hero's top-right tiles, which are links. Let
+	   clicks fall through it; the toggle opts back in, and the corner name
+	   once it has woken (body.past-hero). */
+	pointer-events: none;
 }
 
 .brand {
@@ -221,6 +218,7 @@ body.past-hero .brand { pointer-events: auto; }
 	height: 44px;
 	margin-right: -10px;   /* optical alignment with the brand's right edge */
 	flex: none;
+	pointer-events: auto;  /* 03 HEADER lets clicks through everything else */
 }
 
 .nav-toggle__box {
@@ -248,10 +246,11 @@ body.past-hero .brand { pointer-events: auto; }
 .nav-toggle__bar:nth-child(1) { top: 4px; }
 .nav-toggle__bar:nth-child(2) { top: 10px; }
 
-/* The bars sit over the hero photograph at the top of the homepage, so they
-   start in the photo colour and turn to ink at the same threshold that
-   wakes the corner name — and whenever the menu is open over the ground.
-   The projects page is past-hero from the start, so it is always ink. */
+/* The bars sit over the hero's corner tile — always a photograph (06 HERO) —
+   so they start in the photo colour and turn to ink at the threshold that
+   wakes the corner name (main.js brandFadeStart), before that tile has
+   scrolled out from under them; and whenever the menu is open over the
+   ground. The projects page is past-hero from the start: always ink. */
 body:not(.past-hero) .nav-toggle__bar { background: var(--on-photo); }
 body.nav-open .nav-toggle__bar { background: var(--ink); }
 
@@ -365,103 +364,125 @@ body.nav-open .nav-ig {
 
 /* ==========================================================================
    06  HERO
-   One inset full-viewport image with the wordmark centred over it. Same box
-   as .row, so the gap rhythm carries straight through into the grid below.
+   A modular mosaic that fills the first viewport exactly: one tall portrait,
+   and beside it a 2×2 of three photographs and the type plate. Every gap —
+   between tiles and around the edge — is --inset, so the rhythm runs
+   straight on into the rows below.
 
-   .hero__title positions the wordmark; .hero__title-in carries its scroll
-   fade (JS, rewritten every frame). The intro lives on main — 13 PAGE FADE —
-   so the scroll handler never has an intro opacity to stomp.
+        [      ][ mid ][ corner ]   columns 5 : 3 : 4 of twelve. At 16:10
+        [ tall ][-----][--------]   the tall tile is the photograph's own
+        [      ][ low ][ PLATE  ]   2:3, and the plate is wide enough to set
+                                    the stacked name at a strong size.
+
+   Each photograph links to its chapter, in the plates' hover language
+   (08 ROWS & FRAMES). --corner sits under the fixed header at every size,
+   so it must always be a photograph: the hamburger is cream until the hero
+   is scrolled past (04 NAV TOGGLE).
+
+   .hero carries the tiles' scroll fade; .hero__plate-in carries the type's,
+   which runs ahead of it (main.js 04 HANDOFF). The intro lives on main —
+   12 PAGE FADE — so the scroll handler never has an intro opacity to stomp.
+   Portrait and short viewports: 13 RESPONSIVE.
    ========================================================================== */
 
-/* The whole hero — photograph and text together — fades as you scroll off it.
-   Two nested opacities do the work: this one carries the image and lingers
-   longer, the inner title fades faster. They multiply, so the text leads and
-   the picture follows it out. */
+/* Two nested opacities: this one carries the tiles and the plate ground and
+   lingers; the plate's type fades faster. They multiply, so the words lead
+   and the pictures follow them out. */
 .hero { opacity: var(--hero-media-op, 1); }
 
 .hero {
-	position: relative;
-	/* One inset TALLER than the viewport, so after the padding is removed the
-	   image itself measures a true 100vh — the gaps live in the extra height
-	   rather than eating into the picture */
-	height: calc(100vh + var(--inset));    /* fallback first… */
-	height: calc(100svh + var(--inset));   /* …then the small-viewport unit */
+	display: grid;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 4fr);
+	/* Equal rows — except that the plate's row never drops below the height
+	   of its own type. A short window takes the difference from the top row
+	   instead, so the name is never clipped and the mosaic still fills the
+	   viewport exactly. */
+	grid-template-rows: minmax(0, 1fr) minmax(min-content, 1fr);
+	grid-template-areas:
+		"tall mid corner"
+		"tall low plate";
+	gap: var(--inset);
+
+	/* One inset SHORTER than the viewport: main's half inset plus this
+	   padding's puts the mosaic one --inset from the top, and the same
+	   --inset shows beneath it before the fold. (.row is one inset taller —
+	   its photographs run a true 100vh; this has to fit inside one.) */
+	height: calc(100vh - var(--inset));    /* fallback first… */
+	height: calc(100svh - var(--inset));   /* …then the small-viewport unit */
 	padding: calc(var(--inset) / 2) var(--inset);
 }
 
-.hero__media {
+.hero__tile {
 	position: relative;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
+	overflow: hidden;            /* clips the hover scale */
 	background: var(--bg-raise);
 }
 
-.hero__media img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	/* travel.jpg is 1.5:1 against a ~1.6:1 hero, so it crops barely at all.
-	   Sits low to put the ridges and outcrop under the wordmark. */
-	object-position: 50% 58%;
+.hero__tile--tall   { grid-area: tall; }
+.hero__tile--mid    { grid-area: mid; }
+.hero__tile--corner { grid-area: corner; }
+.hero__tile--low    { grid-area: low; }
+
+/* The type plate — the fifth module, not a link. On the plate ground rather
+   than the page's, so it reads as a tile of the grid, not a hole in it. */
+.hero__plate {
+	grid-area: plate;
+	display: grid;               /* .hero__plate-in stretches to fill it */
+	background: var(--bg-raise);
+	/* The size container its type is measured against: cqi in --mark-size,
+	   --tag-size, --pos-size and --plate-pad is 1% of this plate's width.
+	   inline-size, not size: the height must stay content-driven, or the
+	   plate's row could no longer grow to hold the type. */
+	container-type: inline-size;
 }
 
-.hero__title {
-	position: absolute;
-	inset: 0;
-	display: grid;
-	place-items: center;
-	text-align: center;
-	padding: 0 var(--gutter);
-	pointer-events: none;
-	color: var(--on-photo);
-	text-shadow: 0 2px 40px rgba(0, 0, 0, 0.5);
-}
-
-/* Scroll-driven — deliberately no transition.
-   width:100% matters: as a grid child under place-items:center this would
-   otherwise size to max-content and the tagline would never wrap. */
-.hero__title-in {
-	width: 100%;
+/* Scroll-driven — deliberately no transition */
+.hero__plate-in {
+	display: flex;
+	flex-direction: column;
+	padding: var(--plate-pad);
 	opacity: var(--hero-op, 1);
 }
 
+/* The name as a masthead: stacked, left-aligned like the chapter markers,
+   at the head of the plate. The fields and place sit at its foot. */
 .hero__mark {
-	font-size: var(--hero-size);
+	/* Trims the line's half-leading, so the cap line sits on the padding
+	   edge the way the first letter sits on the left one */
+	margin-top: -0.13em;
+	margin-bottom: auto;         /* pushes the rest to the foot of the plate */
+	font-size: var(--mark-size);
 	font-weight: 400;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
 	line-height: 1;
-	/* letter-spacing adds a trailing space on the last glyph — pull it back
-	   so the wordmark sits optically centred */
-	text-indent: 0.14em;
+	color: var(--ink);
 }
 
+.hero__mark span { display: block; }
+
 .hero__tagline {
-	margin-top: clamp(14px, 2.2vh, 26px);
+	/* The closest the foot may come to the name: the plate's own padding,
+	   so the plate keeps to one measure */
+	margin-top: var(--plate-pad);
 	font-size: var(--tag-size);
-	letter-spacing: 0.22em;
+	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1.9;
-	/* Brighter than --on-photo-dim: the tagline sits over the lit part of the
-	   photograph, where 0.55 alpha loses legibility */
-	color: rgba(236, 234, 227, 0.78);
-	text-indent: 0.22em;
+	color: var(--ink-soft);
 	text-wrap: balance;
 }
 
 /* Categories stay whole — the line may only break at the em-dashes */
 .hero__tagline span { white-space: nowrap; }
 
-/* Positioning line — a sentence, so normal tracking and sentence case. The
-   max-width is what stops it running to one over-long line on a wide screen. */
+/* Positioning line — a sentence, so normal tracking and sentence case */
 .hero__positioning {
-	max-width: 46ch;
-	margin: clamp(16px, 2.4vh, 30px) auto 0;
+	margin-top: 0.8em;
 	font-size: var(--pos-size);
 	letter-spacing: 0.02em;
 	line-height: 1.75;
-	color: var(--on-photo-dim);
+	color: var(--ink-dim);
 	text-wrap: balance;
 }
 
@@ -512,7 +533,10 @@ main {
 }
 
 .row {
-	/* Same +1 inset as .hero, so each image is a true 100vh tall */
+	/* One inset TALLER than the viewport, so after the half-inset padding each
+	   pair measures a true 100vh — the gaps live in the extra height rather
+	   than eating into the pictures. (The hero is one inset shorter: its
+	   mosaic has to fit inside the first viewport.) */
 	height: calc(100vh + var(--inset));    /* fallback first… */
 	height: calc(100svh + var(--inset));   /* …then the small-viewport unit, so
 	                                          mobile chrome can't clip the pair */
@@ -543,8 +567,11 @@ main {
 }
 
 /* Absolutely positioned so the photograph can never contribute its intrinsic
-   size to track sizing, whatever aspect ratio gets dropped in later */
-.frame img {
+   size to track sizing, whatever aspect ratio gets dropped in later. The
+   hero's tiles (06 HERO) share this, the note and the hover below: one hover
+   language across the page. */
+.frame img,
+.hero__tile img {
 	position: absolute;
 	inset: 0;
 	width: 100%;
@@ -556,8 +583,10 @@ main {
 		transform var(--dur-slow) var(--ease);
 }
 
-/* The poetic line — lives over the photograph, on hover only */
-.frame__note {
+/* The poetic line — or, on a hero tile, the chapter it leads to. Lives over
+   the photograph, on hover only. */
+.frame__note,
+.hero__note {
 	position: absolute;
 	left: 50%;
 	top: 50%;
@@ -582,12 +611,14 @@ main {
 
 /* --- Pointer devices: reveal on hover ------------------------------------ */
 @media (hover: hover) and (pointer: fine) {
-	.frame:hover img {
+	.frame:hover img,
+	.hero__tile:hover img {
 		opacity: var(--hover-alpha);   /* 0.75, from the reference */
 		transform: scale(1.03);
 	}
 
-	.frame:hover .frame__note {
+	.frame:hover .frame__note,
+	.hero__tile:hover .hero__note {
 		opacity: 1;
 		transform: translate(-50%, -50%) translateY(0);
 	}
@@ -839,7 +870,7 @@ main {
    exists only on this page, so these rules cannot reach index.html.
 
    Hidden with visibility and a near-zero opacity rather than opacity: 0, for
-   the reason given in 13 PAGE FADE. */
+   the reason given in 12 PAGE FADE. */
 
 .js .plate {
 	opacity: 0.001;
@@ -867,85 +898,9 @@ main > .contact__colophon {
 
 
 /* ==========================================================================
-   12  LOADER  (index.html only)
-   The name, set letter by letter before every homepage load, then taken
-   away in reverse. It hands straight into 13 PAGE FADE: the same .is-ready
-   that brings the page up takes the loader down, over the same --dur-intro,
-   so it is one crossfade — timed to land as the last letter, the C, goes.
-
-   The letters are faded by main.js with the Web Animations API, timed from
-   the --loader-* tokens. Not CSS transitions: the web font's swap restyles
-   the text a frame or two after it loads, and Chrome drops any transition
-   running at that moment, so every letter would snap on at once. Not CSS
-   keyframes either: under reduced motion the A11Y section forces
-   animation-duration to 0.01ms. The single CSS animation here is the
-   failsafe, which only needs its delay.
-   ========================================================================== */
-
-/* Nothing would ever take it down without JS */
-.loader { display: none; }
-
-.js .loader {
-	position: fixed;
-	inset: 0;
-	z-index: 200;               /* above the header (120) and nav (110) */
-	display: grid;
-	place-items: center;
-	padding: 0 var(--gutter);
-	/* Opaque, on the page's own ground. As the two cross, the letters clear
-	   before the photograph comes up underneath them. */
-	background: var(--bg);
-
-	transition:
-		opacity    var(--dur-intro) var(--ease),
-		visibility 0s linear var(--dur-intro);
-
-	/* CSS-only failsafe: if main.js fails or throws before .is-ready, the
-	   loader still leaves. It runs from first style rather than from the JS
-	   cap's start, so it sits well behind that cap on any normal load; only a
-	   script several seconds late would see this one fire first. */
-	animation: loader-failsafe var(--dur-intro) var(--ease) var(--intro-failsafe) forwards;
-}
-
-/* animation: none detaches the failsafe once it is no longer needed */
-body.is-ready .loader {
-	opacity: 0;
-	visibility: hidden;
-	pointer-events: none;
-	animation: none;
-}
-
-/* pointer-events as well as visibility: under reduced motion the A11Y section
-   crushes this to 0.01ms, and Chrome parks the finished animation a hair
-   short of its end, where visibility has not yet flipped. pointer-events
-   flips at the midpoint, so the page underneath still takes clicks. */
-@keyframes loader-failsafe {
-	to { opacity: 0; visibility: hidden; pointer-events: none; }
-}
-
-/* Mixed case, as the name is written — the one place it isn't set in
-   capitals. Light tracking only: lowercase spaced wide falls apart. */
-.loader__word {
-	font-size: var(--loader-size);
-	letter-spacing: var(--loader-track);
-	text-indent: var(--loader-track);   /* same trailing-space fix as .hero__mark */
-	line-height: 1;
-	white-space: nowrap;
-	color: var(--ink);
-}
-
-/* Hidden until main.js animates each one in. Its animations fill forwards,
-   so they hold the letters at full opacity from then on. 0.001, not 0:
-   Chrome records no first contentful paint for text at exactly 0, and this
-   is the first thing the visitor sees. It rounds to the ground colour. */
-.loader__word span { opacity: 0.001; }
-
-
-/* ==========================================================================
-   13  PAGE FADE
-   The entire opening. JS adds .is-ready once the hero photograph has
-   decoded — and, on the homepage, once the loader has set the name — and
-   the page arrives as one.
+   12  PAGE FADE
+   The entire opening. JS adds .is-ready once the hero photographs have
+   decoded, and the page arrives as one.
 
    .site-header and main fade separately rather than fading <body>: opacity
    below 1 on body would make its position:fixed children resolve against
@@ -960,11 +915,10 @@ body.is-ready .loader {
    largest contentful paint, and Lighthouse / PageSpeed can't score it at all.
    Flipping visibility on .is-ready forces the paint at the moment of reveal,
    which is also the honest time for it. It keeps the hidden page out of the
-   tab order under the loader, too.
+   tab order until then, too.
 
-   The failsafe pairs with the loader's: if JS never adds .is-ready the page
-   still comes up, on the same delay, so the two still cross. .is-ready
-   detaches it. */
+   The failsafe: if JS never adds .is-ready, the page still comes up after
+   --intro-failsafe. .is-ready detaches it. */
 .js .site-header,
 .js main {
 	opacity: 0.001;
@@ -988,7 +942,7 @@ body.is-ready main {
 
 
 /* ==========================================================================
-   14  RESPONSIVE
+   13  RESPONSIVE
    ========================================================================== */
 
 @media (max-width: 768px) {
@@ -997,10 +951,6 @@ body.is-ready main {
 	:root {
 		--nav-size:  clamp(1.15rem, 5.6vw, 1.9rem);
 		--cap-size:  clamp(0.62rem, 2.5vw, 0.78rem);
-		/* The old 1.6rem floor would run the 17-letter mark off a 375px screen.
-		   6vw gives it the same ~296px footprint the original 9-letter mark had. */
-		--hero-size: clamp(1rem, 6vw, 2.8rem);
-		--tag-size:  clamp(0.58rem, 2.4vw, 0.72rem);
 
 		/* The corner name plus the hamburger must fit a 320px phone; 19px would
 		   clip it by ~21px. Back to the desktop floor from ~414px up. */
@@ -1067,19 +1017,6 @@ body.is-ready main {
 	   the desktop size at every width from ~400px and doesn't jump at 769px. */
 	.contact__email { font-size: clamp(0.9rem, 5.2vw, max(1.3rem, 4vw)); }
 
-	/* "CAPTUREDBYTIFFANY" is one unbreakable word — tighten the tracking so it
-	   holds a single line inside the gutters rather than running off the edges */
-	.hero__mark {
-		letter-spacing: 0.1em;
-		text-indent: 0.1em;
-	}
-
-	/* Let the tagline wrap to two centred lines rather than shrink further */
-	.hero__tagline {
-		letter-spacing: 0.14em;
-		text-indent: 0.14em;
-	}
-
 	.brand { letter-spacing: 0.12em; }
 
 	.nav-list { gap: clamp(0.8rem, 2.4vh, 1.4rem); }
@@ -1105,6 +1042,29 @@ body.is-ready main {
 }
 
 
+/* --- Hero, portrait: the 2×2, with the type plate beneath ---------------
+   Keyed to shape, not width. The mosaic needs a landscape window: a
+   portrait tablet at 820–1024px would otherwise get 190px slivers, while a
+   landscape phone gets the mosaic, which suits it. */
+@media (max-aspect-ratio: 1/1) {
+	/* The plate is full width here; without a lower cap the name would
+	   reach ~93px on a tablet and take its height from the photographs */
+	:root { --mark-size: min(12.5cqi, 7.5vh, 4.5rem); }
+
+	.hero {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		/* The plate takes the height its type needs; the four photographs
+		   share the rest, so the whole still fills the viewport exactly */
+		grid-template-rows: repeat(2, minmax(0, 1fr)) auto;
+		/* --corner stays top right, under the header. Read column by column
+		   the tiles still meet in source order: tall, mid, corner, low. */
+		grid-template-areas:
+			"tall   corner"
+			"mid    low"
+			"plate  plate";
+	}
+}
+
 @media (max-width: 380px) {
 	.site-header { gap: 12px; }
 }
@@ -1113,11 +1073,17 @@ body.is-ready main {
 @media (max-height: 480px) {
 	:root { --nav-size: clamp(1.2rem, 6vh, 2rem); }
 	.nav-ig { margin-top: 20px; }
+
+	/* A landscape phone's plate can't hold the name, the fields and the
+	   sentence and still leave the photographs above it a usable row. The
+	   sentence goes: 01 Behind the Lens opens with it almost word for word,
+	   and the colophon repeats it exactly. */
+	.hero__positioning { display: none; }
 }
 
 
 /* ==========================================================================
-   15  A11Y
+   14  A11Y
    ========================================================================== */
 
 :focus-visible {
@@ -1128,20 +1094,18 @@ body.is-ready main {
 @media (prefers-reduced-motion: reduce) {
 	html { scroll-behavior: auto; }
 
-	/* The loader's letters arrive together, as one fade. A left-to-right sweep
-	   reads as movement even when it is built from opacity. */
-	:root { --loader-stagger: 0ms; }
-
 	/* Keep fades, drop all movement. The wordmark crossfade stays — opacity
 	   is not a vestibular trigger. */
 	.nav-list a,
 	.nav-ig,
 	.frame img,
+	.hero__tile img,
 	.plate {
 		transform: none !important;
 	}
 
-	.frame__note {
+	.frame__note,
+	.hero__note {
 		transform: translate(-50%, -50%) !important;
 	}
 

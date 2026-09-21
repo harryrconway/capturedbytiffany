@@ -36,40 +36,30 @@
 	<link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32">
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-	<!-- The loader waits (up to 2s) for Tenor Sans before setting a letter, so
-	     fetch it during head parsing rather than waiting for the stylesheet.
-	     crossorigin is required even same-origin: fonts always fetch in CORS
+	<!-- The hero's stacked name is set large in Tenor Sans. Fetch it during
+	     head parsing so it arrives before the photographs decode and the name
+	     never swaps faces as the page fades in. crossorigin is required even same-origin: fonts always fetch in CORS
 	     mode, and a preload without it doesn't match — it downloads twice. -->
 	<link rel="preload" as="font" type="font/woff2" href="fonts/tenor-sans-latin.woff2" crossorigin>
 
-	<!-- Start the hero fetch during head parsing: the page fade is gated on
-	     this image decoding. imagesrcset/imagesizes match the <img> exactly,
-	     so the preload and the image resolve to the same file. No href, so
-	     browsers without imagesrcset don't fetch the full-size original too. -->
+	<!-- Start the tall architecture tile's fetch during head parsing — the
+	     page's largest image. The page fade waits for all four hero
+	     photographs to decode; the other three are eager <img>s the preload
+	     scanner finds straight after. imagesrcset/imagesizes match the <img>
+	     exactly, so both resolve to the same file. No href, so browsers without
+	     imagesrcset don't fetch the full-size original too. -->
 	<link rel="preload" as="image" type="image/webp" fetchpriority="high"
-		imagesrcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
-		imagesizes="(max-aspect-ratio: 3/2) 151vh, 100vw">
+		imagesrcset="images/architecture-960.webp 960w, images/architecture-1280.webp 1280w, images/architecture-1600.webp 1600w, images/architecture-1920.webp 1920w, images/architecture.webp 2400w"
+		imagesizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw">
 
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <!-- ==========================================================================
-	 LOADER — the name, set letter by letter on the ground colour, on every
-	 homepage load. Decorative: the h1 carries the name, so this is hidden
-	 from assistive tech. Only shown with JS; removed once it has faded.
-	 ========================================================================== -->
-<div class="loader" aria-hidden="true">
-	<!-- One span per letter, faded in order by main.js. One line, no
-	     whitespace between spans: a space would render between the letters,
-	     and inline spans stay one run of text, so text-indent centring works
-	     and the browser can still kern across them -->
-	<p class="loader__word"><span>C</span><span>a</span><span>p</span><span>t</span><span>u</span><span>r</span><span>e</span><span>d</span><span>b</span><span>y</span><span>t</span><span>i</span><span>f</span><span>f</span><span>a</span><span>n</span><span>y</span></p>
-</div>
-
-<!-- ==========================================================================
-	 HEADER — name + hamburger, fixed top right. Comes up with the page as the
-	 loader clears (style.css 13 PAGE FADE).
+	 HEADER — name + hamburger, fixed top right. Comes up with the page as it
+	 fades in (style.css 12 PAGE FADE). Clicks pass through its box to the
+	 hero tiles beneath (style.css 03 HEADER).
 	 ========================================================================== -->
 <header class="site-header">
 	<a class="brand" href="#top" aria-label="Capturedbytiffany — back to top">Capturedbytiffany</a>
@@ -130,31 +120,71 @@
 	 IMAGES: one `sizes` per photograph, not per slot. While the same three
 	 placeholders fill every slot, a single value keeps each photograph to
 	 one download. Once real, distinct photographs arrive, give each <img>
-	 the sizes of its own slot.
+	 the sizes of its own slot. The hero tiles are eager and gate the page
+	 fade, so the fade currently waits for the largest candidate of each
+	 photograph — per-slot sizes will shrink that too.
 	 ========================================================================== -->
 <main id="top">
 
-	<!-- Hero — one inset full-viewport image, wordmark centred over it.
-	     The page waits for this photograph to decode before fading in, so it
-	     is never seen arriving. .hero__title positions; .hero__title-in
-	     carries the scroll fade. -->
+	<!-- Hero — a modular mosaic filling the first viewport: one tall portrait,
+	     three photographs and the type plate (style.css 06 HERO). The plate
+	     comes first so the name is read first; grid areas place everything.
+	     Each photograph links to its chapter. The page waits for all four to
+	     decode before fading in, so no tile is ever seen arriving.
+	     PLACEHOLDER: only three photographs exist, so travel fills two tiles
+	     on different crops. Give --low its own photograph when real work
+	     arrives. -->
 	<section class="hero">
-		<figure class="hero__media">
-			<img src="images/travel.webp"
-				srcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
-				sizes="(max-aspect-ratio: 3/2) 151vh, 100vw"
-				alt="Mountain ridges receding into golden haze, a lone figure standing on a rock outcrop"
-				loading="eager" fetchpriority="high" decoding="async">
-		</figure>
-
-		<div class="hero__title">
-			<div class="hero__title-in">
-				<h1 class="hero__mark">Capturedbytiffany</h1>
+		<div class="hero__plate">
+			<div class="hero__plate-in">
+				<!-- The spaces between the spans are deliberate: the lines stack as
+				     blocks, and the heading still reads "Captured by Tiffany" -->
+				<h1 class="hero__mark"><span>Captured</span> <span>by</span> <span>Tiffany</span></h1>
 				<!-- PLACEHOLDER fields and positioning — confirm with Tiffany -->
 				<p class="hero__tagline"><span>Architecture —</span> <span>Lifestyle &amp; People —</span> <span>Travel / Hotels</span></p>
 				<p class="hero__positioning">Based on the Gold Coast, working throughout Australia and internationally.</p>
 			</div>
 		</div>
+
+		<a class="hero__tile hero__tile--tall" href="#architecture" style="--pos:50% 78%">
+			<img src="images/architecture.webp"
+				srcset="images/architecture-960.webp 960w, images/architecture-1280.webp 1280w, images/architecture-1600.webp 1600w, images/architecture-1920.webp 1920w, images/architecture.webp 2400w"
+				sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
+				alt="A figure in black walking beside a shallow pool beneath a sweeping white wall"
+				loading="eager" fetchpriority="high" decoding="async">
+			<p class="hero__note">Architecture</p>
+		</a>
+
+		<a class="hero__tile hero__tile--mid" href="#lifestyle" style="--pos:40% 50%">
+			<img src="images/lifestyle.webp"
+				srcset="images/lifestyle-960.webp 960w, images/lifestyle-1280.webp 1280w, images/lifestyle-1600.webp 1600w, images/lifestyle-1920.webp 1920w, images/lifestyle.webp 2400w"
+				sizes="(max-width: 768px) and (max-aspect-ratio: 138/100) 138vh, (max-width: 768px) 100vw, (max-aspect-ratio: 294/100) 147vh, 50vw"
+				alt="Silver sports car parked side-on on a paved forecourt"
+				loading="eager" decoding="async">
+			<p class="hero__note">Lifestyle &amp; People</p>
+		</a>
+
+		<!-- --corner sits under the fixed header at every size: keep it a
+		     photograph (style.css 06 HERO). Travel's hazy sky holds the cream
+		     hamburger; lifestyle's white house would swallow it. -->
+		<a class="hero__tile hero__tile--corner" href="#travel" style="--pos:85% 60%">
+			<img src="images/travel.webp"
+				srcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
+				sizes="(max-width: 768px) and (max-aspect-ratio: 130/100) 130vh, (max-width: 768px) 100vw, (max-aspect-ratio: 276/100) 138vh, 50vw"
+				alt="A lone figure on a rock outcrop above ridges receding into golden haze"
+				loading="eager" decoding="async">
+			<p class="hero__note">Travel / Hotels</p>
+		</a>
+
+		<!-- PLACEHOLDER: travel again, on its left-hand spires -->
+		<a class="hero__tile hero__tile--low" href="#travel" style="--pos:10% 50%">
+			<img src="images/travel.webp"
+				srcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
+				sizes="(max-width: 768px) and (max-aspect-ratio: 130/100) 130vh, (max-width: 768px) 100vw, (max-aspect-ratio: 276/100) 138vh, 50vw"
+				alt="Rock spires rising from a sunlit green ridge"
+				loading="eager" decoding="async">
+			<p class="hero__note">Travel / Hotels</p>
+		</a>
 	</section>
 
 	<!-- ─── 01 ──────────────────────────────────────────────────────────── -->
@@ -185,7 +215,7 @@
 			<a class="frame__media" href="projects/#one-sydney-harbour" style="--pos:50% 26%">
 				<img src="images/architecture.webp"
 					srcset="images/architecture-960.webp 960w, images/architecture-1280.webp 1280w, images/architecture-1600.webp 1600w, images/architecture-1920.webp 1920w, images/architecture.webp 2400w"
-					sizes="(max-width: 768px) and (max-aspect-ratio: 57/100) 57vh, (max-width: 768px) 100vw, (max-aspect-ratio: 118/100) 59vh, 50vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
 					alt="Sweeping white concrete wall curving against a clear sky"
 					loading="lazy" decoding="async">
 				<p class="frame__note">Light held against a curve</p>
@@ -203,7 +233,7 @@
 			<a class="frame__media" href="projects/#one-sydney-harbour" style="--pos:50% 92%">
 				<img src="images/architecture.webp"
 					srcset="images/architecture-960.webp 960w, images/architecture-1280.webp 1280w, images/architecture-1600.webp 1600w, images/architecture-1920.webp 1920w, images/architecture.webp 2400w"
-					sizes="(max-width: 768px) and (max-aspect-ratio: 57/100) 57vh, (max-width: 768px) 100vw, (max-aspect-ratio: 118/100) 59vh, 50vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
 					alt="A figure in black walking beside a shallow reflecting pool at the base of a white wall"
 					loading="lazy" decoding="async">
 				<p class="frame__note">The smallest figure in the frame</p>
@@ -231,7 +261,7 @@
 			<a class="frame__media" href="projects/#private-collection" style="--pos:30% 58%">
 				<img src="images/lifestyle.webp"
 					srcset="images/lifestyle-960.webp 960w, images/lifestyle-1280.webp 1280w, images/lifestyle-1600.webp 1600w, images/lifestyle-1920.webp 1920w, images/lifestyle.webp 2400w"
-					sizes="(max-width: 768px) and (max-aspect-ratio: 138/100) 138vh, (max-width: 768px) 100vw, (max-aspect-ratio: 284/100) 142vh, 50vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 138/100) 138vh, (max-width: 768px) 100vw, (max-aspect-ratio: 294/100) 147vh, 50vw"
 					alt="Silver sports car parked side-on across a paved forecourt"
 					loading="lazy" decoding="async">
 				<p class="frame__note">Kept for the road that deserves it</p>
@@ -249,7 +279,7 @@
 			<a class="frame__media" href="projects/#hillside-residence" style="--pos:76% 55%">
 				<img src="images/lifestyle.webp"
 					srcset="images/lifestyle-960.webp 960w, images/lifestyle-1280.webp 1280w, images/lifestyle-1600.webp 1600w, images/lifestyle-1920.webp 1920w, images/lifestyle.webp 2400w"
-					sizes="(max-width: 768px) and (max-aspect-ratio: 138/100) 138vh, (max-width: 768px) 100vw, (max-aspect-ratio: 284/100) 142vh, 50vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 138/100) 138vh, (max-width: 768px) 100vw, (max-aspect-ratio: 294/100) 147vh, 50vw"
 					alt="Sports car and a white four-wheel drive outside a modern white house"
 					loading="lazy" decoding="async">
 				<p class="frame__note">Parked where the afternoon lands</p>
@@ -276,7 +306,7 @@
 			<a class="frame__media" href="projects/#alpine-traverse" style="--pos:67% 64%">
 				<img src="images/travel.webp"
 					srcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
-					sizes="(max-aspect-ratio: 3/2) 151vh, 100vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 130/100) 130vh, (max-width: 768px) 100vw, (max-aspect-ratio: 276/100) 138vh, 50vw"
 					alt="A walker standing alone on a rock outcrop above forested ridges"
 					loading="lazy" decoding="async">
 				<p class="frame__note">The long way round, taken slowly</p>
@@ -294,7 +324,7 @@
 			<a class="frame__media" href="projects/#hinterland-lodge" style="--pos:22% 50%">
 				<img src="images/travel.webp"
 					srcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
-					sizes="(max-aspect-ratio: 3/2) 151vh, 100vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 130/100) 130vh, (max-width: 768px) 100vw, (max-aspect-ratio: 276/100) 138vh, 50vw"
 					alt="Rock spires rising from a green ridge in late afternoon light"
 					loading="lazy" decoding="async">
 				<p class="frame__note">Stone that got there first</p>
@@ -316,7 +346,7 @@
 			<a class="frame__media" href="projects/#highland-crossing" style="--pos:50% 20%">
 				<img src="images/travel.webp"
 					srcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
-					sizes="(max-aspect-ratio: 3/2) 151vh, 100vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 130/100) 130vh, (max-width: 768px) 100vw, (max-aspect-ratio: 276/100) 138vh, 50vw"
 					alt="Layered mountain ridges fading into haze"
 					loading="lazy" decoding="async">
 				<p class="frame__note">Ridge after ridge, going quiet</p>
@@ -334,7 +364,7 @@
 			<a class="frame__media" href="projects/#the-escarpment" style="--pos:90% 70%">
 				<img src="images/travel.webp"
 					srcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
-					sizes="(max-aspect-ratio: 3/2) 151vh, 100vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 130/100) 130vh, (max-width: 768px) 100vw, (max-aspect-ratio: 276/100) 138vh, 50vw"
 					alt="Weathered rock formations along a high mountain ridge"
 					loading="lazy" decoding="async">
 				<p class="frame__note">Somewhere the season turns first</p>
