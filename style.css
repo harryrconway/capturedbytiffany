@@ -385,9 +385,9 @@ body.nav-open .nav-ig {
    Portrait and short viewports: 13 RESPONSIVE.
    ========================================================================== */
 
-/* Two nested opacities: this one carries the tiles and the plate ground and
-   lingers; the plate's type fades faster. They multiply, so the words lead
-   and the pictures follow them out. */
+/* Two nested opacities: this one carries the tiles and lingers; the plate's
+   type fades faster. They multiply, so the words lead and the pictures
+   follow them out. */
 .hero { opacity: var(--hero-media-op, 1); }
 
 .hero {
@@ -423,12 +423,12 @@ body.nav-open .nav-ig {
 .hero__tile--corner { grid-area: corner; }
 .hero__tile--low    { grid-area: low; }
 
-/* The type plate — the fifth module, not a link. On the plate ground rather
-   than the page's, so it reads as a tile of the grid, not a hole in it. */
+/* The type plate — the fifth module, not a link. No fill of its own: the
+   name sits straight on the page's white ground, in the cell the grid
+   leaves for it. */
 .hero__plate {
 	grid-area: plate;
 	display: grid;               /* .hero__plate-in stretches to fill it */
-	background: var(--bg-raise);
 	/* The size container its type is measured against: cqi in --mark-size,
 	   --tag-size, --pos-size and --plate-pad is 1% of this plate's width.
 	   inline-size, not size: the height must stay content-driven, or the
