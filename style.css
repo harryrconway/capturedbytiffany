@@ -630,6 +630,12 @@ body.nav-open .nav-ig {
 	line-height: 1;
 }
 
+/* 01 Behind the Lens only: the written chapter is centred, over a centred
+   statement and the centred copy-and-picture pair below it (10 BEHIND THE
+   LENS). The photographic chapters keep the page's left edge, where they
+   line up with the plates they head. */
+.chapter--centre { justify-content: center; }
+
 .chapter__num  { color: var(--ink-quiet); }
 .chapter__name { color: var(--ink); }
 
@@ -816,10 +822,12 @@ main {
 }
 
 /* 52ch: three lines from 1024px up, six on a phone. Wider and it reads as a
-   paragraph; narrower and it stacks into a column of fragments. */
+   paragraph; narrower and it stacks into a column of fragments. Centred,
+   with the marker above it and the pair below. */
 .about__statement {
 	max-width: 52ch;
-	margin-bottom: clamp(40px, 7vh, 84px);
+	margin: 0 auto clamp(40px, 7vh, 84px);
+	text-align: center;
 	font-size: var(--statement-size);
 	letter-spacing: 0.01em;
 	line-height: 1.26;
@@ -864,12 +872,19 @@ main {
 
 /* 2:3 is the photograph's own ratio, so nothing is cropped — the opposite of
    the hero, which shows 55–100% of its height. Its track caps the width, so
-   a 2560px window can't blow it up to 1019px. */
+   a 2560px window can't blow it up to 1019px.
+
+   Arched: radii far larger than the box are scaled back by the browser until
+   they fit, so 999px resolves to exactly half the width however wide the
+   track is — a true semicircle at every size, with the foot left square so
+   the picture still sits on the line of the copy beside it. The curve
+   answers the sweep of the wall inside the photograph. */
 .about__portrait {
 	position: relative;
-	overflow: hidden;
+	overflow: hidden;            /* clips the photograph into the arch */
 	width: 100%;
 	aspect-ratio: 2 / 3;
+	border-radius: 999px 999px 0 0;
 	background: var(--bg-raise);
 }
 
