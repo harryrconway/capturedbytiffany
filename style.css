@@ -811,10 +811,12 @@ main {
    The opening sentence set as a statement across the page, then one narrow
    column of copy on the left and a tall photograph on the right.
 
-   7 : 5, not 1 : 1. The copy is held to a 46ch measure (527px at 1440) inside
-   a 786px column: that unused right-hand slack is deliberate — it is the air
-   that separates the paragraph from the picture, which a --gutter alone is
-   too narrow to give.
+   The copy and the photograph are a PAIR, centred on the page together:
+   each column is sized to its own content — the copy's 46ch measure, the
+   picture's own width — with one --gutter between them, so they sit beside
+   each other rather than at opposite edges of the page. (Tracks sized in fr
+   left ~330px of dead air in the middle, which read as two unrelated
+   columns.) The statement above keeps the page's left edge.
    ========================================================================== */
 
 .about {
@@ -835,8 +837,10 @@ main {
 
 .about__grid {
 	display: grid;
-	grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+	/* Content-sized tracks, centred as a pair by justify-content */
+	grid-template-columns: minmax(0, 46ch) minmax(0, clamp(320px, 34vw, 560px));
 	gap: var(--gutter);
+	justify-content: center;
 	/* The copy is the shorter column, so centring it sets its middle against
 	   the photograph's rather than leaving it hanging from the top */
 	align-items: center;
@@ -869,14 +873,12 @@ main {
 }
 
 /* 2:3 is the photograph's own ratio, so nothing is cropped — the opposite of
-   the hero, which shows 55–100% of its height. Capped and pinned to the right
-   page edge, or a 2560px window would blow it up to 1019px wide. */
+   the hero, which shows 55–100% of its height. Its track caps the width, so
+   a 2560px window can't blow it up to 1019px. */
 .about__portrait {
 	position: relative;
 	overflow: hidden;
-	justify-self: end;
 	width: 100%;
-	max-width: 560px;
 	aspect-ratio: 2 / 3;
 	background: var(--bg-raise);
 }
@@ -1211,10 +1213,7 @@ body.is-ready main {
 
 	/* 2:3 at full phone width is 555px tall — over half a 390×844 screen
 	   before the copy above it. 4:5 keeps it to 462px. */
-	.about__portrait {
-		max-width: none;
-		aspect-ratio: 4 / 5;
-	}
+	.about__portrait { aspect-ratio: 4 / 5; }
 
 	.brand { letter-spacing: 0.12em; }
 
