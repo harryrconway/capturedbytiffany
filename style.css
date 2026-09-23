@@ -403,10 +403,9 @@ body.nav-open .nav-ig {
    and the only portrait photograph there is turns landscape. At 1:1 the box
    runs 0.66 to 0.89 at every landscape size.
 
-   The name's cap line starts level with the photograph's TOP edge (that is
-   what the -0.13em trim buys) and the cue's hairline lands on its BOTTOM
-   edge, so the two anchors frame the column's white space rather than
-   letting the type float in it.
+   The name and the fields line sit centred in the column, and the cue's
+   hairline lands on the photograph's BOTTOM edge — so the type reads as one
+   quiet block against the picture, anchored at the foot.
 
    .hero carries the photograph's scroll fade; .hero__type carries the type's,
    which runs ahead of it (main.js 04 HANDOFF). The intro lives on main —
@@ -450,12 +449,15 @@ body.nav-open .nav-ig {
 }
 
 /* The masthead: stacked, left-aligned on the page's editorial column — the
-   same --inset every chapter marker and photograph below starts from. */
+   same --inset every chapter marker and photograph below starts from.
+
+   Centred vertically by a pair of auto margins — this one and the tagline's
+   below — which split the column's free space evenly above and below the
+   two of them. The cue keeps the foot, so the name sits in the middle of
+   the space above it. (In the stacked layout the column is content-height,
+   so there is no free space and both autos collapse to nothing.) */
 .hero__mark {
-	/* Trims the line's half-leading (0.123em at line-height 1), so the cap
-	   line sits level with the photograph's top edge the way the first
-	   letter sits on the page's left one */
-	margin-top: -0.13em;
+	margin-top: auto;
 	font-size: var(--mark-size);
 	font-weight: 400;
 	letter-spacing: 0.14em;
@@ -468,6 +470,7 @@ body.nav-open .nav-ig {
 
 .hero__tagline {
 	margin-top: var(--hero-step);
+	margin-bottom: auto;         /* the other half of the centring pair */
 	font-size: var(--tag-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
@@ -478,11 +481,11 @@ body.nav-open .nav-ig {
 /* Categories stay whole — the line may only break between them */
 .hero__tagline span { white-space: nowrap; }
 
-/* Pinned to the foot by margin-top: auto, so the rule lands on the
-   photograph's bottom edge. In the stacked layout there is no free space to
-   absorb, so 14 RESPONSIVE swaps the auto for a real step. */
+/* The masthead's two auto margins take all the free space above it, so this
+   lands on the photograph's bottom edge with no margin of its own. In the
+   stacked layout there is no free space at all, so 14 RESPONSIVE gives it a
+   real step to stand on. */
 .hero__foot {
-	margin-top: auto;
 	padding-top: clamp(12px, 1.8cqi, 22px);
 	border-top: 1px solid var(--rule);
 }
@@ -834,7 +837,9 @@ main {
 	display: grid;
 	grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
 	gap: var(--gutter);
-	align-items: start;
+	/* The copy is the shorter column, so centring it sets its middle against
+	   the photograph's rather than leaving it hanging from the top */
+	align-items: center;
 }
 
 .about__body {
@@ -1253,8 +1258,8 @@ body.is-ready main {
 			"type";
 	}
 
-	/* The column is content-height here, so margin-top: auto has no free
-	   space to absorb and the rule would crowd the tagline */
+	/* The column is content-height here, so the masthead's centring margins
+	   collapse and the rule would crowd the tagline without a step of its own */
 	.hero__foot { margin-top: var(--hero-step); }
 }
 
