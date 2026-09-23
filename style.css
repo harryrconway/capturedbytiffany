@@ -73,11 +73,6 @@
 	   from 1024px up (six on a phone); 3vw reaches the 2.8rem cap at ~1490px. */
 	--statement-size: clamp(1.5rem, 3vw, 2.8rem);
 
-	/* Hairline — the hero cue's rule, the clients band, the About meta line.
-	   Decorative only: every one of them sits under type that carries the
-	   meaning on its own, so it is not held to 3:1. */
-	--rule: rgba(23, 35, 48, 0.16);
-
 	/* Clients strip (07 CLIENTS). Five 20vw slots make one pass exactly one
 	   screen wide up to 2100px, so the three-pass track is always at least
 	   twice the window and the loop's seam can never appear. A fixed duration
@@ -403,9 +398,9 @@ body.nav-open .nav-ig {
    and the only portrait photograph there is turns landscape. At 1:1 the box
    runs 0.66 to 0.89 at every landscape size.
 
-   The name and the fields line sit centred in the column, and the cue's
-   hairline lands on the photograph's BOTTOM edge — so the type reads as one
-   quiet block against the picture, anchored at the foot.
+   The name and the fields line sit centred in the column, and the cue sits
+   on the photograph's BOTTOM edge — so the type reads as one quiet block
+   against the picture, anchored at the foot.
 
    .hero carries the photograph's scroll fade; .hero__type carries the type's,
    which runs ahead of it (main.js 04 HANDOFF). The intro lives on main —
@@ -482,12 +477,11 @@ body.nav-open .nav-ig {
 .hero__tagline span { white-space: nowrap; }
 
 /* The masthead's two auto margins take all the free space above it, so this
-   lands on the photograph's bottom edge with no margin of its own. In the
+   sits on the photograph's bottom edge with no margin of its own. In the
    stacked layout there is no free space at all, so 14 RESPONSIVE gives it a
    real step to stand on. */
 .hero__foot {
 	padding-top: clamp(12px, 1.8cqi, 22px);
-	border-top: 1px solid var(--rule);
 }
 
 .hero__cue {
@@ -566,8 +560,6 @@ body.nav-open .nav-ig {
 	   edges as every photograph on the page */
 	margin: clamp(48px, 9vh, 104px) var(--inset) 0;
 	padding-block: clamp(20px, 3vh, 34px);
-	border-top: 1px solid var(--rule);
-	border-bottom: 1px solid var(--rule);
 	overflow: hidden;            /* the band is the window onto a wider track */
 }
 
@@ -859,12 +851,10 @@ main {
 .about__body p + p { margin-top: 1.5em; }
 
 /* Place and availability are a credit, not a paragraph — set in the credit
-   band's own language, under a hairline that closes the column */
+   band's own language, spaced off the copy that closes above it */
 .about__meta {
 	max-width: 46ch;
 	margin-top: clamp(28px, 4.5vh, 52px);
-	padding-top: clamp(12px, 1.8vh, 18px);
-	border-top: 1px solid var(--rule);
 	font-size: var(--credit-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
@@ -1258,7 +1248,7 @@ body.is-ready main {
 	}
 
 	/* The column is content-height here, so the masthead's centring margins
-	   collapse and the rule would crowd the tagline without a step of its own */
+	   collapse and the cue would crowd the tagline without a step of its own */
 	.hero__foot { margin-top: var(--hero-step); }
 }
 
