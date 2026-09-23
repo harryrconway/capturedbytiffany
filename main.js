@@ -17,7 +17,7 @@
 	   ====================================================================== */
 
 	var CONFIG = {
-		// Cap on how long the page will wait for the hero photographs before
+		// Cap on how long the page will wait for the hero photograph before
 		// fading in regardless. A broken or very slow image must never leave
 		// the visitor looking at a blank screen.
 		fadeFailsafe: 2000,
@@ -26,9 +26,9 @@
 		// The corner mark starts well before the hero mark is gone — without
 		// that overlap there's a dead patch mid-scroll where neither is
 		// really on screen, which reads as a flicker rather than a handoff.
-		heroFadeEnd:    0.55,    // plate TYPE fully gone by here
-		heroMediaEnd:   0.85,    // TILES and plate linger, gone by here
-		brandFadeStart: 0.35,    // corner mark starts appearing here (and the bars turn to ink)
+		heroFadeEnd:    0.55,    // hero TYPE fully gone by here
+		heroMediaEnd:   0.85,    // the PHOTOGRAPH lingers, gone by here
+		brandFadeStart: 0.35,    // corner mark starts appearing here
 		brandFadeEnd:   0.75     // …and is fully opaque by here
 	};
 
@@ -54,10 +54,11 @@
 
 	/* ======================================================================
 	   02  INTRO
-	   One beat. The page holds on the ground colour until every hero
-	   photograph has actually decoded, then everything fades in together —
-	   all four, so the mosaic arrives as one piece and no tile is seen
-	   landing late. (The projects page has no hero, so it never waits.)
+	   One beat. The page holds on the ground colour until the hero photograph
+	   has actually decoded, then everything fades in together. One photograph
+	   now, not four: the querySelectorAll and the counter stay, so a second
+	   hero image would still be waited for. (The projects page has no hero,
+	   so it never waits.)
 
 	   Gating on decode (not `load`) is the point: `load` fires before the
 	   pixels are ready, so a load-gated fade can still stutter on a large
@@ -161,9 +162,9 @@
 
 	/* ======================================================================
 	   04  HANDOFF
-	   Crossfades the wordmark between the hero's type plate and the
-	   top-right corner as the hero scrolls past. Writes three custom
-	   properties; CSS does the rest, so this touches nothing but opacity.
+	   Crossfades the wordmark between the hero's masthead and the top-right
+	   corner as the hero scrolls past. Writes three custom properties; CSS
+	   does the rest, so this touches nothing but opacity.
 
 	   Each property is written on the element that reads it — .hero and
 	   .brand — never on <body>. Custom properties inherit, so a write on
@@ -210,19 +211,17 @@
 			);
 
 			// Both fade from the very start; the type just clears first, so the
-			// tiles are still receding as the work below comes up. A single
+			// photograph is still receding as the work below comes up. A single
 			// shared curve would empty the top half of the screen too early.
-			// .hero__plate-in inherits --hero-op from .hero.
+			// .hero__type carries --hero-op; .hero carries the photograph's.
 			write(el.hero, '--hero-op', heroOp);
 			write(el.hero, '--hero-media-op', mediaOp);
 			write(el.brand, '--brand-op', brandOp);
 
 			// Class toggle only on threshold crossings, not every frame. It
-			// flips the corner mark's pointer-events and turns the hamburger
-			// to ink as the corner mark starts to wake — while the bars are
-			// still over the hero's corner tile, which leaves from under them
-			// at about 0.43 on a 16:10 screen. Any later and cream bars would
-			// cross the white gap and the pale type plate.
+			// flips the corner mark's pointer-events as the mark starts to
+			// wake. (It used to turn the hamburger to ink here too; the bars
+			// are ink at all times now — style.css 04 NAV TOGGLE.)
 			var isPast = p > CONFIG.brandFadeStart;
 			if (isPast !== wasPast) {
 				wasPast = isPast;

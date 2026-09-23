@@ -37,20 +37,21 @@
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 	<!-- The hero's stacked name is set large in Tenor Sans. Fetch it during
-	     head parsing so it arrives before the photographs decode and the name
-	     never swaps faces as the page fades in. crossorigin is required even same-origin: fonts always fetch in CORS
-	     mode, and a preload without it doesn't match — it downloads twice. -->
+	     head parsing so it arrives before the photograph decodes and the name
+	     never swaps faces as the page fades in. crossorigin is required even
+	     same-origin: fonts always fetch in CORS mode, and a preload without it
+	     doesn't match — it downloads twice. -->
 	<link rel="preload" as="font" type="font/woff2" href="fonts/tenor-sans-latin.woff2" crossorigin>
 
-	<!-- Start the tall architecture tile's fetch during head parsing — the
-	     page's largest image. The page fade waits for all four hero
-	     photographs to decode; the other three are eager <img>s the preload
-	     scanner finds straight after. imagesrcset/imagesizes match the <img>
-	     exactly, so both resolve to the same file. No href, so browsers without
-	     imagesrcset don't fetch the full-size original too. -->
+	<!-- One hero photograph, and it is the LCP element: start its fetch during
+	     head parsing. imagesrcset/imagesizes match the <img> below exactly, so
+	     both resolve to the same candidate and the preload is never wasted. No
+	     href, so browsers without imagesrcset don't also fetch the full-size
+	     original. The page fade waits on this one decode (main.js 02 INTRO) —
+	     one file and one decode, where the mosaic needed three and four. -->
 	<link rel="preload" as="image" type="image/webp" fetchpriority="high"
 		imagesrcset="images/architecture-960.webp 960w, images/architecture-1280.webp 1280w, images/architecture-1600.webp 1600w, images/architecture-1920.webp 1920w, images/architecture.webp 2400w"
-		imagesizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw">
+		imagesizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 1/1) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw">
 
 	<link rel="stylesheet" href="style.css">
 </head>
@@ -58,8 +59,8 @@
 
 <!-- ==========================================================================
 	 HEADER — name + hamburger, fixed top right. Comes up with the page as it
-	 fades in (style.css 12 PAGE FADE). Clicks pass through its box to the
-	 hero tiles beneath (style.css 03 HEADER).
+	 fades in (style.css 13 PAGE FADE). Clicks pass through its box to the
+	 hero beneath (style.css 03 HEADER).
 	 ========================================================================== -->
 <header class="site-header">
 	<a class="brand" href="#top" aria-label="Capturedbytiffany — back to top">Capturedbytiffany</a>
@@ -118,73 +119,83 @@
 	 genuine jobs before this goes anywhere public.
 
 	 IMAGES: one `sizes` per photograph, not per slot. While the same three
-	 placeholders fill every slot, a single value keeps each photograph to
-	 one download. Once real, distinct photographs arrive, give each <img>
-	 the sizes of its own slot. The hero tiles are eager and gate the page
-	 fade, so the fade currently waits for the largest candidate of each
-	 photograph — per-slot sizes will shrink that too.
+	 placeholders fill every slot, a single value keeps each photograph to one
+	 download — architecture now fills the hero, the About portrait and the two
+	 02 frames from a single file. Once real, distinct photographs arrive, give
+	 each <img> the sizes of its own slot; the hero's would then drop from 58vh
+	 to ~50vh on a phone, because only the row frames need the larger value.
 	 ========================================================================== -->
 <main id="top">
 
-	<!-- Hero — a modular mosaic filling the first viewport: one tall portrait,
-	     three photographs and the type plate (style.css 06 HERO). The plate
-	     comes first so the name is read first; grid areas place everything.
-	     Each photograph links to its chapter. The page waits for all four to
-	     decode before fading in, so no tile is ever seen arriving.
-	     PLACEHOLDER: only three photographs exist, so travel fills two tiles
-	     on different crops. Give --low its own photograph when real work
-	     arrives. -->
+	<!-- Hero — the first viewport exactly: the masthead on the left, one
+	     photograph full height on the right (style.css 06 HERO). The name's
+	     cap line starts level with the photograph's top edge and the cue's
+	     hairline lands on its bottom edge, so the column is framed rather
+	     than floated. One eager photograph: the page waits for its decode
+	     and nothing else. -->
 	<section class="hero">
-		<div class="hero__plate">
-			<div class="hero__plate-in">
-				<!-- The spaces between the spans are deliberate: the lines stack as
-				     blocks, and the heading still reads "Captured by Tiffany" -->
-				<h1 class="hero__mark"><span>Captured</span> <span>by</span> <span>Tiffany</span></h1>
-				<!-- PLACEHOLDER fields and positioning — confirm with Tiffany -->
-				<p class="hero__tagline"><span>Architecture —</span> <span>Lifestyle &amp; People —</span> <span>Travel / Hotels</span></p>
-				<p class="hero__positioning">Based on the Gold Coast, working throughout Australia and internationally.</p>
-			</div>
+		<div class="hero__type">
+			<!-- The spaces between the spans are deliberate: the lines stack as
+			     blocks, and the heading still reads "Captured by Tiffany" -->
+			<h1 class="hero__mark"><span>Captured</span> <span>by</span> <span>Tiffany</span></h1>
+
+			<!-- PLACEHOLDER fields — confirm with Tiffany -->
+			<p class="hero__tagline"><span>Architecture —</span> <span>Lifestyle &amp; People —</span> <span>Travel / Hotels</span></p>
+
+			<!-- 02 Architecture, not 01: the label promises photographs, and 01
+			     is the written About -->
+			<p class="hero__foot">
+				<a class="hero__cue" href="#architecture">Selected work<svg viewBox="0 0 12 14" width="12" height="14" aria-hidden="true" focusable="false"><path d="M6 0v12M1.4 7.6 6 12.6l4.6-5" fill="none" stroke="currentColor" stroke-width="1"/></svg></a>
+			</p>
 		</div>
 
-		<a class="hero__tile hero__tile--tall" href="#architecture" style="--pos:50% 78%">
+		<!-- The hamburger sits over this photograph at every size. Its bars are
+		     ink: measured 5.5:1 at its darkest (the blue sky, 1024×768) to
+		     11.9:1 over the wall, against 1.0–1.9:1 for cream. A DARK
+		     photograph here would need the cream override restoring — see
+		     style.css 04 NAV TOGGLE. -->
+		<figure class="hero__photo" style="--pos:50% 78%">
 			<img src="images/architecture.webp"
 				srcset="images/architecture-960.webp 960w, images/architecture-1280.webp 1280w, images/architecture-1600.webp 1600w, images/architecture-1920.webp 1920w, images/architecture.webp 2400w"
-				sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
+				sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 1/1) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
 				alt="A figure in black walking beside a shallow pool beneath a sweeping white wall"
 				loading="eager" fetchpriority="high" decoding="async">
-			<p class="hero__note">Architecture</p>
-		</a>
+		</figure>
+	</section>
 
-		<a class="hero__tile hero__tile--mid" href="#lifestyle" style="--pos:40% 50%">
-			<img src="images/lifestyle.webp"
-				srcset="images/lifestyle-960.webp 960w, images/lifestyle-1280.webp 1280w, images/lifestyle-1600.webp 1600w, images/lifestyle-1920.webp 1920w, images/lifestyle.webp 2400w"
-				sizes="(max-width: 768px) and (max-aspect-ratio: 138/100) 138vh, (max-width: 768px) 100vw, (max-aspect-ratio: 294/100) 147vh, 50vw"
-				alt="Silver sports car parked side-on on a paved forecourt"
-				loading="eager" decoding="async">
-			<p class="hero__note">Lifestyle &amp; People</p>
-		</a>
+	<!-- ==========================================================================
+	     CLIENTS — a slow marquee (style.css 07 CLIENTS). Five slots per pass,
+	     three passes: the track drifts exactly one pass and repeats, so the
+	     seam never shows. Two passes are always at least as wide as the
+	     window, which holds to a 4200px viewport.
 
-		<!-- --corner sits under the fixed header at every size: keep it a
-		     photograph (style.css 06 HERO). Travel's hazy sky holds the cream
-		     hamburger; lifestyle's white house would swallow it. -->
-		<a class="hero__tile hero__tile--corner" href="#travel" style="--pos:85% 60%">
-			<img src="images/travel.webp"
-				srcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
-				sizes="(max-width: 768px) and (max-aspect-ratio: 130/100) 130vh, (max-width: 768px) 100vw, (max-aspect-ratio: 276/100) 138vh, 50vw"
-				alt="A lone figure on a rock outcrop above ridges receding into golden haze"
-				loading="eager" decoding="async">
-			<p class="hero__note">Travel / Hotels</p>
-		</a>
+	     PLACEHOLDER: the word LOGO. To swap in real client logos, replace each
+	     <li>'s text with <img src="logos/name.svg" alt="Client name"> and add
+	         .clients__logo img { height: 100%; width: auto; }
+	     Keep five per pass and keep all three passes, or the loop breaks. The
+	     two repeat passes are aria-hidden: screen readers get the five names
+	     once.
+	     ========================================================================== -->
+	<section class="clients" aria-label="Selected clients">
+		<ul class="clients__track">
+			<li class="clients__logo">Logo</li>
+			<li class="clients__logo">Logo</li>
+			<li class="clients__logo">Logo</li>
+			<li class="clients__logo">Logo</li>
+			<li class="clients__logo">Logo</li>
 
-		<!-- PLACEHOLDER: travel again, on its left-hand spires -->
-		<a class="hero__tile hero__tile--low" href="#travel" style="--pos:10% 50%">
-			<img src="images/travel.webp"
-				srcset="images/travel-960.webp 960w, images/travel-1280.webp 1280w, images/travel-1600.webp 1600w, images/travel-1920.webp 1920w, images/travel-2400.webp 2400w, images/travel.webp 3200w"
-				sizes="(max-width: 768px) and (max-aspect-ratio: 130/100) 130vh, (max-width: 768px) 100vw, (max-aspect-ratio: 276/100) 138vh, 50vw"
-				alt="Rock spires rising from a sunlit green ridge"
-				loading="eager" decoding="async">
-			<p class="hero__note">Travel / Hotels</p>
-		</a>
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+			<li class="clients__logo" aria-hidden="true">Logo</li>
+		</ul>
 	</section>
 
 	<!-- ─── 01 ──────────────────────────────────────────────────────────── -->
@@ -194,13 +205,33 @@
 	</h2>
 
 	<!-- PLACEHOLDER BIO — carried over from the previous build with the name
-	     swapped. Replace with Tiffany's own words before publishing. -->
+	     swapped. Replace with Tiffany's own words before publishing. Every
+	     word of the old four paragraphs survives: the first is now the
+	     statement, the last is the meta line. -->
 	<section class="about">
-		<div class="about__body">
-			<p>Based on the Gold Coast and working throughout Australia and internationally, Tiffany is a photographer focused on capturing people, places and spaces with a natural, considered approach.</p>
-			<p>With a background spanning lifestyle and people, architecture, travel and hospitality, the work is driven by an appreciation for light, detail and the atmosphere of a place. Whether photographing a person, a finished space or a destination, the aim is always the same: to create images that feel authentic, refined and true to the experience.</p>
-			<p>From intimate portraits and creative sessions to architecture, hotels and travel, Tiffany works closely with clients to create imagery that feels genuine rather than overly produced.</p>
-			<p>Gold Coast, Australia. Available internationally.</p>
+		<p class="about__statement">Based on the Gold Coast and working throughout Australia and internationally, Tiffany is a photographer focused on capturing people, places and spaces with a natural, considered approach.</p>
+
+		<div class="about__grid">
+			<div class="about__col">
+				<div class="about__body">
+					<p>With a background spanning lifestyle and people, architecture, travel and hospitality, the work is driven by an appreciation for light, detail and the atmosphere of a place. Whether photographing a person, a finished space or a destination, the aim is always the same: to create images that feel authentic, refined and true to the experience.</p>
+					<p>From intimate portraits and creative sessions to architecture, hotels and travel, Tiffany works closely with clients to create imagery that feels genuine rather than overly produced.</p>
+				</div>
+				<p class="about__meta">Gold Coast, Australia. Available internationally.</p>
+			</div>
+
+			<!-- PLACEHOLDER: the hero's photograph again — the only portrait
+			     source there is. It is shown WHOLE here (2:3 is its own ratio)
+			     where the hero crops it, so the repeat reads as deliberate, and
+			     it shares the hero's sizes, so it costs no extra bytes. Swap for
+			     Tiffany's own portrait and give it its own sizes. -->
+			<figure class="about__portrait" style="--pos:50% 60%">
+				<img src="images/architecture.webp"
+					srcset="images/architecture-960.webp 960w, images/architecture-1280.webp 1280w, images/architecture-1600.webp 1600w, images/architecture-1920.webp 1920w, images/architecture.webp 2400w"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 1/1) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
+					alt="A sweeping white wall above a shallow pool, a lone figure in black at its foot"
+					loading="lazy" decoding="async">
+			</figure>
 		</div>
 	</section>
 
@@ -215,7 +246,7 @@
 			<a class="frame__media" href="projects/#one-sydney-harbour" style="--pos:50% 26%">
 				<img src="images/architecture.webp"
 					srcset="images/architecture-960.webp 960w, images/architecture-1280.webp 1280w, images/architecture-1600.webp 1600w, images/architecture-1920.webp 1920w, images/architecture.webp 2400w"
-					sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 1/1) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
 					alt="Sweeping white concrete wall curving against a clear sky"
 					loading="lazy" decoding="async">
 				<p class="frame__note">Light held against a curve</p>
@@ -233,7 +264,7 @@
 			<a class="frame__media" href="projects/#one-sydney-harbour" style="--pos:50% 92%">
 				<img src="images/architecture.webp"
 					srcset="images/architecture-960.webp 960w, images/architecture-1280.webp 1280w, images/architecture-1600.webp 1600w, images/architecture-1920.webp 1920w, images/architecture.webp 2400w"
-					sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
+					sizes="(max-width: 768px) and (max-aspect-ratio: 58/100) 58vh, (max-width: 768px) 100vw, (max-aspect-ratio: 1/1) 100vw, (max-aspect-ratio: 134/100) 67vh, 50vw"
 					alt="A figure in black walking beside a shallow reflecting pool at the base of a white wall"
 					loading="lazy" decoding="async">
 				<p class="frame__note">The smallest figure in the frame</p>
