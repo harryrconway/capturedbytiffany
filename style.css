@@ -884,12 +884,19 @@ main {
 
 /* ==========================================================================
    11  CONTACT
-   The close: one centred enquiry form. Every control is a 1px true-black
-   outline on the page's own white (--line, 01 TOKENS) — no fills. The grey
-   panels this replaces were --bg-raise, the ground photographs sit on while
-   they load, which made the form read as six pieces of loading furniture.
-   An outline says the same with one pixel and keeps the white ground
-   continuous from the last photograph to the colophon.
+   The close: one centred enquiry form. Every control is a single true-black
+   UNDERLINE on the page's own white (--line, 01 TOKENS) — no boxes, no
+   fills. The grey panels this replaces were --bg-raise, the ground the
+   photographs sit on while they load, which made the form read as pieces of
+   loading furniture; a full outline then drew six boxes on a page that has
+   no rules anywhere else. One line under each control says the same thing
+   and keeps the white ground continuous from the last photograph down to
+   the colophon.
+
+   Because there are no side borders, the text fields carry no side padding
+   either: what is typed starts on the same vertical as the label above it
+   and as every other element on the page. The chips keep theirs — there the
+   padding is the hit area, and the underline spans it.
 
    Chosen is filled: a ticked box, a pressed month, a picked day and the Send
    button are solid --line with white type, 21:1. Everything else is a line.
@@ -976,9 +983,12 @@ main {
 .field input,
 .field textarea {
 	width: 100%;
-	padding: clamp(13px, 1.7vh, 17px) clamp(14px, 1.6vw, 20px);
+	/* No side padding: with no side borders, an inset would float the text
+	   away from the label it belongs to */
+	padding: clamp(10px, 1.3vh, 13px) 0;
 	background: none;
-	border: 1px solid var(--line);
+	border: none;
+	border-bottom: 1px solid var(--line);
 	font-family: var(--font);
 	font-size: var(--field-size);
 	letter-spacing: 0.04em;
@@ -1010,9 +1020,12 @@ main {
    never a 2px border: a border would shift the text a pixel on hover. Inside
    the pointer query, because on a phone the old rule stuck after a tap and
    left a field looking permanently hovered. */
+/* The line doubles rather than drawing a box: a second pixel under the
+   first. An INSET shadow, never a 2px border — a border would shift the
+   text a pixel on hover. */
 @media (hover: hover) and (pointer: fine) {
 	.field input:hover,
-	.field textarea:hover { box-shadow: inset 0 0 0 1px var(--line); }
+	.field textarea:hover { box-shadow: inset 0 -1px 0 var(--line); }
 }
 
 /* The ring is the page's own (15 A11Y): 1px ink, 6px clear of the black
@@ -1020,7 +1033,7 @@ main {
    field doubles its own line as well, so a focused control is still obvious
    where the ring is suppressed (forced colours, print). */
 .field input:focus-visible,
-.field textarea:focus-visible { box-shadow: inset 0 0 0 1px var(--line); }
+.field textarea:focus-visible { box-shadow: inset 0 -1px 0 var(--line); }
 
 /* iOS Safari zooms the page the moment a focused field is under 16px, and it
    does not zoom back — the visitor is left dragging a layout viewport wider
@@ -1037,8 +1050,8 @@ main {
    of warn, read at a glance, and nothing moves. 8.2:1 on white. */
 .field input[aria-invalid="true"],
 .field textarea[aria-invalid="true"] {
-	border-color: var(--warn);
-	box-shadow: inset 0 0 0 1px var(--warn);
+	border-bottom-color: var(--warn);
+	box-shadow: inset 0 -1px 0 var(--warn);
 }
 
 .field__note {
@@ -1088,7 +1101,8 @@ main {
 	gap: 0.7em;
 	padding: clamp(11px, 1.45vh, 14px) clamp(14px, 1.4vw, 18px);
 	background: none;
-	border: 1px solid var(--line);
+	border: none;
+	border-bottom: 1px solid var(--line);
 	font-size: var(--tick-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
@@ -1201,7 +1215,8 @@ main {
 .dates__flex {
 	flex: none;
 	background: none;
-	border: 1px solid var(--line);
+	border: none;
+	border-bottom: 1px solid var(--line);
 	font-family: var(--font);
 	font-size: var(--tick-size);
 	letter-spacing: var(--track-wide);
@@ -1225,7 +1240,7 @@ main {
 	.ticks label:hover,
 	.dates__month:hover,
 	.dates__flex:hover,
-	.dates__day:not([disabled]):hover { box-shadow: inset 0 0 0 1px var(--line); }
+	.dates__day:not([disabled]):hover { box-shadow: inset 0 -1px 0 var(--line); }
 
 	.ticks input:checked + label:hover,
 	.dates__month[aria-pressed="true"]:hover,
@@ -1278,10 +1293,10 @@ main {
 	letter-spacing: 0.04em;
 }
 
-/* A day that has already been and gone. No box at all: an outlined past date
-   would read as an empty one that is free. */
+/* A day that has already been and gone. No line at all: an underlined past
+   date would read as an empty one that is free. */
 .dates__day[disabled] {
-	border-color: transparent;
+	border-bottom-color: transparent;
 	color: rgba(23, 35, 48, 0.35);
 	cursor: default;
 }
@@ -1305,13 +1320,12 @@ main {
 }
 
 /* The one control here that is not a choice but an action, so it is the one
-   solid: everything around it is a line, and that is what makes it read as
-   the end of the form. The border matches the fill, so it measures the same
-   box as the outlined controls. */
+   solid: everything around it is a single line, and that is what makes this
+   read as the end of the form. */
 .button {
 	padding: clamp(16px, 2.1vh, 21px) clamp(39px, 5.75vw, 62px);
 	background: var(--line);
-	border: 1px solid var(--line);
+	border: none;
 	font-family: var(--font);
 	font-size: var(--tick-size);
 	letter-spacing: var(--track-wide);
