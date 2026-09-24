@@ -972,12 +972,18 @@ main {
 	gap: 0.7em;
 }
 
+/* The labels are set as the page's body copy, not as the credit marks the
+   rest of the site uses for small type: same size, leading and colour as 10
+   BEHIND THE LENS, and sentence case rather than capitals (the markup was
+   always sentence case — only text-transform was shouting). Each one now
+   reads as a question asked in the same voice as the writing above, with the
+   field or the chips answering it underneath. */
 .field label,
 .enquiry legend {
-	font-size: var(--credit-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
-	color: var(--ink-quiet);
+	font-size: var(--about-size);
+	letter-spacing: 0.01em;
+	line-height: 1.75;
+	color: rgba(23, 35, 48, 0.83);
 }
 
 .field input,
