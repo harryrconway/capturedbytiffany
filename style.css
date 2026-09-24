@@ -841,9 +841,9 @@ main {
 	grid-template-columns: minmax(0, 46ch) minmax(0, clamp(320px, 34vw, 560px));
 	gap: var(--gutter);
 	justify-content: center;
-	/* The copy is the shorter column, so centring it sets its middle against
-	   the photograph's rather than leaving it hanging from the top */
-	align-items: center;
+	/* stretch, not center: the copy sets the row's height and the photograph
+	   fills it, so the two stand exactly level, top and bottom */
+	align-items: stretch;
 }
 
 .about__body {
@@ -870,21 +870,16 @@ main {
 	color: var(--ink-quiet);
 }
 
-/* 2:3 is the photograph's own ratio, so nothing is cropped — the opposite of
-   the hero, which shows 55–100% of its height. Its track caps the width, so
-   a 2560px window can't blow it up to 1019px.
-
-   Arched: radii far larger than the box are scaled back by the browser until
-   they fit, so 999px resolves to exactly half the width however wide the
-   track is — a true semicircle at every size, with the foot left square so
-   the picture still sits on the line of the copy beside it. The curve
-   answers the sweep of the wall inside the photograph. */
+/* No ratio of its own: it takes the height of the copy beside it (the grid
+   stretches it) and crops to fill, so the pair reads as one block. The track
+   caps the width, so a 2560px window can't blow it up to 1019px. On a phone
+   the column stacks and there is no copy to match, so 14 RESPONSIVE gives it
+   a ratio to stand on. */
 .about__portrait {
 	position: relative;
-	overflow: hidden;            /* clips the photograph into the arch */
+	overflow: hidden;
 	width: 100%;
-	aspect-ratio: 2 / 3;
-	border-radius: 999px 999px 0 0;
+	height: 100%;
 	background: var(--bg-raise);
 }
 
@@ -1216,9 +1211,12 @@ body.is-ready main {
 		gap: clamp(34px, 6vh, 56px);
 	}
 
-	/* 2:3 at full phone width is 555px tall — over half a 390×844 screen
-	   before the copy above it. 4:5 keeps it to 462px. */
-	.about__portrait { aspect-ratio: 4 / 5; }
+	/* Stacked, so there is no copy beside it to match: 4:5 keeps it to 462px
+	   at full phone width, where 2:3 would be 555px — over half the screen */
+	.about__portrait {
+		height: auto;
+		aspect-ratio: 4 / 5;
+	}
 
 	.brand { letter-spacing: 0.12em; }
 
