@@ -884,9 +884,9 @@ main {
 
 /* ==========================================================================
    11  CONTACT
-   The close: one centred enquiry form. Every control is a single true-black
-   UNDERLINE on the page's own white (--line, 01 TOKENS) — no boxes, no
-   fills. The grey panels this replaces were --bg-raise, the ground the
+   The close: one centred enquiry form. What is TYPED into carries a single
+   true-black underline (--line, 01 TOKENS); what is CHOSEN from carries no
+   line at all until it is hovered or chosen — no boxes, no fills. The grey panels this replaces were --bg-raise, the ground the
    photographs sit on while they load, which made the form read as pieces of
    loading furniture; a full outline then drew six boxes on a page that has
    no rules anywhere else. One line under each control says the same thing
@@ -1102,7 +1102,6 @@ main {
 	padding: clamp(11px, 1.45vh, 14px) clamp(14px, 1.4vw, 18px);
 	background: none;
 	border: none;
-	border-bottom: 1px solid var(--line);
 	font-size: var(--tick-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
@@ -1216,7 +1215,6 @@ main {
 	flex: none;
 	background: none;
 	border: none;
-	border-bottom: 1px solid var(--line);
 	font-family: var(--font);
 	font-size: var(--tick-size);
 	letter-spacing: var(--track-wide);
@@ -1233,9 +1231,13 @@ main {
 .dates__month,
 .dates__flex { padding: clamp(11px, 1.45vh, 14px) clamp(12px, 1.15vw, 16px); }
 
-/* Offered controls double their line; chosen ones are already solid, so they
-   fade the way the Send button does. A day that has been and gone answers
-   nothing at all. */
+/* The chip groups — what kind of work, when, how did you find me — carry no
+   resting line at all: the ticked box, the drawn checkbox and the solid
+   chosen state say everything, and three grids of underlines under words
+   that are already set in caps read as ruled paper. Hover DRAWS the line
+   instead, so a pointer still gets an answer from each one; chosen chips
+   are already solid, so they fade the way the Send button does. A day that
+   has been and gone answers nothing at all. */
 @media (hover: hover) and (pointer: fine) {
 	.ticks label:hover,
 	.dates__month:hover,
@@ -1293,10 +1295,9 @@ main {
 	letter-spacing: 0.04em;
 }
 
-/* A day that has already been and gone. No line at all: an underlined past
-   date would read as an empty one that is free. */
+/* A day that has already been and gone: no hover, and quiet enough to scan
+   past. It is exempt from the contrast minimum, being disabled. */
 .dates__day[disabled] {
-	border-bottom-color: transparent;
 	color: rgba(23, 35, 48, 0.35);
 	cursor: default;
 }
