@@ -2,6 +2,27 @@
 <html lang="en" class="no-js">
 <head>
 	<meta charset="utf-8">
+	<!-- A meta CSP governs only what is parsed AFTER it, so it sits second —
+	     ahead of the inline class flip below and every link in this head.
+	     script-src carries the sha256 of that one inline script; the hash is
+	     over the exact 42 bytes between its tags. Change one character of
+	     that line and the page stops flipping to .js: it would then come up
+	     only on the 4s failsafe (style.css 13 PAGE FADE).
+
+	     style-src-attr is what keeps the style="--pos:…" / style="--i:…"
+	     attributes working while inline <style> ELEMENTS stay blocked; where
+	     it is unsupported the crops fall back to their 50%/50% default and
+	     the nav stagger flattens, both cosmetic. form-action 'none' is
+	     correct: this form posts nowhere (main.js 06 ENQUIRY intercepts) and
+	     the mail hand-off is a link, not a submission.
+	     require-trusted-types-for makes the "no HTML from strings" rule
+	     structural — any future innerHTML throws.
+
+	     A meta CSP silently ignores frame-ancestors, report-uri/report-to
+	     and sandbox; GitHub Pages serves no response headers, so those are
+	     not available to us. -->
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-VDVDNNRTREupwUTWnq6itaNdc1TFEVFbXV4xlAS7Gow='; script-src-attr 'none'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'; require-trusted-types-for 'script'; trusted-types 'none'">
+
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Capturedbytiffany</title>
 	<!-- PLACEHOLDER positioning, carried over from the previous build — confirm
@@ -488,7 +509,7 @@
 
 				<p class="field">
 					<label for="f-message">Message</label>
-					<textarea id="f-message" name="message" rows="4" maxlength="1200" required></textarea>
+					<textarea id="f-message" name="message" rows="5" maxlength="1200" required></textarea>
 				</p>
 
 				<div class="enquiry__send">

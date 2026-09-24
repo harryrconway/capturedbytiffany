@@ -396,8 +396,14 @@
 					button.className = 'dates__month';
 					button.setAttribute('aria-pressed', 'false');
 					button.setAttribute('aria-label', MONTHS[when.getMonth()] + ' ' + when.getFullYear());
+					/* The full year, not two digits. The strip runs twelve
+					   months from this one, so it always crosses a new year:
+					   "OCT 26" beside "JAN 27" asks the reader to do
+					   arithmetic on the one thing they came here to state.
+					   The aria-label below already said "October 2026"; the
+					   two now agree. */
 					button.appendChild(document.createTextNode(
-						MONTHS[when.getMonth()].slice(0, 3) + ' ' + String(when.getFullYear()).slice(2)
+						MONTHS[when.getMonth()].slice(0, 3) + ' ' + when.getFullYear()
 					));
 
 					button.addEventListener('click', function () {
@@ -413,7 +419,13 @@
 			}
 
 			function buildDays(month) {
-				grid.innerHTML = '';
+				/* Emptied by hand rather than with innerHTML: the pages turn
+				   on Trusted Types (index.html CSP), where an assignment to
+				   innerHTML throws even when the string is empty. Nothing
+				   typed ever reached this line — but the rule is worth more
+				   than the line it costs, because it stops the NEXT person
+				   reaching for innerHTML with something that isn't empty. */
+				while (grid.firstChild) grid.removeChild(grid.firstChild);
 				grid.hidden = false;
 
 				DOW.forEach(function (letter, n) {
@@ -528,22 +540,54 @@
 
 		/* --- sending ----------------------------------------------------- */
 
+		/* --- the one exit -------------------------------------------------
+		   The mailto URL below is the only place a typed value leaves this
+		   page. encodeURIComponent already makes & = ? # < > " inert, so
+		   nothing typed can add a mail header or break out of the URL.
+
+		   Control characters are the one class it carries through verbatim,
+		   and a decoded CR/LF inside a SUBJECT is the classic mailto header
+		   injection against a careless handler. So fold those out — and
+		   reject nothing. No character a person might legitimately type is
+		   refused: a "<" in a message is a "<". Nothing here is ever parsed
+		   as HTML. (Bidi marks stay: they are legitimate for right-to-left
+		   writers, and the status line never shows a typed value.)
+		   -------------------------------------------------------------- */
+
+		// A subject is one line. Whitespace runs collapse first, so CR and LF
+		// become spaces rather than welding two words together.
+		function oneLine(value) {
+			return value
+				.replace(/\s+/g, ' ')
+				.replace(/[\u0000-\u001F\u007F]/g, '')
+				.slice(0, 120)
+				.trim();
+		}
+
+		// A body keeps its paragraphs and its tabs, and loses everything else
+		// below U+0020.
+		function plainText(value) {
+			return value
+				.replace(/\r\n?/g, '\n')
+				.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '');
+		}
+
 		function collect() {
 			var lines = [];
 			var data = new FormData(form);
 
 			[['name', 'Name'], ['email', 'Email'], ['location', 'Location'], ['date', 'When']].forEach(function (pair) {
 				var v = (data.get(pair[0]) || '').toString().trim();
-				if (v) lines.push(pair[1] + ': ' + v);
+				if (v) lines.push(pair[1] + ': ' + oneLine(v));
 			});
 
 			[['work', 'Work'], ['heard', 'Found me via']].forEach(function (pair) {
 				var all = data.getAll(pair[0]).join(', ');
-				if (all) lines.push(pair[1] + ': ' + all);
+				if (all) lines.push(pair[1] + ': ' + oneLine(all));
 			});
 
 			var message = (data.get('message') || '').toString().trim();
-			if (message) lines.push('', message);
+			if (message) lines.push('', plainText(message));
 
 			return lines.join('\n');
 		}
@@ -583,10 +627,22 @@
 				return;
 			}
 
-			var subject = 'Enquiry — ' + (form.querySelector('#f-name').value.trim() || 'Capturedbytiffany');
-			var href = 'mailto:hello@capturedbytiffany.com.au'
+			var MAILTO = 'mailto:hello@capturedbytiffany.com.au';
+			var subject = 'Enquiry — ' + (oneLine(form.querySelector('#f-name').value.trim()) || 'Capturedbytiffany');
+			var href = MAILTO
 				+ '?subject=' + encodeURIComponent(subject)
 				+ '&body=' + encodeURIComponent(collect());
+
+			/* Measured: 1200 characters of English make a 1796-character
+			   mailto, 1200 of Arabic make 7076, because every letter becomes
+			   six percent-escapes. Windows mail handlers cut at about 2048 and
+			   open a truncated draft without saying so. Better to open an
+			   empty one and say what happened than to lose half a message. */
+			if (href.length > 1900) {
+				tell('This form is not connected yet, so nothing was sent — and this message is longer than a mail link can carry, so copy it across once your mail app opens.',
+					'Open your mail app', MAILTO + '?subject=' + encodeURIComponent(subject));
+				return;
+			}
 
 			tell('This form is not connected yet, so nothing was sent.', 'Send it from your mail app instead', href);
 		});

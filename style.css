@@ -56,6 +56,16 @@
 	--chapter-size: clamp(0.62rem, 0.85vw, 0.78rem);
 	--about-size:   clamp(0.95rem, 1.5vw, 1.2rem);
 
+	/* The enquiry form's own two sizes (11 CONTACT). The form is the one
+	   place on the page a visitor has to read and type rather than look, so
+	   it runs about 15% above the credit and chapter marks around it:
+	   --field-size is what gets typed into, --tick-size is what gets chosen
+	   from. Same clamp shape as the tokens above — a rem floor so a phone
+	   keeps a readable minimum, a vw middle, a rem cap so a 2560px screen
+	   doesn't shout. */
+	--field-size: clamp(0.82rem, 0.95vw, 0.88rem);
+	--tick-size:  clamp(0.72rem, 0.90vw, 0.78rem);
+
 	/* Hero masthead (06 HERO). cqi is 1% of the TYPE COLUMN's width — that
 	   column is the size container — so the name is measured against its own
 	   box: half the window on a landscape screen, all of it on a phone, from
@@ -105,6 +115,13 @@
 	/* The one colour outside the palette: an error, and only an error. Muted
 	   enough to sit in a navy-on-white page, dark enough to clear 4.5:1. */
 	--warn: #8C2F26;
+
+	/* The form's line, and nothing else. The page carries no rules anywhere,
+	   so the one outlined thing on it has to read as a deliberate frame
+	   rather than as a faint edge — a step darker than the navy ink, which
+	   is what keeps the form's STRUCTURE separate from its TYPE. Never set
+	   type in it: --ink is the ink. */
+	--line: #000000;
 
 	/* Interaction — reference thumbnailHoverAlpha: 0.75 */
 	--hover-alpha: 0.75;
@@ -347,7 +364,7 @@ body.nav-open .nav-overlay {
 body.nav-open .nav-list a {
 	opacity: 1;
 	transform: translateY(0);
-	transition-delay: calc(var(--i) * 70ms + 90ms);
+	transition-delay: calc(var(--i, 0) * 70ms + 90ms);
 }
 
 /* Hovering the list dims the siblings */
@@ -867,10 +884,16 @@ main {
 
 /* ==========================================================================
    11  CONTACT
-   The close: one centred enquiry form. Fields are filled, never outlined —
-   the page has no rules anywhere else, so a box of hairlines would be the
-   loudest thing on it. --bg-raise is the same ground the photographs sit on
-   while they load, so the form reads as part of the same material.
+   The close: one centred enquiry form. Every control is a 1px true-black
+   outline on the page's own white (--line, 01 TOKENS) — no fills. The grey
+   panels this replaces were --bg-raise, the ground photographs sit on while
+   they load, which made the form read as six pieces of loading furniture.
+   An outline says the same with one pixel and keeps the white ground
+   continuous from the last photograph to the colophon.
+
+   Chosen is filled: a ticked box, a pressed month, a picked day and the Send
+   button are solid --line with white type, 21:1. Everything else is a line.
+   That is the whole state language — outline offered, solid chosen.
 
    The tick boxes and the date module are built from real inputs: a native
    checkbox under a drawn box, and (in 06 ENQUIRY) real buttons for months
@@ -953,40 +976,69 @@ main {
 .field input,
 .field textarea {
 	width: 100%;
-	padding: clamp(12px, 1.6vh, 16px) clamp(12px, 1.4vw, 18px);
-	background: var(--bg-raise);
-	border: none;
+	padding: clamp(13px, 1.7vh, 17px) clamp(14px, 1.6vw, 20px);
+	background: none;
+	border: 1px solid var(--line);
 	font-family: var(--font);
-	font-size: var(--chapter-size);
+	font-size: var(--field-size);
 	letter-spacing: 0.04em;
 	line-height: 1.6;
 	color: var(--ink);
-	transition: background var(--dur) var(--ease);
+	transition:
+		border-color var(--dur) var(--ease),
+		box-shadow   var(--dur) var(--ease);
 }
 
 .field textarea {
-	resize: vertical;
-	min-height: 7em;
+	/* Not resizable. The drag handle is the only piece of browser furniture
+	   on the page, and it lands on the exact corner the outline needs to hold
+	   unbroken. Nothing is lost by fixing it, because the box is now sized for
+	   the job: about six lines at 1440 and five on a phone, against a
+	   1200-character limit. Past that it scrolls, as any full field does.
+	   px, not em, so the 16px touch bump below can't inflate it. */
+	resize: none;
+	min-height: clamp(148px, 19vh, 176px);
 }
 
+/* Was 0.38 on a grey panel; on white that measured 2.3:1 — unreadable, and
+   the location placeholder is real guidance, not decoration. 0.62 is 4.6:1,
+   still four stops lighter than a typed value, so it can't be mistaken. */
 .field input::placeholder,
-.field textarea::placeholder { color: rgba(23, 35, 48, 0.38); }
+.field textarea::placeholder { color: rgba(23, 35, 48, 0.62); }
 
-.field input:hover,
-.field textarea:hover { background: #E9ECEF; }
-
-/* The focus ring is the page's own (15 A11Y); the fill just deepens under it */
-.field input:focus,
-.field textarea:focus {
-	background: #E4E8EC;
-	outline-offset: 2px;
+/* There is no fill left to deepen, so the line doubles. An INSET shadow,
+   never a 2px border: a border would shift the text a pixel on hover. Inside
+   the pointer query, because on a phone the old rule stuck after a tap and
+   left a field looking permanently hovered. */
+@media (hover: hover) and (pointer: fine) {
+	.field input:hover,
+	.field textarea:hover { box-shadow: inset 0 0 0 1px var(--line); }
 }
 
-/* Set by 06 ENQUIRY, cleared as soon as the field is touched again */
+/* The ring is the page's own (15 A11Y): 1px ink, 6px clear of the black
+   outline, so the two read as two rings rather than one thick smear. The
+   field doubles its own line as well, so a focused control is still obvious
+   where the ring is suppressed (forced colours, print). */
+.field input:focus-visible,
+.field textarea:focus-visible { box-shadow: inset 0 0 0 1px var(--line); }
+
+/* iOS Safari zooms the page the moment a focused field is under 16px, and it
+   does not zoom back — the visitor is left dragging a layout viewport wider
+   than the screen. Keyed to the POINTER, not the width: the zoom is a touch
+   behaviour, and 14px is right wherever there's a mouse. max() so the token
+   still governs if it ever exceeds 16px. */
+@media (hover: none) {
+	.field input,
+	.field textarea { font-size: max(16px, var(--field-size)); }
+}
+
+/* Set by 06 ENQUIRY, cleared as soon as the field is touched again. No panel
+   to tint any more: the line changes colour and doubles instead — two pixels
+   of warn, read at a glance, and nothing moves. 8.2:1 on white. */
 .field input[aria-invalid="true"],
 .field textarea[aria-invalid="true"] {
-	background: #FBEDEC;
-	box-shadow: inset 0 -2px 0 var(--warn);
+	border-color: var(--warn);
+	box-shadow: inset 0 0 0 1px var(--warn);
 }
 
 .field__note {
@@ -1034,16 +1086,18 @@ main {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.7em;
-	padding: clamp(9px, 1.2vh, 12px) clamp(12px, 1.2vw, 16px);
-	background: var(--bg-raise);
-	font-size: var(--credit-size);
+	padding: clamp(11px, 1.45vh, 14px) clamp(14px, 1.4vw, 18px);
+	background: none;
+	border: 1px solid var(--line);
+	font-size: var(--tick-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1;
-	color: var(--ink-soft);
+	color: var(--ink);           /* 15.9:1 — was --ink-soft on a panel */
 	cursor: pointer;
 	transition:
 		background var(--dur) var(--ease),
+		box-shadow var(--dur) var(--ease),
 		color      var(--dur) var(--ease);
 }
 
@@ -1055,7 +1109,7 @@ main {
 	flex: none;
 	width: 1em;
 	height: 1em;
-	box-shadow: inset 0 0 0 1px rgba(23, 35, 48, 0.28);
+	box-shadow: inset 0 0 0 1px var(--line);
 	transition:
 		background  var(--dur) var(--ease),
 		box-shadow  var(--dur) var(--ease);
@@ -1082,18 +1136,14 @@ main {
 	display: flex;
 }
 
-@media (hover: hover) and (pointer: fine) {
-	.ticks label:hover { background: #E9ECEF; }
-}
-
 .ticks input:checked + label {
-	background: var(--ink);
-	color: var(--bg);
+	background: var(--line);
+	color: var(--bg);            /* 21:1 */
 }
 
 .ticks input:checked + label::before {
 	background: transparent;
-	box-shadow: inset 0 0 0 1px rgba(236, 234, 227, 0.5);
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
 }
 
 .ticks input:checked + label::after {
@@ -1101,10 +1151,25 @@ main {
 	transform: rotate(-45deg) scale(1);
 }
 
-.ticks input:focus-visible + label {
+/* The page's ring is 1px ink at 6px offset (15 A11Y) — 7px of clearance. The
+   gutters here are 10px between months and 7px between day cells at 1440, and
+   6px and 4px at 375, so an outward ring would cross its neighbour's outline
+   at every width below desktop. Draw it INSIDE instead: black outline, then
+   the same ink ring 5px in. A doubled frame, same colour, same weight — only
+   the sign of the offset changes, and it can never reach a neighbour. On a
+   chosen chip the ground is black, so the ring flips to the page white. */
+.ticks input:focus-visible + label,
+.dates__month:focus-visible,
+.dates__flex:focus-visible,
+.dates__day:focus-visible {
 	outline: 1px solid var(--ink);
-	outline-offset: 6px;
+	outline-offset: -5px;
 }
+
+.ticks input:checked:focus-visible + label,
+.dates__month[aria-pressed="true"]:focus-visible,
+.dates__flex[aria-pressed="true"]:focus-visible,
+.dates__day[aria-pressed="true"]:focus-visible { outline-color: var(--bg); }
 
 /* --- the date module (built by main.js 06 ENQUIRY) ---------------------- */
 
@@ -1117,10 +1182,18 @@ main {
 /* The months WRAP; they do not scroll sideways. A horizontal scroller here
    measured about 1300px of chips, and on a phone that dragged the layout
    viewport out with it — innerWidth 712 on a 390px screen, the whole page
-   with it. Wrapping also means no month is ever hidden off the edge. */
+   with it. Wrapping also means no month is ever hidden off the edge.
+
+   Centred, all three parts of it. Every other row in this form is a
+   full-width box starting on the form's left edge; the day grid cannot be
+   one — seven columns cap at 496px inside a 716px column — so left-aligned it
+   strands 220px of white and reads as a mistake rather than as rag. Centred,
+   it sits on the axis the lede, the button, the status line and the colophon
+   already share. The legend stays left with the form's other labels. */
 .dates__months {
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: center;
 	gap: clamp(6px, 0.7vw, 10px);
 }
 
@@ -1128,34 +1201,47 @@ main {
 .dates__day,
 .dates__flex {
 	flex: none;
-	background: var(--bg-raise);
-	border: none;
+	background: none;
+	border: 1px solid var(--line);
 	font-family: var(--font);
-	font-size: var(--credit-size);
+	font-size: var(--tick-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1;
-	color: var(--ink-soft);
+	color: var(--ink);
 	cursor: pointer;
 	transition:
 		background var(--dur) var(--ease),
+		box-shadow var(--dur) var(--ease),
 		color      var(--dur) var(--ease);
 }
 
 .dates__month,
-.dates__flex { padding: clamp(9px, 1.2vh, 12px) clamp(10px, 1vw, 14px); }
+.dates__flex { padding: clamp(11px, 1.45vh, 14px) clamp(12px, 1.15vw, 16px); }
 
+/* Offered controls double their line; chosen ones are already solid, so they
+   fade the way the Send button does. A day that has been and gone answers
+   nothing at all. */
 @media (hover: hover) and (pointer: fine) {
+	.ticks label:hover,
 	.dates__month:hover,
-	.dates__day:hover,
-	.dates__flex:hover { background: #E9ECEF; }
+	.dates__flex:hover,
+	.dates__day:not([disabled]):hover { box-shadow: inset 0 0 0 1px var(--line); }
+
+	.ticks input:checked + label:hover,
+	.dates__month[aria-pressed="true"]:hover,
+	.dates__flex[aria-pressed="true"]:hover,
+	.dates__day[aria-pressed="true"]:hover {
+		opacity: var(--hover-alpha);
+		box-shadow: none;
+	}
 }
 
 .dates__month[aria-pressed="true"],
 .dates__day[aria-pressed="true"],
 .dates__flex[aria-pressed="true"] {
-	background: var(--ink);
-	color: var(--bg);
+	background: var(--line);
+	color: var(--bg);            /* 21:1 */
 }
 
 /* Seven across, capped: left to the form's full width the cells would be
@@ -1164,7 +1250,14 @@ main {
 	display: grid;
 	grid-template-columns: repeat(7, minmax(0, 1fr));
 	gap: clamp(4px, 0.5vw, 8px);
-	max-width: min(27em, 100%);   /* 27em alone overruns a 370px phone column */
+
+	/* width, not max-width, and a margin rather than align-self: this is a
+	   flex item in a COLUMN flex container, where an auto cross-axis margin
+	   cancels `stretch`. With max-width alone the grid falls back to its
+	   content width and every cell collapses. 31em is seven 64px cells plus
+	   six gutters; the 100% keeps it inside a 370px phone column. */
+	width: min(31em, 100%);
+	margin-inline: auto;
 }
 
 .dates__dow {
@@ -1180,18 +1273,23 @@ main {
 	aspect-ratio: 1;
 	display: grid;
 	place-items: center;
+	/* A day number is a value, not a label — set like the typed text beside
+	   it rather than like the chip it sits under */
+	font-size: var(--field-size);
 	letter-spacing: 0.04em;
 }
 
-/* A day that has already been and gone */
+/* A day that has already been and gone. No box at all: an outlined past date
+   would read as an empty one that is free. */
 .dates__day[disabled] {
-	background: none;
-	color: rgba(23, 35, 48, 0.25);
+	border-color: transparent;
+	color: rgba(23, 35, 48, 0.35);
 	cursor: default;
 }
 
 .dates__chosen {
-	font-size: var(--credit-size);
+	text-align: center;
+	font-size: var(--tick-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	color: var(--ink-quiet);
@@ -1207,12 +1305,16 @@ main {
 	margin-top: clamp(8px, 1.5vh, 16px);
 }
 
+/* The one control here that is not a choice but an action, so it is the one
+   solid: everything around it is a line, and that is what makes it read as
+   the end of the form. The border matches the fill, so it measures the same
+   box as the outlined controls. */
 .button {
-	padding: clamp(14px, 1.8vh, 18px) clamp(34px, 5vw, 54px);
-	background: var(--ink);
-	border: none;
+	padding: clamp(16px, 2.1vh, 21px) clamp(39px, 5.75vw, 62px);
+	background: var(--line);
+	border: 1px solid var(--line);
 	font-family: var(--font);
-	font-size: var(--credit-size);
+	font-size: var(--tick-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1;
@@ -1489,15 +1591,16 @@ body.is-ready main {
 		height: 46svh;
 	}
 
-	.contact__details {
-		grid-template-columns: 1fr;
-		gap: clamp(18px, 3vh, 28px);
+	/* "OCT 2026" is eight characters where "OCT 26" was six. At the form's
+	   0.22em tracking that is a 102px chip — three to a 355px phone row. At
+	   0.08em with a tighter inset it is 79px: four to a row. Tracking is the
+	   first thing that should give when the data gets longer, and a date is
+	   data. */
+	.dates__month,
+	.dates__flex {
+		letter-spacing: 0.08em;
+		padding-inline: 9px;
 	}
-
-	/* An email address can't wrap, and the 1.3rem floor would clip this one at
-	   320px. The max() hands back to the desktop 4vw from 520px, so it matches
-	   the desktop size at every width from ~400px and doesn't jump at 769px. */
-	.contact__email { font-size: clamp(0.9rem, 5.2vw, max(1.3rem, 4vw)); }
 
 	/* One column: side by side the photograph would be a 299px sliver */
 	.about__grid {
