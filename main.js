@@ -6,7 +6,8 @@
    03  NAV
    04  HANDOFF
    05  REVEAL
-   06  INIT
+   06  ENQUIRY
+   07  INIT
    ========================================================================== */
 
 (function () {
@@ -296,7 +297,305 @@
 
 
 	/* ======================================================================
-	   06  INIT
+	   06  ENQUIRY
+	   The contact form (index.html 05, style.css 11 CONTACT). Three jobs:
+
+	     · builds the date module — a strip of the next twelve months, a day
+	       grid for whichever is chosen, and a "flexible" option — over a
+	       hidden field. Without JS the markup keeps a plain text field, so
+	       the form is still complete.
+	     · checks the form before anything else happens, and says what is
+	       wrong in the page rather than in a browser dialog.
+	     · hands the finished message to the visitor's own mail app, and says
+	       plainly that nothing was sent. THE FORM POSTS NOWHERE — see the
+	       note in index.html for how to point it at an endpoint.
+
+	   Two quiet spam checks that cost a person nothing: a honeypot field no
+	   one can reach, and the time taken — a bot fills and submits in
+	   milliseconds. Both simply drop the message.
+	   ====================================================================== */
+
+	function enquiry() {
+		var form = document.querySelector('.enquiry');
+		if (!form) return;
+
+		var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+			'July', 'August', 'September', 'October', 'November', 'December'];
+		var DOW = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+		var MIN_SECONDS = 2000;   // faster than this is not a person
+		var openedAt = Date.now();
+		var status = form.querySelector('.enquiry__status');
+
+		/* --- the date module ------------------------------------------- */
+
+		function buildDates() {
+			var wrap = form.querySelector('[data-date]');
+			if (!wrap) return;
+
+			var plain = wrap.querySelector('.field--plain');
+			if (plain) plain.parentNode.removeChild(plain);
+
+			var today = new Date();
+			today.setHours(0, 0, 0, 0);
+
+			var dates = document.createElement('div');
+			dates.className = 'dates';
+
+			var strip = document.createElement('div');
+			strip.className = 'dates__months';
+			strip.setAttribute('role', 'group');
+			strip.setAttribute('aria-label', 'Month');
+
+			var grid = document.createElement('div');
+			grid.className = 'dates__days';
+			grid.hidden = true;
+
+			var chosen = document.createElement('p');
+			chosen.className = 'dates__chosen';
+			chosen.setAttribute('aria-live', 'polite');
+
+			var value = document.createElement('input');
+			value.type = 'hidden';
+			value.name = 'date';
+
+			var flex = document.createElement('button');
+			flex.type = 'button';
+			flex.className = 'dates__flex';
+			flex.setAttribute('aria-pressed', 'false');
+			flex.appendChild(document.createTextNode('Flexible'));
+			strip.appendChild(flex);
+
+			function press(node, on) {
+				node.setAttribute('aria-pressed', on ? 'true' : 'false');
+			}
+
+			function clearPressed(selector) {
+				Array.prototype.forEach.call(dates.querySelectorAll(selector), function (n) {
+					press(n, false);
+				});
+			}
+
+			function say(text) {
+				chosen.textContent = text;
+				value.value = text;
+			}
+
+			flex.addEventListener('click', function () {
+				clearPressed('.dates__month');
+				grid.hidden = true;
+				press(flex, true);
+				say('Flexible');
+			});
+
+			// Twelve months from this one
+			for (var i = 0; i < 12; i++) {
+				(function (offset) {
+					var when = new Date(today.getFullYear(), today.getMonth() + offset, 1);
+					var button = document.createElement('button');
+					button.type = 'button';
+					button.className = 'dates__month';
+					button.setAttribute('aria-pressed', 'false');
+					button.setAttribute('aria-label', MONTHS[when.getMonth()] + ' ' + when.getFullYear());
+					button.appendChild(document.createTextNode(
+						MONTHS[when.getMonth()].slice(0, 3) + ' ' + String(when.getFullYear()).slice(2)
+					));
+
+					button.addEventListener('click', function () {
+						clearPressed('.dates__month');
+						press(flex, false);
+						press(button, true);
+						buildDays(when);
+						say(MONTHS[when.getMonth()] + ' ' + when.getFullYear());
+					});
+
+					strip.appendChild(button);
+				})(i);
+			}
+
+			function buildDays(month) {
+				grid.innerHTML = '';
+				grid.hidden = false;
+
+				DOW.forEach(function (letter, n) {
+					var head = document.createElement('span');
+					head.className = 'dates__dow';
+					head.setAttribute('aria-hidden', 'true');
+					head.appendChild(document.createTextNode(letter));
+					grid.appendChild(head);
+					return n;
+				});
+
+				// Monday-first: JS makes Sunday 0, so shift it to the end
+				var first = new Date(month.getFullYear(), month.getMonth(), 1);
+				var lead = (first.getDay() + 6) % 7;
+				var days = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+
+				for (var b = 0; b < lead; b++) {
+					grid.appendChild(document.createElement('span'));
+				}
+
+				for (var d = 1; d <= days; d++) {
+					(function (day) {
+						var date = new Date(month.getFullYear(), month.getMonth(), day);
+						var button = document.createElement('button');
+						button.type = 'button';
+						button.className = 'dates__day';
+						button.appendChild(document.createTextNode(String(day)));
+
+						if (date < today) {
+							button.disabled = true;
+						} else {
+							var label = day + ' ' + MONTHS[month.getMonth()] + ' ' + month.getFullYear();
+							button.setAttribute('aria-pressed', 'false');
+							button.setAttribute('aria-label', label);
+							button.addEventListener('click', function () {
+								clearPressed('.dates__day');
+								press(button, true);
+								say(label);
+							});
+						}
+
+						grid.appendChild(button);
+					})(d);
+				}
+			}
+
+			dates.appendChild(strip);
+			dates.appendChild(grid);
+			dates.appendChild(chosen);
+			dates.appendChild(value);
+			wrap.appendChild(dates);
+		}
+
+		/* --- checking --------------------------------------------------- */
+
+		// Deliberately loose: something, an @, something, a dot, something.
+		// Anything stricter rejects addresses that are perfectly valid.
+		var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+		function fieldOf(input) {
+			return input.closest ? input.closest('.field') : input.parentNode;
+		}
+
+		function clearError(input) {
+			input.removeAttribute('aria-invalid');
+			input.removeAttribute('aria-describedby');
+			var field = fieldOf(input);
+			var note = field && field.querySelector('.field__note');
+			if (note) note.parentNode.removeChild(note);
+		}
+
+		function setError(input, message) {
+			clearError(input);
+			var field = fieldOf(input);
+			if (!field) return;
+
+			var note = document.createElement('span');
+			note.className = 'field__note';
+			note.id = input.id + '-note';
+			note.appendChild(document.createTextNode(message));
+
+			input.setAttribute('aria-invalid', 'true');
+			input.setAttribute('aria-describedby', note.id);
+			field.appendChild(note);
+		}
+
+		function check() {
+			var problems = [];
+
+			[
+				[form.querySelector('#f-name'), function (v) { return v.length > 1; }, 'Your name, so the reply has somewhere to go.'],
+				[form.querySelector('#f-email'), function (v) { return EMAIL.test(v); }, 'An address I can reach you at.'],
+				[form.querySelector('#f-message'), function (v) { return v.length > 9; }, 'A line or two about the work.']
+			].forEach(function (rule) {
+				var input = rule[0];
+				if (!input) return;
+				if (rule[1](input.value.trim())) clearError(input);
+				else {
+					setError(input, rule[2]);
+					problems.push(input);
+				}
+			});
+
+			return problems;
+		}
+
+		Array.prototype.forEach.call(form.querySelectorAll('input, textarea'), function (input) {
+			input.addEventListener('input', function () {
+				if (input.getAttribute('aria-invalid')) clearError(input);
+			});
+		});
+
+		/* --- sending ----------------------------------------------------- */
+
+		function collect() {
+			var lines = [];
+			var data = new FormData(form);
+
+			[['name', 'Name'], ['email', 'Email'], ['location', 'Location'], ['date', 'When']].forEach(function (pair) {
+				var v = (data.get(pair[0]) || '').toString().trim();
+				if (v) lines.push(pair[1] + ': ' + v);
+			});
+
+			[['work', 'Work'], ['heard', 'Found me via']].forEach(function (pair) {
+				var all = data.getAll(pair[0]).join(', ');
+				if (all) lines.push(pair[1] + ': ' + all);
+			});
+
+			var message = (data.get('message') || '').toString().trim();
+			if (message) lines.push('', message);
+
+			return lines.join('\n');
+		}
+
+		function tell(text, linkText, href) {
+			status.className = 'enquiry__status';
+			status.textContent = text;
+
+			if (!href) return;
+			status.appendChild(document.createTextNode(' '));
+
+			var link = document.createElement('a');
+			link.href = href;
+			link.appendChild(document.createTextNode(linkText));
+			status.appendChild(link);
+		}
+
+		form.addEventListener('submit', function (e) {
+			e.preventDefault();   // nothing to post to yet
+
+			var trap = form.querySelector('#f-website');
+			var tooQuick = Date.now() - openedAt < MIN_SECONDS;
+
+			// A bot: say the same thing a person would see, do nothing at all
+			if ((trap && trap.value) || tooQuick) {
+				tell('Thank you — that has been noted.');
+				return;
+			}
+
+			var problems = check();
+			if (problems.length) {
+				status.className = 'enquiry__status enquiry__status--warn';
+				status.textContent = problems.length === 1
+					? 'One field needs a moment.'
+					: problems.length + ' fields need a moment.';
+				problems[0].focus();
+				return;
+			}
+
+			var subject = 'Enquiry — ' + (form.querySelector('#f-name').value.trim() || 'Capturedbytiffany');
+			var href = 'mailto:hello@capturedbytiffany.com.au'
+				+ '?subject=' + encodeURIComponent(subject)
+				+ '&body=' + encodeURIComponent(collect());
+
+			tell('This form is not connected yet, so nothing was sent.', 'Send it from your mail app instead', href);
+		});
+
+		buildDates();
+	}
+
+	/* ======================================================================
+	   07  INIT
 	   ====================================================================== */
 
 	function init() {
@@ -304,6 +603,7 @@
 		nav();
 		handoff();
 		reveal();
+		enquiry();
 	}
 
 	if (document.readyState === 'loading') {

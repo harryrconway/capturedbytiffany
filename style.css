@@ -102,6 +102,10 @@
 	   cap (main.js fadeFailsafe, 2s), so it never races a working script. */
 	--intro-failsafe: 4s;
 
+	/* The one colour outside the palette: an error, and only an error. Muted
+	   enough to sit in a navy-on-white page, dark enough to clear 4.5:1. */
+	--warn: #8C2F26;
+
 	/* Interaction — reference thumbnailHoverAlpha: 0.75 */
 	--hover-alpha: 0.75;
 }
@@ -862,21 +866,24 @@ main {
 
 
 /* ==========================================================================
-   11  CONTACT — full-viewport close, left-aligned to the same editorial
-   column as everything above it.
+   11  CONTACT
+   The close: one centred enquiry form. Fields are filled, never outlined —
+   the page has no rules anywhere else, so a box of hairlines would be the
+   loudest thing on it. --bg-raise is the same ground the photographs sit on
+   while they load, so the form reads as part of the same material.
+
+   The tick boxes and the date module are built from real inputs: a native
+   checkbox under a drawn box, and (in 06 ENQUIRY) real buttons for months
+   and days feeding a hidden field. Nothing here depends on JS to be usable
+   except the date module, which falls back to a plain text field.
    ========================================================================== */
 
 .contact {
-	/* Deliberately not a full viewport. The section holds ~130px of content
-	   between a marker on top and a footer pinned to the bottom, so a taller
-	   box just distributes slack into the gaps. Full height and tight
-	   spacing are mutually exclusive here; this trades the former. */
+	/* Deliberately not a full viewport: the form sets the height, the marker
+	   sits on top and the colophon is pinned to the bottom. */
 	min-height: 62vh;
 	min-height: 62svh;
 	display: grid;
-	/* marker up top · contact block centred in the slack · colophon pinned
-	   to the bottom. The 1fr row absorbs all leftover height, so there is no
-	   dead space under the footer. */
 	grid-template-rows: auto 1fr auto;
 	padding-bottom: clamp(26px, 5vh, 56px);
 	scroll-margin-top: clamp(24px, 6vh, 64px);
@@ -888,50 +895,369 @@ main {
 
 .contact__inner {
 	align-self: center;
+	width: 100%;
+	max-width: 760px;            /* a form wider than this reads as a wall */
+	margin: 0 auto;
 	padding: 0 var(--inset);
 }
 
-.contact__email {
-	display: inline-block;
-	font-size: clamp(1.3rem, 4vw, 3rem);
-	letter-spacing: 0.04em;
-	line-height: 1.1;
-	color: var(--ink);
-	transition: opacity var(--dur) var(--ease);
+.contact__lede {
+	max-width: 52ch;
+	margin: 0 auto clamp(36px, 6vh, 64px);
+	text-align: center;
+	font-size: var(--about-size);
+	line-height: 1.75;
+	color: rgba(23, 35, 48, 0.83);
+	text-wrap: balance;
 }
 
-.contact__email:hover { opacity: var(--hover-alpha); }
+/* --- the form ----------------------------------------------------------- */
 
-.contact__details {
+.enquiry {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(20px, 3vh, 32px);
+}
+
+/* Name and email share a line until there isn't room for two */
+.enquiry__pair {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: clamp(20px, 2.6vw, 48px);
-	max-width: 840px;
-	margin-top: clamp(44px, 8vh, 96px);
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: clamp(20px, 3vh, 32px);
 }
 
-.contact__item {
+/* Off the page, not display:none — a bot reading the DOM still finds it,
+   which is the point; aria-hidden and tabindex keep people away from it */
+.enquiry__trap {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+.field {
 	display: flex;
 	flex-direction: column;
 	gap: 0.7em;
 }
 
-.contact__item dt {
+.field label,
+.enquiry legend {
 	font-size: var(--credit-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	color: var(--ink-quiet);
 }
 
-.contact__item dd {
+.field input,
+.field textarea {
+	width: 100%;
+	padding: clamp(12px, 1.6vh, 16px) clamp(12px, 1.4vw, 18px);
+	background: var(--bg-raise);
+	border: none;
+	font-family: var(--font);
 	font-size: var(--chapter-size);
-	letter-spacing: 0.06em;
+	letter-spacing: 0.04em;
 	line-height: 1.6;
 	color: var(--ink);
+	transition: background var(--dur) var(--ease);
 }
 
-.contact__item dd a { transition: opacity var(--dur) var(--ease); }
-.contact__item dd a:hover { opacity: var(--hover-alpha); }
+.field textarea {
+	resize: vertical;
+	min-height: 7em;
+}
+
+.field input::placeholder,
+.field textarea::placeholder { color: rgba(23, 35, 48, 0.38); }
+
+.field input:hover,
+.field textarea:hover { background: #E9ECEF; }
+
+/* The focus ring is the page's own (15 A11Y); the fill just deepens under it */
+.field input:focus,
+.field textarea:focus {
+	background: #E4E8EC;
+	outline-offset: 2px;
+}
+
+/* Set by 06 ENQUIRY, cleared as soon as the field is touched again */
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+	background: #FBEDEC;
+	box-shadow: inset 0 -2px 0 var(--warn);
+}
+
+.field__note {
+	font-size: var(--credit-size);
+	letter-spacing: 0.08em;
+	line-height: 1.5;
+	color: var(--warn);
+}
+
+.enquiry__block {
+	display: flex;
+	flex-direction: column;
+	gap: 0.9em;
+	border: none;                /* a fieldset's default frame */
+	padding: 0;
+	margin: 0;
+	/* A fieldset's min-width is min-content, not 0 — without this the day
+	   grid inside pushes it 900px wide in a 716px form */
+	min-width: 0;
+}
+
+/* --- tick boxes --------------------------------------------------------- */
+
+.ticks {
+	display: flex;
+	flex-wrap: wrap;
+	gap: clamp(8px, 1vw, 12px);
+}
+
+/* The real checkbox, kept where it is for the keyboard and for screen
+   readers, but drawn as the box inside the label below */
+.ticks input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+	clip-path: inset(50%);
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.ticks label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.7em;
+	padding: clamp(9px, 1.2vh, 12px) clamp(12px, 1.2vw, 16px);
+	background: var(--bg-raise);
+	font-size: var(--credit-size);
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	line-height: 1;
+	color: var(--ink-soft);
+	cursor: pointer;
+	transition:
+		background var(--dur) var(--ease),
+		color      var(--dur) var(--ease);
+}
+
+/* The box itself: drawn, not a glyph, so it lands on the same pixel at
+   every size. The tick inside is a rotated corner — two borders of a square
+   — which needs no SVG and no font. */
+.ticks label::before {
+	content: '';
+	flex: none;
+	width: 1em;
+	height: 1em;
+	box-shadow: inset 0 0 0 1px rgba(23, 35, 48, 0.28);
+	transition:
+		background  var(--dur) var(--ease),
+		box-shadow  var(--dur) var(--ease);
+}
+
+.ticks label::after {
+	content: '';
+	position: absolute;
+	width: 0.52em;
+	height: 0.28em;
+	margin-left: 0.24em;
+	border-left: 1.5px solid var(--bg);
+	border-bottom: 1.5px solid var(--bg);
+	transform: rotate(-45deg) scale(0.4);
+	transform-origin: center;
+	opacity: 0;
+	transition:
+		opacity   var(--dur) var(--ease),
+		transform var(--dur) var(--ease);
+}
+
+.ticks li {
+	position: relative;          /* the tick is positioned against this */
+	display: flex;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.ticks label:hover { background: #E9ECEF; }
+}
+
+.ticks input:checked + label {
+	background: var(--ink);
+	color: var(--bg);
+}
+
+.ticks input:checked + label::before {
+	background: transparent;
+	box-shadow: inset 0 0 0 1px rgba(236, 234, 227, 0.5);
+}
+
+.ticks input:checked + label::after {
+	opacity: 1;
+	transform: rotate(-45deg) scale(1);
+}
+
+.ticks input:focus-visible + label {
+	outline: 1px solid var(--ink);
+	outline-offset: 6px;
+}
+
+/* --- the date module (built by main.js 06 ENQUIRY) ---------------------- */
+
+.dates {
+	display: flex;
+	flex-direction: column;
+	gap: 0.9em;
+}
+
+/* The months WRAP; they do not scroll sideways. A horizontal scroller here
+   measured about 1300px of chips, and on a phone that dragged the layout
+   viewport out with it — innerWidth 712 on a 390px screen, the whole page
+   with it. Wrapping also means no month is ever hidden off the edge. */
+.dates__months {
+	display: flex;
+	flex-wrap: wrap;
+	gap: clamp(6px, 0.7vw, 10px);
+}
+
+.dates__month,
+.dates__day,
+.dates__flex {
+	flex: none;
+	background: var(--bg-raise);
+	border: none;
+	font-family: var(--font);
+	font-size: var(--credit-size);
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	line-height: 1;
+	color: var(--ink-soft);
+	cursor: pointer;
+	transition:
+		background var(--dur) var(--ease),
+		color      var(--dur) var(--ease);
+}
+
+.dates__month,
+.dates__flex { padding: clamp(9px, 1.2vh, 12px) clamp(10px, 1vw, 14px); }
+
+@media (hover: hover) and (pointer: fine) {
+	.dates__month:hover,
+	.dates__day:hover,
+	.dates__flex:hover { background: #E9ECEF; }
+}
+
+.dates__month[aria-pressed="true"],
+.dates__day[aria-pressed="true"],
+.dates__flex[aria-pressed="true"] {
+	background: var(--ink);
+	color: var(--bg);
+}
+
+/* Seven across, capped: left to the form's full width the cells would be
+   122px squares and the month would swallow the page */
+.dates__days {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: clamp(4px, 0.5vw, 8px);
+	max-width: min(27em, 100%);   /* 27em alone overruns a 370px phone column */
+}
+
+.dates__dow {
+	padding-bottom: 0.3em;
+	font-size: var(--spec-size);
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	text-align: center;
+	color: var(--ink-quiet);
+}
+
+.dates__day {
+	aspect-ratio: 1;
+	display: grid;
+	place-items: center;
+	letter-spacing: 0.04em;
+}
+
+/* A day that has already been and gone */
+.dates__day[disabled] {
+	background: none;
+	color: rgba(23, 35, 48, 0.25);
+	cursor: default;
+}
+
+.dates__chosen {
+	font-size: var(--credit-size);
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	color: var(--ink-quiet);
+}
+
+/* --- send --------------------------------------------------------------- */
+
+.enquiry__send {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.2em;
+	margin-top: clamp(8px, 1.5vh, 16px);
+}
+
+.button {
+	padding: clamp(14px, 1.8vh, 18px) clamp(34px, 5vw, 54px);
+	background: var(--ink);
+	border: none;
+	font-family: var(--font);
+	font-size: var(--credit-size);
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	line-height: 1;
+	color: var(--bg);
+	cursor: pointer;
+	transition: opacity var(--dur) var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.button:hover { opacity: var(--hover-alpha); }
+}
+
+.enquiry__status {
+	max-width: 46ch;
+	text-align: center;
+	font-size: var(--credit-size);
+	letter-spacing: 0.08em;
+	line-height: 1.8;
+	color: var(--ink-quiet);
+}
+
+.enquiry__status a {
+	box-shadow: 0 1px 0 rgba(23, 35, 48, 0.3);
+	transition: box-shadow var(--dur) var(--ease);
+}
+
+.enquiry__status a:hover { box-shadow: 0 1px 0 var(--ink); }
+
+.enquiry__status--warn { color: var(--warn); }
+
+.contact__fallback {
+	margin-top: clamp(28px, 5vh, 52px);
+	text-align: center;
+	font-size: var(--credit-size);
+	letter-spacing: var(--track-wide);
+	text-transform: uppercase;
+	color: var(--ink-quiet);
+}
+
+.contact__fallback a {
+	color: var(--ink);
+	transition: opacity var(--dur) var(--ease);
+}
+
+.contact__fallback a:hover { opacity: var(--hover-alpha); }
 
 /* Centred and bottom-aligned — the one element on the page that breaks the
    left editorial column, which is what makes it read as a footer */
@@ -1218,6 +1544,12 @@ body.is-ready main {
    (only 23px of clearance the other way round at 375px) and gives a phone
    the picture first. The <h1> stays first in the DOM, where it belongs. */
 @media (max-aspect-ratio: 1/1) {
+	/* The column is the full page here, so the trailing-space pull-back would
+	   hang the type's box over the right edge — 0.7px of nothing, but enough
+	   to put the document 1px wider than the screen */
+	.hero__mark,
+	.hero__tagline { margin-right: 0; }
+
 	.hero {
 		grid-template-columns: minmax(0, 1fr);
 		/* The type takes the height it needs; the photograph takes the rest,

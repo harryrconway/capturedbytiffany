@@ -405,33 +405,100 @@
 	</section>
 
 	<!-- ─── 05 ─────────────────────────────────────────────────────────────
-	     Full-viewport close. Contact details below are PLACEHOLDER — the
-	     domain, email, phone and handles are unconfirmed. Replace with
-	     Tiffany's real details before publishing.
+	     Full-viewport close: a centred enquiry form (style.css 11 CONTACT,
+	     main.js 06 ENQUIRY).
+
+	     NOT CONNECTED. There is no server behind a static site, so the form
+	     posts nowhere: main.js validates it, then offers to hand the message
+	     to the visitor's own mail app, and says plainly that nothing was
+	     sent. To make it live, either
+	       a) give <form> an action="https://formspree.io/f/XXXX" method="post"
+	          (or Web3Forms etc.) and delete the interception in 06 ENQUIRY, or
+	       b) keep it as it is — the mail-app hand-off works without any
+	          third party, and nothing ever leaves the visitor's machine.
+	     The honeypot and the elapsed-time check below are worth keeping
+	     either way.
+
+	     PLACEHOLDER: the email address is unconfirmed.
 	     ──────────────────────────────────────────────────────────────────── -->
 	<section class="contact" id="contact">
-		<h2 class="chapter chapter--flush">
+		<h2 class="chapter chapter--flush chapter--centre">
 			<span class="chapter__num">05</span>
 			<span class="chapter__name">Contact</span>
 		</h2>
 
 		<div class="contact__inner">
-			<a class="contact__email" href="mailto:hello@capturedbytiffany.com.au">hello@capturedbytiffany.com.au</a>
+			<p class="contact__lede">Tell me about the work. The place, the date and what the pictures are for are the three things that shape a quote.</p>
 
-			<dl class="contact__details">
-				<div class="contact__item">
-					<dt>Telephone</dt>
-					<dd><a href="tel:+61400000000">+61 400 000 000</a></dd>
+			<form class="enquiry" method="post" novalidate>
+				<!-- Honeypot: off-screen, never announced, never tab-stopped. A
+				     bot fills every field it finds; a person can't reach this one,
+				     so anything in it is a bot and the message is dropped. -->
+				<div class="enquiry__trap" aria-hidden="true">
+					<label for="f-website">Website</label>
+					<input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
 				</div>
-				<div class="contact__item">
-					<dt>Instagram</dt>
-					<dd><a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">@capturedbytiffany</a></dd>
+
+				<div class="enquiry__pair">
+					<p class="field">
+						<label for="f-name">Name</label>
+						<input id="f-name" name="name" type="text" maxlength="80" autocomplete="name" required>
+					</p>
+					<p class="field">
+						<label for="f-email">Email</label>
+						<input id="f-email" name="email" type="email" maxlength="120" autocomplete="email" required>
+					</p>
 				</div>
-				<div class="contact__item">
-					<dt>LinkedIn</dt>
-					<dd><a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">@capturedbytiffany</a></dd>
+
+				<p class="field">
+					<label for="f-place">Location</label>
+					<input id="f-place" name="location" type="text" maxlength="120" autocomplete="address-level2" placeholder="Where is the shoot?">
+				</p>
+
+				<!-- The date module is built by main.js so it can count real
+				     months; without JS this plain field takes its place. -->
+				<fieldset class="enquiry__block" data-date>
+					<legend>When</legend>
+					<p class="field field--plain">
+						<label for="f-date">Date</label>
+						<input id="f-date" name="date" type="text" maxlength="40" autocomplete="off" placeholder="e.g. March 2027, or flexible">
+					</p>
+				</fieldset>
+
+				<fieldset class="enquiry__block">
+					<legend>What kind of work</legend>
+					<ul class="ticks">
+						<li><input id="k-arch" type="checkbox" name="work" value="Architecture"><label for="k-arch">Architecture</label></li>
+						<li><input id="k-life" type="checkbox" name="work" value="Lifestyle &amp; People"><label for="k-life">Lifestyle &amp; People</label></li>
+						<li><input id="k-trav" type="checkbox" name="work" value="Travel / Hotels"><label for="k-trav">Travel / Hotels</label></li>
+						<li><input id="k-else" type="checkbox" name="work" value="Something else"><label for="k-else">Something else</label></li>
+					</ul>
+				</fieldset>
+
+				<fieldset class="enquiry__block">
+					<legend>How did you find me</legend>
+					<ul class="ticks">
+						<li><input id="h-ig" type="checkbox" name="heard" value="Instagram"><label for="h-ig">Instagram</label></li>
+						<li><input id="h-ref" type="checkbox" name="heard" value="A referral"><label for="h-ref">A referral</label></li>
+						<li><input id="h-search" type="checkbox" name="heard" value="Search"><label for="h-search">Search</label></li>
+						<li><input id="h-print" type="checkbox" name="heard" value="Print"><label for="h-print">Print</label></li>
+						<li><input id="h-other" type="checkbox" name="heard" value="Somewhere else"><label for="h-other">Somewhere else</label></li>
+					</ul>
+				</fieldset>
+
+				<p class="field">
+					<label for="f-message">Message</label>
+					<textarea id="f-message" name="message" rows="4" maxlength="1200" required></textarea>
+				</p>
+
+				<div class="enquiry__send">
+					<button class="button" type="submit">Send</button>
+					<!-- Filled by main.js: the outcome, and a mail-app hand-off -->
+					<p class="enquiry__status" role="status" aria-live="polite"></p>
 				</div>
-			</dl>
+			</form>
+
+			<p class="contact__fallback">Or write straight to <a href="mailto:hello@capturedbytiffany.com.au">hello@capturedbytiffany.com.au</a></p>
 		</div>
 
 		<!-- Sits in its own bottom grid row, not inside the centred block —
