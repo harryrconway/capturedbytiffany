@@ -69,10 +69,6 @@
 	--tag-size:  clamp(0.68rem, 1.9cqi, 0.9rem);
 	--hero-step: clamp(16px, 2.6cqi, 34px);       /* the type column's one vertical step */
 
-	/* About's opening line, set as a statement. 52ch holds it to three lines
-	   from 1024px up (six on a phone); 3vw reaches the 2.8rem cap at ~1490px. */
-	--statement-size: clamp(1.5rem, 3vw, 2.8rem);
-
 	/* Clients strip (07 CLIENTS). Five 20vw slots make one pass exactly one
 	   screen wide up to 2100px, so the three-pass track is always at least
 	   twice the window and the loop's seam can never appear. A fixed duration
@@ -398,9 +394,9 @@ body.nav-open .nav-ig {
    and the only portrait photograph there is turns landscape. At 1:1 the box
    runs 0.66 to 0.89 at every landscape size.
 
-   The name and the fields line sit centred in the column, and the cue sits
-   on the photograph's BOTTOM edge — so the type reads as one quiet block
-   against the picture, anchored at the foot.
+   The name and the fields line sit centred in the column and flush right,
+   so the type gathers against the photograph rather than drifting across
+   the page.
 
    .hero carries the photograph's scroll fade; .hero__type carries the type's,
    which runs ahead of it (main.js 04 HANDOFF). The intro lives on main —
@@ -440,19 +436,24 @@ body.nav-open .nav-ig {
 	container-type: inline-size;
 	display: flex;
 	flex-direction: column;
+	text-align: right;
 	opacity: var(--hero-op, 1);
 }
 
-/* The masthead: stacked, left-aligned on the page's editorial column — the
-   same --inset every chapter marker and photograph below starts from.
+/* The masthead: stacked, and set flush RIGHT, so the name runs up to the
+   gap and reads against the photograph rather than across the page.
 
    Centred vertically by a pair of auto margins — this one and the tagline's
    below — which split the column's free space evenly above and below the
-   two of them. The cue keeps the foot, so the name sits in the middle of
-   the space above it. (In the stacked layout the column is content-height,
-   so there is no free space and both autos collapse to nothing.) */
+   two of them. (In the stacked layout the column is content-height, so
+   there is no free space and both autos collapse to nothing.)
+
+   The negative right margin pulls back the trailing letter-space that
+   tracking adds after the last glyph of every line, so the INK lands flush
+   on the column's edge rather than 0.14em short of it. */
 .hero__mark {
 	margin-top: auto;
+	margin-right: -0.14em;
 	font-size: var(--mark-size);
 	font-weight: 400;
 	letter-spacing: 0.14em;
@@ -466,6 +467,7 @@ body.nav-open .nav-ig {
 .hero__tagline {
 	margin-top: var(--hero-step);
 	margin-bottom: auto;         /* the other half of the centring pair */
+	margin-right: -0.22em;       /* the same trailing-space pull-back */
 	font-size: var(--tag-size);
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
@@ -475,39 +477,6 @@ body.nav-open .nav-ig {
 
 /* Categories stay whole — the line may only break between them */
 .hero__tagline span { white-space: nowrap; }
-
-/* The masthead's two auto margins take all the free space above it, so this
-   sits on the photograph's bottom edge with no margin of its own. In the
-   stacked layout there is no free space at all, so 14 RESPONSIVE gives it a
-   real step to stand on. */
-.hero__foot {
-	padding-top: clamp(12px, 1.8cqi, 22px);
-}
-
-.hero__cue {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.8em;
-	font-size: var(--tag-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
-	line-height: 1.6;
-	color: var(--ink-quiet);
-	transition: color var(--dur) var(--ease);
-}
-
-/* Sized in em so the arrow tracks the label rather than the viewport */
-.hero__cue svg {
-	flex: none;
-	width: 0.85em;
-	height: 1em;
-	transition: transform var(--dur) var(--ease);
-}
-
-@media (hover: hover) and (pointer: fine) {
-	.hero__cue:hover { color: var(--ink); }
-	.hero__cue:hover svg { transform: translateY(3px); }
-}
 
 /* Absolutely positioned for the same reason as the plates below: the
    photograph must never contribute its intrinsic size to track sizing. No
@@ -821,17 +790,16 @@ main {
 	padding: 0 var(--inset) clamp(80px, 16vh, 180px);
 }
 
-/* 52ch: three lines from 1024px up, six on a phone. Wider and it reads as a
-   paragraph; narrower and it stacks into a column of fragments. Centred,
-   with the marker above it and the pair below. */
+/* Set exactly as the copy below it — same size, leading and weight — and
+   centred under the marker, with the 52ch measure keeping it to a readable
+   line however wide the page gets. */
 .about__statement {
 	max-width: 52ch;
 	margin: 0 auto clamp(40px, 7vh, 84px);
 	text-align: center;
-	font-size: var(--statement-size);
-	letter-spacing: 0.01em;
-	line-height: 1.26;
-	color: var(--ink);
+	font-size: var(--about-size);
+	line-height: 1.75;
+	color: rgba(23, 35, 48, 0.83);
 	text-wrap: balance;
 }
 
@@ -1260,9 +1228,6 @@ body.is-ready main {
 			"type";
 	}
 
-	/* The column is content-height here, so the masthead's centring margins
-	   collapse and the cue would crowd the tagline without a step of its own */
-	.hero__foot { margin-top: var(--hero-step); }
 }
 
 @media (max-width: 380px) {
@@ -1293,7 +1258,6 @@ body.is-ready main {
 	.nav-list a,
 	.nav-ig,
 	.frame img,
-	.hero__cue svg,
 	.plate {
 		transform: none !important;
 	}
