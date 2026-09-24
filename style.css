@@ -1184,16 +1184,15 @@ main {
    viewport out with it — innerWidth 712 on a 390px screen, the whole page
    with it. Wrapping also means no month is ever hidden off the edge.
 
-   Centred, all three parts of it. Every other row in this form is a
-   full-width box starting on the form's left edge; the day grid cannot be
-   one — seven columns cap at 496px inside a 716px column — so left-aligned it
-   strands 220px of white and reads as a mistake rather than as rag. Centred,
-   it sits on the axis the lede, the button, the status line and the colophon
-   already share. The legend stays left with the form's other labels. */
+   The strip starts on the form's LEFT edge, with the legend above it and the
+   Name, Location and Message fields either side — it is a row of controls
+   like any other, and it fills the width, so there is no stranded white to
+   answer for. The day grid below it is the exception and stays centred: seven
+   columns cap at 496px inside a 716px column, and left-aligned that leaves
+   220px of white beside it that reads as a mistake rather than as rag. */
 .dates__months {
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: center;
 	gap: clamp(6px, 0.7vw, 10px);
 }
 
