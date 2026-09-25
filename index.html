@@ -49,19 +49,21 @@
 	     states only apply when JS is actually there to reveal them -->
 	<script>document.documentElement.className = 'js';</script>
 
-	<!-- Favicon: the letter C in DM Sans, the page's own face. Rendered from
-	     the TTF to raster — an SVG favicon cannot rely on a web font.
+	<!-- Favicon: the letter C in the title face, the wordmark's own. Rendered
+	     from the TTF to raster — an SVG favicon cannot rely on a web font.
 	     Relative paths, so they resolve under the GitHub Pages project path
 	     (/capturedbytiffany/) as well as at the root of a custom domain. -->
 	<link rel="icon" href="favicon.ico" sizes="any">
 	<link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32">
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-	<!-- One face, and the hero's stacked name is set large in it. Fetch it
-	     during head parsing so it arrives before the photograph decodes and
-	     nothing swaps face as the page fades in. crossorigin is required even
-	     same-origin: fonts always fetch in CORS mode, and a preload without it
-	     doesn't match — it downloads twice. -->
+	<!-- Both faces: the title serif carries the hero's stacked name, which is
+	     the largest type on the page, and the sans carries everything else.
+	     Fetch both during head parsing so they arrive before the photograph
+	     decodes and nothing swaps face as the page fades in. crossorigin is
+	     required even same-origin: fonts always fetch in CORS mode, and a
+	     preload without it doesn't match — it downloads twice. -->
+	<link rel="preload" as="font" type="font/woff2" href="fonts/cormorant-garamond-latin.woff2" crossorigin>
 	<link rel="preload" as="font" type="font/woff2" href="fonts/dm-sans-latin.woff2" crossorigin>
 
 	<!-- One hero photograph, and it is the LCP element: start its fetch during

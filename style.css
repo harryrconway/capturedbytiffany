@@ -50,26 +50,26 @@
 	   drawn in it (04 NAV TOGGLE). */
 	--on-photo:      #ECEAE3;
 
-	/* Type — ONE face, everywhere: masthead, wordmark, chapter markers,
-	   statement, copy, captions, credits, form. The page ran on two for a
-	   while, a serif for the voice and a sans for the reading, and every size
-	   token below carries the scar: each one has been re-derived twice, first
-	   for the serif's metrics and then back again.
+	/* Type — two faces, and which one a thing takes is a question of JOB.
+	   --font-title is for the NAMES of things and nothing else: the hero
+	   masthead, the corner wordmark, the chapter markers, the project titles.
+	   --font is everything else, including the statement and the lede, which
+	   are sentences rather than titles however large they are set.
 
-	   The rule the numbers follow is optical parity, never taste. Capitals
-	   are matched on CAP HEIGHT, lowercase on X-HEIGHT, and a measure is
-	   checked in characters rather than carried across as a `ch` count, since
-	   a ch is the width of a ZERO and every face draws that differently.
-	   DM Sans's cap height is 0.700 — the same as the Tenor Sans this site
-	   opened with — which is why several tokens here are back at the values
-	   they started from. */
-	--font: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	--logo-size:    clamp(19px, 2vw, 36px);       /* corner wordmark */
+	   Every size below follows optical parity, never taste: capitals matched
+	   on CAP HEIGHT (Cormorant Garamond 0.625 against DM Sans's 0.700, so a
+	   title token is 1.12 of what the sans would want), lowercase on
+	   X-HEIGHT (0.386 against 0.504), and a measure checked in CHARACTERS
+	   rather than carried across as a `ch` count, since a ch is the width of
+	   a ZERO and every face draws that differently. */
+	--font:       'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	--font-title: 'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+	--logo-size:    clamp(21px, 2.24vw, 40px);    /* corner wordmark — a title */
 	--nav-size:     clamp(1.75rem, 5.2vw, 3.5rem);
 	--cap-size:     clamp(0.68rem, 1.05vw, 0.85rem);
 	--credit-size:  clamp(0.56rem, 0.72vw, 0.68rem);
 	--spec-size:    clamp(0.5rem, 0.6vw, 0.58rem);
-	--chapter-size: clamp(0.62rem, 0.85vw, 0.78rem);
+	--chapter-size: clamp(0.70rem, 0.95vw, 0.88rem);
 	--about-size:   clamp(0.95rem, 1.5vw, 1.2rem);
 
 	/* The enquiry form's own two sizes (11 CONTACT). The form is the one
@@ -86,14 +86,15 @@
 	   column is the size container — so the name is measured against its own
 	   box: half the window on a landscape screen, all of it on a phone, from
 	   one token. "Captured" is the widest line, and the token is whatever
-	   holds its ink across 82% of the column: 4.658em of it in DM Sans
-	   against the 3.993em the serif before it measured, so the number comes
-	   DOWN by 0.857 — a wider face needs fewer points to fill the same
-	   width. The vh term only bites on short windows (a landscape phone,
-	   844×390), where it hands height back to the photograph; the rem cap
-	   stops a 2560px column from shouting. Browsers without container units
-	   fall back to inherited 16px type — plain, but it fits. */
-	--mark-size: min(17.6cqi, 15.4vh, 13.5rem);
+	   holds its ink across 82% of the column: 3.993em of it in the title
+	   face, against the 4.658em the body face measures, so the number is
+	   1.166 of what a sans masthead would want — a narrower face needs more
+	   points to fill the same width. The vh term only bites on short windows
+	   (a landscape phone, 844×390), where it hands height back to the
+	   photograph; the rem cap stops a 2560px column from shouting. Browsers
+	   without container units fall back to inherited 16px type — plain, but
+	   it fits. */
+	--mark-size: min(20.5cqi, 18vh, 15.7rem);
 	/* Mixed case too, and lowercase reads by its x-height: at the old size the
 	   line would have dropped a third of its apparent weight under a masthead
 	   that just gained some. A fifth back is enough to hold it — not the full
@@ -166,26 +167,45 @@
    02  RESET & BASE
    ========================================================================== */
 
-/* One face, self-hosted — the latin subset Google Fonts serves, no
-   render-blocking third-party stylesheet and no extra connections. swap, as
-   before. Licence: fonts/dm-sans-OFL.txt
+/* Both faces self-hosted — the latin subsets Google Fonts serves — rather
+   than linked from fonts.googleapis.com. Three reasons, in order: the CSP in
+   both pages' heads allows stylesheets and fonts from 'self' only, so a
+   third-party <link> would be refused outright; a Google stylesheet is
+   render-blocking and adds two connections before a single byte of font
+   arrives; and a file in this repo cannot change under us. swap, as before.
+   Licences: fonts/dm-sans-OFL.txt, fonts/cormorant-garamond-OFL.txt
 
-   The STATIC 400, not the variable file: 400 is the only weight anything on
-   this page is set in, and the two-axis variable file is 62,556 bytes
+   DM SANS is the STATIC 400, not the variable file: 400 is the only weight
+   the body is ever set in, and the two-axis variable file is 62,556 bytes
    against this one's 14,124 — 48KB for an optical-size axis nobody is asking
-   for. Nothing may ask for a 600 while this file is the one being served:
-   the browser would answer with a synthesised bold, which is a smeared 400.
-   Take the variable file instead, and say so here.
+   for. Nothing may ask this family for a 600 while that file is the one
+   being served: the browser would answer with a synthesised bold, which is a
+   smeared 400. Take the variable file instead, and say so here.
+
+   CORMORANT GARAMOND is variable, and its weight RANGE is load-bearing: the
+   file's default instance is 300, so a flat `font-weight: 400` here would
+   make every 400 synthesise from a light master rather than instance the
+   axis. Declaring 300 700 hands the axis to the browser, and the chapter
+   markers' 600 is then a real 600.
 
    DM Sans stands in for Adelle Sans, which is licensed per-domain and not
-   ours to serve. The swap, when the licence is bought, is this block and the
-   --font token. */
+   ours to serve. The swap, when the licence is bought, is its block here and
+   the --font token. */
 @font-face {
 	font-family: 'DM Sans';
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
 	src: url('fonts/dm-sans-latin.woff2') format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+	font-family: 'Cormorant Garamond';
+	font-style: normal;
+	font-weight: 300 700;
+	font-display: swap;
+	src: url('fonts/cormorant-garamond-latin.woff2') format('woff2');
 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
@@ -310,6 +330,7 @@ ul { list-style: none; }
 }
 
 .brand {
+	font-family: var(--font-title);
 	font-size: var(--logo-size);
 	/* Mixed case, so the tracking comes down with it: 0.14em is a CAPS
 	   setting and on lowercase it reads as damage, not as air. */
@@ -568,6 +589,7 @@ body.nav-open .nav-ig {
 .hero__mark {
 	margin-top: auto;
 	margin-right: -0.04em;
+	font-family: var(--font-title);
 	font-size: var(--mark-size);
 	font-weight: 400;
 	/* 0.04em. Tracking is what stops CAPITALS closing their counters up;
@@ -577,8 +599,8 @@ body.nav-open .nav-ig {
 	   the same words. */
 	letter-spacing: 0.04em;
 	/* 0.95: mixed case brings descenders, and the p of "Captured" drops
-	   0.22em below its baseline while the B beneath it rises 0.70em above
-	   its own — 0.92 between them, so 0.95 leaves 0.03em of daylight, and
+	   0.275em below its baseline while the B beneath it rises 0.628em above
+	   its own — 0.903 between them, so 0.95 leaves 0.047em of daylight, and
 	   they are at opposite ends of their lines in any case. Anything looser
 	   sets three lines where the design wants one block. */
 	line-height: 0.95;
@@ -717,13 +739,17 @@ body.nav-open .nav-ig {
 	/* Without this a nav jump lands the heading flush to the viewport edge */
 	scroll-margin-top: clamp(24px, 6vh, 64px);
 
+	font-family: var(--font-title);
 	font-size: var(--chapter-size);
-	/* 400, and it must stay 400: the face is served as a single static
-	   weight (02 RESET), so a 600 here would be synthesised rather than
-	   drawn. The serif this replaced needed the extra weight to hold at this
-	   size; a sans does not. Figures are lining by default in this face, so
-	   the numeral and the word sit on one line without asking. */
-	font-weight: 400;
+	/* 600: at this size, tracked this wide, a high-contrast serif's thins
+	   disappear on a low-DPI screen. The weight is what keeps the marker a
+	   mark rather than a whisper, and the variable file instances it, so it
+	   costs nothing and is never synthesised. */
+	font-weight: 600;
+	/* Lining, not this face's default old-style figures: "01" beside "05"
+	   has to read as a series, and an old-style 0 sits below the baseline
+	   while the 1 stands on it — the pair looks broken rather than lettered. */
+	font-variant-numeric: lining-nums;
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1;
@@ -1576,10 +1602,12 @@ main {
 
 .project__title {
 	padding: clamp(40px, 7vh, 90px) var(--inset) clamp(18px, 2.6vh, 34px);
-	/* Set as the homepage's chapter markers are, because that is what they
-	   are on this page. */
+	/* Set as the homepage's chapter markers are — same face, same weight,
+	   same figures — because that is what they are on this page. */
+	font-family: var(--font-title);
 	font-size: var(--chapter-size);
-	font-weight: 400;
+	font-weight: 600;
+	font-variant-numeric: lining-nums;
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1;
@@ -1727,8 +1755,10 @@ body.is-ready main {
 		--cap-size:  clamp(0.62rem, 2.5vw, 0.78rem);
 
 		/* The corner name, the logo and the hamburger must all fit a 320px
-		   phone. Back to the desktop floor from ~414px up. */
-		--logo-size: clamp(14px, 4.6vw, 19px);
+		   phone. Same cap parity as the desktop token, and mixed case is
+		   narrower than the capitals this replaced, so the fit improves.
+		   Back to the desktop floor from ~414px up. */
+		--logo-size: clamp(16px, 5.15vw, 21px);
 
 		/* Taller band: the project line stacks to two lines and the three
 		   credit columns collapse to one, so the band has more to hold */
