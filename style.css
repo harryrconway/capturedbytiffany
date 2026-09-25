@@ -1287,6 +1287,26 @@ main {
 .enquiry__groups > :last-child {
 	padding-left: clamp(14px, 3vw, 44px);
 	border-left: 1px solid var(--line);
+	/* Mirrored, so the pair is symmetrical about the rule: this question's
+	   lines range right, its boxes go to the OUTSIDE edge and its words read
+	   inward, exactly as the left-hand question's do. */
+	text-align: right;
+}
+
+.enquiry__groups > :last-child .ticks { align-items: flex-end; }
+
+/* row-reverse moves the drawn box to the far side of the word. Only the
+   drawing moves: the DOM keeps input then label, so a screen reader hears
+   this question exactly as it hears the one beside it. */
+.enquiry__groups > :last-child .ticks label { flex-direction: row-reverse; }
+
+/* The tick is absolutely positioned, and its default placement assumes a box
+   on the left. Pin it to the other edge with the same 0.24em that centres a
+   0.52em mark in a 1em box. */
+.enquiry__groups > :last-child .ticks label::after {
+	right: 0;
+	margin-left: 0;
+	margin-right: 0.24em;
 }
 
 
