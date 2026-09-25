@@ -50,32 +50,27 @@
 	   drawn in it (04 NAV TOGGLE). */
 	--on-photo:      #ECEAE3;
 
-	/* Type — two faces, and which one a thing takes is a question of JOB, not
-	   of size. --font-head is the voice: the hero masthead, the corner
-	   wordmark, the chapter markers, the statement and lede, the project
-	   titles. --font-body is everything read rather than looked at.
-	   Cormorant Garamond's cap height is 0.625 against Tenor Sans's 0.700 and
-	   its x-height 0.386 against 0.500, so every size token below was
-	   RE-DERIVED, not kept: caps ×1.12, lowercase ×1.26. A token moved here
-	   is a token whose face changed — none of them is a taste adjustment.
-	   DM Sans replaced Source Sans 3 as the body face later, and cost
-	   nothing in sizes: its x-height is 0.504 against 0.486, within 4%. */
-	--font-head: 'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-	--font-body: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	--logo-size:    clamp(21px, 2.24vw, 40px);    /* corner wordmark — cap parity with the old 19/36 */
+	/* Type — ONE face, everywhere: masthead, wordmark, chapter markers,
+	   statement, copy, captions, credits, form. The page ran on two for a
+	   while, a serif for the voice and a sans for the reading, and every size
+	   token below carries the scar: each one has been re-derived twice, first
+	   for the serif's metrics and then back again.
+
+	   The rule the numbers follow is optical parity, never taste. Capitals
+	   are matched on CAP HEIGHT, lowercase on X-HEIGHT, and a measure is
+	   checked in characters rather than carried across as a `ch` count, since
+	   a ch is the width of a ZERO and every face draws that differently.
+	   DM Sans's cap height is 0.700 — the same as the Tenor Sans this site
+	   opened with — which is why several tokens here are back at the values
+	   they started from. */
+	--font: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	--logo-size:    clamp(19px, 2vw, 36px);       /* corner wordmark */
 	--nav-size:     clamp(1.75rem, 5.2vw, 3.5rem);
 	--cap-size:     clamp(0.68rem, 1.05vw, 0.85rem);
 	--credit-size:  clamp(0.56rem, 0.72vw, 0.68rem);
 	--spec-size:    clamp(0.5rem, 0.6vw, 0.58rem);
-	--chapter-size: clamp(0.70rem, 0.95vw, 0.88rem);
+	--chapter-size: clamp(0.62rem, 0.85vw, 0.78rem);
 	--about-size:   clamp(0.95rem, 1.5vw, 1.2rem);
-
-	/* The statement and the enquiry's lede — the two places the head face
-	   speaks in sentences rather than in labels. Their own token because they
-	   are no longer set as body copy: a serif at the body's size, with a
-	   0.386 x-height, reads a full step smaller than the paragraph beside it,
-	   so it has to be set larger to weigh the same. */
-	--statement-size: clamp(1.2rem, 1.9vw, 1.5rem);
 
 	/* The enquiry form's own two sizes (11 CONTACT). The form is the one
 	   place on the page a visitor has to read and type rather than look, so
@@ -90,18 +85,15 @@
 	/* Hero masthead (06 HERO). cqi is 1% of the TYPE COLUMN's width — that
 	   column is the size container — so the name is measured against its own
 	   box: half the window on a landscape screen, all of it on a phone, from
-	   one token. "Captured" is the widest line: set in mixed case it measures
-	   3.993em of ink against the 6.284em the same word measured in capitals,
-	   so the token goes up by 1.57 to hold the masthead flush across its
-	   column — and the x-height that does the reading lands within 6% of the
-	   cap height it replaces, so the name is the same SIZE on the page while
-	   every letter is bigger. Measured: the ink fills 82% of the column at
-	   375, 768, 1440 and 2560 alike. The vh term only bites on short windows
-	   (a landscape phone, 844×390), where it hands height back to the
-	   photograph; the rem cap stops a 2560px column from shouting. Browsers
-	   without container units fall back to inherited 16px type — plain, but
-	   it fits. */
-	--mark-size: min(20.5cqi, 18vh, 15.7rem);
+	   one token. "Captured" is the widest line, and the token is whatever
+	   holds its ink across 82% of the column: 4.658em of it in DM Sans
+	   against the 3.993em the serif before it measured, so the number comes
+	   DOWN by 0.857 — a wider face needs fewer points to fill the same
+	   width. The vh term only bites on short windows (a landscape phone,
+	   844×390), where it hands height back to the photograph; the rem cap
+	   stops a 2560px column from shouting. Browsers without container units
+	   fall back to inherited 16px type — plain, but it fits. */
+	--mark-size: min(17.6cqi, 15.4vh, 13.5rem);
 	/* Mixed case too, and lowercase reads by its x-height: at the old size the
 	   line would have dropped a third of its apparent weight under a masthead
 	   that just gained some. A fifth back is enough to hold it — not the full
@@ -174,35 +166,20 @@
    02  RESET & BASE
    ========================================================================== */
 
-/* Both faces self-hosted — the latin subsets Google Fonts serves, no
+/* One face, self-hosted — the latin subset Google Fonts serves, no
    render-blocking third-party stylesheet and no extra connections. swap, as
-   before. Licences: fonts/cormorant-garamond-OFL.txt, fonts/source-sans-3-OFL.txt
+   before. Licence: fonts/dm-sans-OFL.txt
 
-   Cormorant Garamond's file is VARIABLE and the weight RANGE is load-bearing
-   rather than decorative: that file defaults to 300, so a `font-weight: 400`
-   declaration would make every 400 on the page synthesise from a light
-   master instead of instancing the axis. Declaring 300 700 hands the axis to
-   the browser, and 400 is then the real 400. The chapter markers ask for 600
-   and nothing else on the page does.
-
-   DM Sans is the STATIC 400, not the variable file, because 400 is the only
-   weight the body face is ever set in — the whole variable file is 62,556
-   bytes against this one's 14,124, and the 48KB buys an optical-size axis
-   nobody here is asking for. If a second body weight is ever wanted, take
-   the variable file rather than letting the browser synthesise one.
+   The STATIC 400, not the variable file: 400 is the only weight anything on
+   this page is set in, and the two-axis variable file is 62,556 bytes
+   against this one's 14,124 — 48KB for an optical-size axis nobody is asking
+   for. Nothing may ask for a 600 while this file is the one being served:
+   the browser would answer with a synthesised bold, which is a smeared 400.
+   Take the variable file instead, and say so here.
 
    DM Sans stands in for Adelle Sans, which is licensed per-domain and not
    ours to serve. The swap, when the licence is bought, is this block and the
-   --font-body token. */
-@font-face {
-	font-family: 'Cormorant Garamond';
-	font-style: normal;
-	font-weight: 300 700;
-	font-display: swap;
-	src: url('fonts/cormorant-garamond-latin.woff2') format('woff2');
-	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
+   --font token. */
 @font-face {
 	font-family: 'DM Sans';
 	font-style: normal;
@@ -227,14 +204,13 @@ body {
 	min-height: 100%;
 	background: var(--bg);
 	color: var(--ink);
-	font-family: var(--font-body);
+	font-family: var(--font);
 	font-weight: 400;
 	overflow-x: hidden;
 
-	/* The 0.3px stroke that used to sit here is gone. It existed to give
-	   Tenor Sans a hairline weight at small sizes; on a high-contrast serif
-	   it thickens the thins and closes the counters, which is the opposite of
-	   what it was for. */
+	/* The 0.3px stroke that used to sit here is gone. It existed to give the
+	   site's first face a hairline weight at small sizes, and on a face with
+	   even strokes it only muddies them. */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
@@ -250,13 +226,25 @@ img {
 	max-width: 100%;
 }
 
-button {
+/* Form controls are the only elements on the page that do NOT inherit type:
+   left alone, every browser hands them its own system face at its own size,
+   which is how a stray Arial gets into a page that sets one face. Even the
+   visually hidden checkboxes are covered — invisible today, but the next
+   person to un-hide one should not find a different font under it. */
+button,
+input,
+textarea,
+select {
 	background: none;
 	border: none;
 	color: inherit;
 	font: inherit;
 	cursor: pointer;
 }
+
+input,
+textarea,
+select { cursor: auto; }
 
 figure { margin: 0; }
 ul { list-style: none; }
@@ -322,10 +310,6 @@ ul { list-style: none; }
 }
 
 .brand {
-	/* The head face, like the hero masthead — the two are on screen together
-	   between a third and a half of the way down the page, and one word set
-	   in two faces reads as a bug rather than as a hierarchy. */
-	font-family: var(--font-head);
 	font-size: var(--logo-size);
 	/* Mixed case, so the tracking comes down with it: 0.14em is a CAPS
 	   setting and on lowercase it reads as damage, not as air. */
@@ -584,19 +568,19 @@ body.nav-open .nav-ig {
 .hero__mark {
 	margin-top: auto;
 	margin-right: -0.04em;
-	font-family: var(--font-head);
 	font-size: var(--mark-size);
 	font-weight: 400;
-	/* 0.04em, down from the 0.16em the capitals needed. Tracking is what
-	   stops capitals from closing their counters up; lowercase letters are
-	   drawn to sit close, and the same 0.16em on them reads as damage. No
-	   text-transform: the words are cased in the MARKUP, so the heading a
-	   screen reader announces and the one on the page are the same words. */
+	/* 0.04em. Tracking is what stops CAPITALS closing their counters up;
+	   lowercase letters are drawn to sit close already, and 0.16em on them
+	   reads as damage. No text-transform: the words are cased in the MARKUP,
+	   so the heading a screen reader announces and the one on the page are
+	   the same words. */
 	letter-spacing: 0.04em;
-	/* 0.95, not 0.9: mixed case brings descenders, and the p of "Captured"
-	   drops 0.275em below its baseline while the B beneath it rises 0.628em
-	   above its own. At 0.9 they touch; 0.95 leaves 0.047em of daylight and
-	   still sets the three words as one block rather than as three lines. */
+	/* 0.95: mixed case brings descenders, and the p of "Captured" drops
+	   0.22em below its baseline while the B beneath it rises 0.70em above
+	   its own — 0.92 between them, so 0.95 leaves 0.03em of daylight, and
+	   they are at opposite ends of their lines in any case. Anything looser
+	   sets three lines where the design wants one block. */
 	line-height: 0.95;
 	color: var(--ink);
 }
@@ -733,17 +717,13 @@ body.nav-open .nav-ig {
 	/* Without this a nav jump lands the heading flush to the viewport edge */
 	scroll-margin-top: clamp(24px, 6vh, 64px);
 
-	font-family: var(--font-head);
 	font-size: var(--chapter-size);
-	/* 600, not 400: at this size, tracked this wide, the head face's thins
-	   disappear on a low-DPI screen. The weight is what keeps the marker a
-	   mark rather than a whisper — and the variable file instances it, so it
-	   costs nothing. */
-	font-weight: 600;
-	/* Lining, not the face's default old-style figures: "01" beside "05" has
-	   to read as a series, and an old-style 0 sits below the baseline while
-	   the 1 stands on it — the pair looks broken rather than lettered. */
-	font-variant-numeric: lining-nums;
+	/* 400, and it must stay 400: the face is served as a single static
+	   weight (02 RESET), so a 600 here would be synthesised rather than
+	   drawn. The serif this replaced needed the extra weight to hold at this
+	   size; a sans does not. Figures are lining by default in this face, so
+	   the numeral and the word sit on one line without asking. */
+	font-weight: 400;
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1;
@@ -940,24 +920,22 @@ main {
 	padding: 0 var(--inset) clamp(80px, 16vh, 180px);
 }
 
-/* No longer set as the copy below it: the head face is what separates the
-   statement from the paragraph, and the size follows from the face rather
-   than from taste — a 0.386 x-height at the body's size reads a step
-   smaller than the body beside it. 54ch here, not 52: the measure is in
-   `ch`, and the head face's 1ch is 0.477em against the sans's 0.597, so the
-   same 52 would have pulled the line 20% shorter than it was. */
+/* Set as the copy below it — same face, same size, same leading — and
+   separated from it by weight of INK, position and measure rather than by
+   size: full ink against the paragraph's 0.83, centred where the paragraph
+   is ranged left, and a line short enough to read as a statement. It was set
+   a quarter larger while a serif carried it, which is what that serif's
+   0.386 x-height cost; on this face the same apparent size IS the body size.
+
+   46ch, measured in characters rather than carried over as a ch count:
+   DM Sans's zero is 0.684em where the serif's was 0.477, so the same 54
+   would have run this line half as long again. 46 holds 65 characters. */
 .about__statement {
-	font-family: var(--font-head);
-	max-width: 54ch;
+	max-width: 46ch;
 	margin: 0 auto clamp(40px, 7vh, 84px);
 	text-align: center;
-	font-size: var(--statement-size);
-	/* 1.5, not 1.75: a small x-height floats in a tall line box, and the
-	   statement is short enough that the air belongs around it, not in it. */
-	line-height: 1.5;
-	/* Full ink, not 0.83. This is a heading now, and a high-contrast serif
-	   held back to 83% reads as washed rather than as quiet: 15.6:1 against
-	   9.1:1. */
+	font-size: var(--about-size);
+	line-height: 1.75;
 	color: var(--ink);
 	text-wrap: balance;
 }
@@ -1079,17 +1057,15 @@ main {
 	padding: 0 var(--inset);
 }
 
-/* Set as the statement in 10 BEHIND THE LENS is, and for the same reason:
-   it opens a section in the head face rather than reading as the form's
-   first paragraph. 54ch because the measure is in `ch` and the head face's
-   1ch is a fifth narrower. */
+/* Set exactly as the statement in 10 BEHIND THE LENS is, and for the same
+   reason: it opens a section rather than reading as the form's first
+   paragraph. */
 .contact__lede {
-	font-family: var(--font-head);
-	max-width: 54ch;
+	max-width: 46ch;
 	margin: 0 auto clamp(36px, 6vh, 64px);
 	text-align: center;
-	font-size: var(--statement-size);
-	line-height: 1.5;
+	font-size: var(--about-size);
+	line-height: 1.75;
 	color: var(--ink);
 	text-wrap: balance;
 }
@@ -1177,7 +1153,6 @@ main {
 	background: none;
 	border: none;
 	border-bottom: 1px solid var(--line);
-	font-family: var(--font-body);
 	font-size: var(--field-size);
 	letter-spacing: 0.04em;
 	line-height: 1.6;
@@ -1487,7 +1462,6 @@ main {
 	background: none;
 	border: none;
 	box-shadow: inset 0 0 0 1px var(--line);
-	font-family: var(--font-body);
 	font-size: var(--tick-size);
 	/* No transform: the word in the markup IS the word on the button, and
 	   lowercase at 0.22em falls apart — 0.12em is enough to hold the block
@@ -1602,12 +1576,10 @@ main {
 
 .project__title {
 	padding: clamp(40px, 7vh, 90px) var(--inset) clamp(18px, 2.6vh, 34px);
-	/* Set as the homepage's chapter markers are — same face, same weight,
-	   same figures — because that is what they are on this page. */
-	font-family: var(--font-head);
+	/* Set as the homepage's chapter markers are, because that is what they
+	   are on this page. */
 	font-size: var(--chapter-size);
-	font-weight: 600;
-	font-variant-numeric: lining-nums;
+	font-weight: 400;
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1;
@@ -1755,10 +1727,8 @@ body.is-ready main {
 		--cap-size:  clamp(0.62rem, 2.5vw, 0.78rem);
 
 		/* The corner name, the logo and the hamburger must all fit a 320px
-		   phone. Same cap parity as the desktop token (×1.12), and mixed case
-		   is narrower than the capitals this replaced, so the fit improves.
-		   Back to the desktop floor from ~414px up. */
-		--logo-size: clamp(16px, 5.15vw, 21px);
+		   phone. Back to the desktop floor from ~414px up. */
+		--logo-size: clamp(14px, 4.6vw, 19px);
 
 		/* Taller band: the project line stacks to two lines and the three
 		   credit columns collapse to one, so the band has more to hold */

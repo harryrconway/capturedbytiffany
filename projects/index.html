@@ -45,7 +45,7 @@
 	     states only apply when JS is actually there to reveal them -->
 	<script>document.documentElement.className = 'js';</script>
 
-	<!-- Favicon: the letter C in Cormorant Garamond, the wordmark's face. Rendered
+	<!-- Favicon: the letter C in DM Sans, the page's own face. Rendered
 	     from the TTF to raster — an SVG favicon cannot rely on a web font.
 	     Relative paths, so they resolve under the GitHub Pages project path
 	     (/capturedbytiffany/) as well as at the root of a custom domain. -->
@@ -53,10 +53,9 @@
 	<link rel="icon" type="image/png" href="../favicon-32.png" sizes="32x32">
 	<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
-	<!-- Same two self-hosted faces as the homepage. crossorigin is required
+	<!-- The same self-hosted face as the homepage. crossorigin is required
 	     even same-origin: fonts always fetch in CORS mode, and a preload
 	     without it doesn't match — it downloads twice. -->
-	<link rel="preload" as="font" type="font/woff2" href="../fonts/cormorant-garamond-latin.woff2" crossorigin>
 	<link rel="preload" as="font" type="font/woff2" href="../fonts/dm-sans-latin.woff2" crossorigin>
 
 	<!-- Shared with the homepage: a visitor arriving from there has both
