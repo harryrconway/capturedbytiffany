@@ -522,52 +522,61 @@
 					<textarea id="f-message" name="message" rows="1" maxlength="1200" required></textarea>
 				</p>
 
-				<!-- One answer, like the group below it: radios, so the browser
-				     itself allows a single choice and "architecture" and
-				     "something else" can never both be true.
+				<!-- Two questions, side by side, with one hairline between them
+				     (style.css 11 CONTACT). They are a pair: the only two parts
+				     of this form that are CHOSEN rather than typed, four
+				     options each. Two columns at every width, phones included:
+				     the longest option measures 107.7px at phone sizes against
+				     the 150px a 320px screen gives each column. -->
+				<div class="enquiry__groups">
 
-				     They are still CHECKED in main.js 06 ENQUIRY rather than
-				     with a `required` attribute. A radio's own required does
-				     work for a group — but the browser would then raise it in
-				     its own bubble, in its own words, at its own moment, and
-				     the other five parts of this form answer in the page. One
-				     voice is worth more than one attribute. -->
-				<fieldset class="enquiry__block" data-group="work">
-					<legend>What kind of work <span class="field__req">required</span></legend>
-					<ul class="ticks">
-						<li><input id="k-arch" type="radio" name="work" value="Architecture"><label for="k-arch">Architecture</label></li>
-						<li><input id="k-life" type="radio" name="work" value="Lifestyle &amp; People"><label for="k-life">Lifestyle &amp; People</label></li>
-						<li><input id="k-trav" type="radio" name="work" value="Travel / Hotels"><label for="k-trav">Travel / Hotels</label></li>
-						<li><input id="k-else" type="radio" name="work" value="Something else"><label for="k-else">Something else</label></li>
-					</ul>
-				</fieldset>
+					<!-- One answer, like the group beside it: radios, so the
+					     browser itself allows a single choice and "architecture"
+					     and "something else" can never both be true.
+
+					     They are still CHECKED in main.js 06 ENQUIRY rather than
+					     with a `required` attribute. A radio's own required does
+					     work for a group — but the browser would then raise it in
+					     its own bubble, in its own words, at its own moment, and
+					     the other five parts of this form answer in the page. One
+					     voice is worth more than one attribute. -->
+					<fieldset class="enquiry__block" data-group="work">
+						<legend>What kind of work <span class="field__req">required</span></legend>
+						<ul class="ticks ticks--column">
+							<li><input id="k-arch" type="radio" name="work" value="Architecture"><label for="k-arch">Architecture</label></li>
+							<li><input id="k-life" type="radio" name="work" value="Lifestyle &amp; People"><label for="k-life">Lifestyle &amp; People</label></li>
+							<li><input id="k-trav" type="radio" name="work" value="Travel / Hotels"><label for="k-trav">Travel / Hotels</label></li>
+							<li><input id="k-else" type="radio" name="work" value="Something else"><label for="k-else">Something else</label></li>
+						</ul>
+					</fieldset>
 
 
-				<!-- Last, and one to a line. It is the question that matters least
-				     to the visitor and most to the diary, so it comes after
-				     everything the enquiry is actually about.
+					<!-- The right-hand column, and the last thing asked: it matters
+					     least to the visitor and most to the diary, so it sits
+					     beside the question about the work rather than above it.
 
-				     RADIOS, like the group above: nobody finds you on Instagram
-				     AND in print AND somewhere else. Both questions take one
-				     answer and both are drawn the same way — a square and a
-				     tick — because a form in which two identical-looking
-				     groups behave differently is worse than one in which they
-				     all behave alike.
+					     RADIOS, like the group beside it: nobody finds you on
+					     Instagram AND in a search AND somewhere else. Both questions take one
+					     answer and both are drawn the same way — a square and a
+					     tick — because a form in which two identical-looking
+					     groups behave differently is worse than one in which they
+					     all behave alike.
 
-				     The chips are shown in the case they are written in, which
-				     is also the case the mail hand-off sends (main.js collect()
-				     reads the value attribute) — one string, one spelling, no
-				     transform in between. -->
-				<fieldset class="enquiry__block" data-group="heard">
-					<legend>How did you find me <span class="field__req">required</span></legend>
-					<ul class="ticks ticks--column">
-						<li><input id="h-ig" type="radio" name="heard" value="Instagram"><label for="h-ig">Instagram</label></li>
-						<li><input id="h-ref" type="radio" name="heard" value="Referral"><label for="h-ref">Referral</label></li>
-						<li><input id="h-search" type="radio" name="heard" value="Search"><label for="h-search">Search</label></li>
-						<li><input id="h-print" type="radio" name="heard" value="Print"><label for="h-print">Print</label></li>
-						<li><input id="h-other" type="radio" name="heard" value="Somewhere else"><label for="h-other">Somewhere else</label></li>
-					</ul>
-				</fieldset>
+					     The chips are shown in the case they are written in, which
+					     is also the case the mail hand-off sends (main.js collect()
+					     reads the value attribute) — one string, one spelling, no
+					     transform in between. -->
+					<fieldset class="enquiry__block" data-group="heard">
+						<legend>How did you find me <span class="field__req">required</span></legend>
+						<ul class="ticks ticks--column">
+							<li><input id="h-ig" type="radio" name="heard" value="Instagram"><label for="h-ig">Instagram</label></li>
+							<li><input id="h-ref" type="radio" name="heard" value="Referral"><label for="h-ref">Referral</label></li>
+							<li><input id="h-search" type="radio" name="heard" value="Google search"><label for="h-search">Google search</label></li>
+							<li><input id="h-other" type="radio" name="heard" value="Somewhere else"><label for="h-other">Somewhere else</label></li>
+						</ul>
+					</fieldset>
+
+				</div>
 
 				<div class="enquiry__send">
 					<button class="button" type="submit">
