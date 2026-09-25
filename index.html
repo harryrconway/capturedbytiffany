@@ -524,23 +524,23 @@
 						placeholder="&#183; Message&#10;&#183; Date" required></textarea>
 				</p>
 
-				<!-- A checkbox's own `required` means THAT box, not one of the set,
-				     so putting it here would demand all four. The rule lives in
-				     main.js 06 ENQUIRY instead, and data-group is what it finds the
-				     pair by.
+				<!-- One answer, like the group below it: radios, so the browser
+				     itself allows a single choice and "architecture" and
+				     "something else" can never both be true.
 
-				     data-exclusive on the catch-all: "something else" and
-				     "architecture" together is not an answer, so ticking one
-				     clears the other. Declared here rather than hard-coded in
-				     the script, so a fifth option can be added without opening
-				     main.js. -->
+				     They are still CHECKED in main.js 06 ENQUIRY rather than
+				     with a `required` attribute. A radio's own required does
+				     work for a group — but the browser would then raise it in
+				     its own bubble, in its own words, at its own moment, and
+				     the other five parts of this form answer in the page. One
+				     voice is worth more than one attribute. -->
 				<fieldset class="enquiry__block" data-group="work">
 					<legend>What kind of work <span class="field__req">required</span></legend>
 					<ul class="ticks">
-						<li><input id="k-arch" type="checkbox" name="work" value="Architecture"><label for="k-arch">Architecture</label></li>
-						<li><input id="k-life" type="checkbox" name="work" value="Lifestyle &amp; People"><label for="k-life">Lifestyle &amp; People</label></li>
-						<li><input id="k-trav" type="checkbox" name="work" value="Travel / Hotels"><label for="k-trav">Travel / Hotels</label></li>
-						<li><input id="k-else" type="checkbox" name="work" value="Something else" data-exclusive><label for="k-else">Something else</label></li>
+						<li><input id="k-arch" type="radio" name="work" value="Architecture"><label for="k-arch">Architecture</label></li>
+						<li><input id="k-life" type="radio" name="work" value="Lifestyle &amp; People"><label for="k-life">Lifestyle &amp; People</label></li>
+						<li><input id="k-trav" type="radio" name="work" value="Travel / Hotels"><label for="k-trav">Travel / Hotels</label></li>
+						<li><input id="k-else" type="radio" name="work" value="Something else"><label for="k-else">Something else</label></li>
 					</ul>
 				</fieldset>
 
@@ -549,12 +549,12 @@
 				     to the visitor and most to the diary, so it comes after
 				     everything the enquiry is actually about.
 
-				     RADIOS, not checkboxes: nobody finds you on Instagram AND
-				     in print AND somewhere else — there is one answer, and the
-				     control should be the one that says so. Round boxes follow
-				     in 11 CONTACT, because a square that behaves like a radio
-				     is a trap. The group above stays checkboxes: a job really
-				     can be architecture and travel at once.
+				     RADIOS, like the group above: nobody finds you on Instagram
+				     AND in print AND somewhere else. Both questions take one
+				     answer and both are drawn the same way — a square and a
+				     tick — because a form in which two identical-looking
+				     groups behave differently is worse than one in which they
+				     all behave alike.
 
 				     The chips keep their title case in the DOM: that case is
 				     what the mail hand-off sends (main.js collect() reads the

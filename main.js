@@ -304,11 +304,11 @@
 	       wrong in the page rather than in a browser dialog. All six parts
 	       are required, and the two chip groups are checked HERE rather than
 	       in the markup, because a checkbox's own `required` means THAT box
-	       rather than one of a set. (The source group is radios, which the
-	       browser could enforce — it is checked the same way anyway, so both
-	       questions fail in the same voice, in the same place on the page.)
-	     · keeps a catch-all honest: ticking "something else" clears the
-	       specific answers beside it, and ticking one of those clears it.
+	       rather than one of a set. Both chip groups are radios, which the
+	       browser COULD enforce on its own — but it would do it in a bubble,
+	       in its own words, at its own moment, and the four fields around
+	       them answer in the page. One voice is worth more than one
+	       attribute.
 	     · hands the finished message to the visitor's own mail app, and says
 	       plainly that nothing was sent. THE FORM POSTS NOWHERE — see the
 	       note in index.html for how to point it at an endpoint.
@@ -495,26 +495,13 @@
 		   same courtesy the text fields get from `input` above. closest() is
 		   guarded the way fieldOf() guards it.
 
-		   The same listener keeps the catch-all exclusive. "Something else"
-		   carries data-exclusive in the markup, and the rule reads both ways:
-		   tick it and the specific answers clear, tick one of those and it
-		   clears. Written against the ATTRIBUTE rather than against an id, so
-		   the day a fifth kind of work is added nothing here has to change.
-		   Radio groups need none of this — the browser already allows one. */
+		   Both groups are radios, so nothing here has to keep one answer to a
+		   question — the browser does that. */
 		Array.prototype.forEach.call(form.querySelectorAll('.ticks input'), function (box) {
 			box.addEventListener('change', function () {
 				var group = box.closest
 					? box.closest('[data-group]')
 					: box.parentNode.parentNode.parentNode;
-
-				if (group && box.checked && box.type === 'checkbox') {
-					var exclusive = box.hasAttribute('data-exclusive');
-
-					Array.prototype.forEach.call(group.querySelectorAll('.ticks input'), function (other) {
-						if (other === box) return;
-						if (exclusive || other.hasAttribute('data-exclusive')) other.checked = false;
-					});
-				}
 
 				if (group && group.getAttribute('aria-describedby')) clearGroupError(group);
 			});
