@@ -168,7 +168,7 @@
 		<div class="hero__type">
 			<!-- The spaces between the spans are deliberate: the lines stack as
 			     blocks, and the heading still reads "Captured by Tiffany" -->
-			<h1 class="hero__mark"><span>Captured</span> <span>by</span> <span>Tiffany</span></h1>
+			<h1 class="hero__mark"><span>Captured</span> <span>By</span> <span>Tiffany</span></h1>
 
 			<!-- PLACEHOLDER fields — confirm with Tiffany -->
 			<p class="hero__tagline"><span>Architecture —</span> <span>Lifestyle &amp; People —</span> <span>Travel / Hotels</span></p>
@@ -515,6 +515,15 @@
 					<input id="f-place" name="location" type="text" maxlength="120" autocomplete="address-level2" placeholder="where is the shoot?" required>
 				</p>
 
+				<p class="field">
+					<span class="field__label">
+						<label for="f-message">Message</label>
+						<span class="field__req" aria-hidden="true">required</span>
+					</span>
+					<textarea id="f-message" name="message" rows="4" maxlength="1200"
+						placeholder="&#183; message&#10;&#183; date&#10;&#183; location" required></textarea>
+				</p>
+
 				<!-- A checkbox's own `required` means THAT box, not one of the set,
 				     so putting it here would demand all four. The rule lives in
 				     main.js 06 ENQUIRY instead, and data-group is what it finds the
@@ -529,17 +538,10 @@
 					</ul>
 				</fieldset>
 
-				<p class="field">
-					<span class="field__label">
-						<label for="f-message">Message</label>
-						<span class="field__req" aria-hidden="true">required</span>
-					</span>
-					<textarea id="f-message" name="message" rows="5" maxlength="1200" required></textarea>
-				</p>
 
 				<!-- Last, and one to a line. It is the question that matters least
-				     to the visitor and most to the diary, so it comes after the
-				     message rather than interrupting it — and a column, because it
+				     to the visitor and most to the diary, so it comes after
+				     everything the enquiry is actually about — and a column, because it
 				     is a list answered once, where the group above is a set of tags
 				     picked from. The chips keep their title case in the DOM: that
 				     case is what the mail hand-off sends (main.js collect() reads

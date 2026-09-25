@@ -88,16 +88,24 @@
 	/* Hero masthead (06 HERO). cqi is 1% of the TYPE COLUMN's width — that
 	   column is the size container — so the name is measured against its own
 	   box: half the window on a landscape screen, all of it on a phone, from
-	   one token. CAPTURED is the widest line: in Cormorant Garamond 4.760em of
-	   capitals plus eight 0.16em tracks, 6.040em — a narrower face, so the
-	   token goes UP to hold the same optical size, and the tracking with it.
-	   At 13cqi it fills 79% of the column, leaving the rest as air before the
-	   gap. The vh term only bites on short windows (844×390 and below), where
-	   it hands height back to the photograph; the rem cap stops a 2560px
-	   column from shouting. Browsers without container units fall back to
-	   inherited 16px type — plain, but it fits. */
-	--mark-size: min(13cqi, 13vh, 10rem);
-	--tag-size:  clamp(0.68rem, 1.9cqi, 0.9rem);
+	   one token. "Captured" is the widest line: set in mixed case it measures
+	   3.993em of ink against the 6.284em the same word measured in capitals,
+	   so the token goes up by 1.57 to hold the masthead flush across its
+	   column — and the x-height that does the reading lands within 6% of the
+	   cap height it replaces, so the name is the same SIZE on the page while
+	   every letter is bigger. Measured: the ink fills 82% of the column at
+	   375, 768, 1440 and 2560 alike. The vh term only bites on short windows
+	   (a landscape phone, 844×390), where it hands height back to the
+	   photograph; the rem cap stops a 2560px column from shouting. Browsers
+	   without container units fall back to inherited 16px type — plain, but
+	   it fits. */
+	--mark-size: min(20.5cqi, 18vh, 15.7rem);
+	/* Mixed case too, and lowercase reads by its x-height: at the old size the
+	   line would have dropped a third of its apparent weight under a masthead
+	   that just gained some. A fifth back is enough to hold it — not the full
+	   1.35 of true optical parity, which would set it as a paragraph rather
+	   than as the fields line it is. */
+	--tag-size:  clamp(0.8rem, 2.25cqi, 1.06rem);
 	--hero-step: clamp(16px, 2.6cqi, 34px);       /* the type column's one vertical step */
 
 	/* Clients strip (07 CLIENTS). Five 20vw slots make one pass exactly one
@@ -564,20 +572,24 @@ body.nav-open .nav-ig {
 
    The negative right margin pulls back the trailing letter-space that
    tracking adds after the last glyph of every line, so the INK lands flush
-   on the column's edge rather than 0.16em short of it. */
+   on the column's edge rather than 0.04em short of it. */
 .hero__mark {
 	margin-top: auto;
-	margin-right: -0.16em;
+	margin-right: -0.04em;
 	font-family: var(--font-head);
 	font-size: var(--mark-size);
 	font-weight: 400;
-	/* Wider than the old 0.14em: capitals in a high-contrast serif need more
-	   air between them than in a sans, or the stems close the counters up. */
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	/* 0.9, not 1: a 0.625 cap height in a full line box leaves a visible gap
-	   between the three stacked words that the sans never had. */
-	line-height: 0.9;
+	/* 0.04em, down from the 0.16em the capitals needed. Tracking is what
+	   stops capitals from closing their counters up; lowercase letters are
+	   drawn to sit close, and the same 0.16em on them reads as damage. No
+	   text-transform: the words are cased in the MARKUP, so the heading a
+	   screen reader announces and the one on the page are the same words. */
+	letter-spacing: 0.04em;
+	/* 0.95, not 0.9: mixed case brings descenders, and the p of "Captured"
+	   drops 0.275em below its baseline while the B beneath it rises 0.628em
+	   above its own. At 0.9 they touch; 0.95 leaves 0.047em of daylight and
+	   still sets the three words as one block rather than as three lines. */
+	line-height: 0.95;
 	color: var(--ink);
 }
 
@@ -586,10 +598,12 @@ body.nav-open .nav-ig {
 .hero__tagline {
 	margin-top: var(--hero-step);
 	margin-bottom: auto;         /* the other half of the centring pair */
-	margin-right: -0.22em;       /* the same trailing-space pull-back */
+	margin-right: -0.1em;        /* the same trailing-space pull-back */
 	font-size: var(--tag-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
+	/* 0.1em, not --track-wide's 0.22em: that is the editorial CAPS setting
+	   this line no longer uses. Enough to keep the three fields reading as a
+	   list rather than as a sentence, and no more. */
+	letter-spacing: 0.1em;
 	line-height: 1.9;
 	color: var(--ink-soft);
 }
@@ -1092,10 +1106,13 @@ main {
 	overflow: hidden;
 }
 
+/* 0.35em, not 0.7: the labels are set on the body's 1.75 leading, which
+   already hangs about 0.37em of half-leading under each one. Two gaps
+   stacked put the question a long way from the line that answers it. */
 .field {
 	display: flex;
 	flex-direction: column;
-	gap: 0.7em;
+	gap: 0.35em;
 }
 
 /* The labels are set as the page's body copy, not as the credit marks the
@@ -1159,20 +1176,31 @@ main {
 
 .field textarea {
 	/* Not resizable. The drag handle is the only piece of browser furniture
-	   on the page, and it lands on the exact corner the outline needs to hold
-	   unbroken. Nothing is lost by fixing it, because the box is now sized for
-	   the job: about six lines at 1440 and five on a phone, against a
-	   1200-character limit. Past that it scrolls, as any full field does.
-	   px, not em, so the 16px touch bump below can't inflate it. */
+	   on the page, and it lands on the exact corner the line needs to hold
+	   unbroken.
+
+	   FOUR lines, not six, and capped: the field's only edge is the rule
+	   underneath it, so every empty line between the last word typed and that
+	   rule reads as a gap rather than as room. 19vh put 300px of nothing
+	   under a one-line answer on a tall screen. Four lines holds the three
+	   prompts below with one spare, and the box scrolls after that, as any
+	   full field does. px, not em, so the 16px touch bump can't inflate it. */
 	resize: none;
-	min-height: clamp(148px, 19vh, 176px);
+	min-height: clamp(116px, 14vh, 132px);
 }
 
 /* Was 0.38 on a grey panel; on white that measured 2.3:1 — unreadable, and
-   the location placeholder is real guidance, not decoration. 0.62 is 4.6:1,
-   still four stops lighter than a typed value, so it can't be mistaken. */
+   the placeholders are real guidance, not decoration. 0.62 is 4.5:1, still
+   four stops lighter than a typed value, so it can't be mistaken for one.
+
+   The message's placeholder is three bulleted lines, carried in the
+   attribute's own newlines. Its leading is tightened here so the three sit
+   as a list inside the box rather than filling it: the typed text keeps the
+   field's 1.6, which is what the answer should be set on. */
 .field input::placeholder,
 .field textarea::placeholder { color: rgba(23, 35, 48, 0.62); }
+
+.field textarea::placeholder { line-height: 1.45; }
 
 /* NOTHING on hover and nothing on focus. The doubled line that used to sit
    here on both was read as a box opening under the cursor, which is exactly

@@ -402,8 +402,8 @@
 				['field', '#f-name',    function (v) { return v.length > 1; },  'your name, so the reply has somewhere to go.'],
 				['field', '#f-email',   function (v) { return EMAIL.test(v); }, 'an address the reply can go to.'],
 				['field', '#f-place',   function (v) { return v.length > 1; },  'where the shoot is, even roughly.'],
-				['group', 'work',       null,                                   'tick at least one, so the quote has something to stand on.'],
 				['field', '#f-message', function (v) { return v.length > 9; },  'a line or two about the work.'],
+				['group', 'work',       null,                                   'tick at least one, so the quote has something to stand on.'],
 				['group', 'heard',      null,                                   'tick at least one — it says where the next month should come from.']
 			];
 
