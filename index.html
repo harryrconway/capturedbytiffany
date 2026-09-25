@@ -59,13 +59,13 @@
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 	<!-- Both faces: the hero's stacked name is set large in Cormorant
-	     Garamond, and Source Sans 3 carries everything under it. Fetch both
+	     Garamond, and DM Sans carries everything under it. Fetch both
 	     during head parsing so they arrive before the photograph decodes and
 	     nothing swaps face as the page fades in. crossorigin is required even
 	     same-origin: fonts always fetch in CORS mode, and a preload without it
 	     doesn't match — it downloads twice. -->
 	<link rel="preload" as="font" type="font/woff2" href="fonts/cormorant-garamond-latin.woff2" crossorigin>
-	<link rel="preload" as="font" type="font/woff2" href="fonts/source-sans-3-latin.woff2" crossorigin>
+	<link rel="preload" as="font" type="font/woff2" href="fonts/dm-sans-latin.woff2" crossorigin>
 
 	<!-- One hero photograph, and it is the LCP element: start its fetch during
 	     head parsing. imagesrcset/imagesizes match the <img> below exactly, so
