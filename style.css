@@ -1175,28 +1175,37 @@ main {
 }
 
 .field textarea {
-	/* Not resizable. The drag handle is the only piece of browser furniture
-	   on the page, and it lands on the exact corner the line needs to hold
-	   unbroken.
+	/* Not resizable, and NOT a fixed height either. The field's only edge is
+	   the rule underneath it, so any empty line between the last word typed
+	   and that rule reads as a gap rather than as room — which is why this
+	   box now sits exactly as close to its rule as Name, Email and Location
+	   do, and grows a line at a time as it is filled (main.js 06 ENQUIRY).
 
-	   FOUR lines, not six, and capped: the field's only edge is the rule
-	   underneath it, so every empty line between the last word typed and that
-	   rule reads as a gap rather than as room. 19vh put 300px of nothing
-	   under a one-line answer on a tall screen. Four lines holds the three
-	   prompts below with one spare, and the box scrolls after that, as any
-	   full field does. px, not em, so the 16px touch bump can't inflate it. */
+	   The floor is TWO LINES, and it is set here rather than measured in JS:
+	   min-height is what the browser clamps an explicit height against, so
+	   the script can set whatever it likes and never take the box below the
+	   two prompts in the placeholder. (It was measured from the DOM at first
+	   run for one version of this, and WebKit answered 32px — the element had
+	   not settled — which left the box stuck a line short until something was
+	   typed.) The calc is the same three numbers the rule above sets: two
+	   1.6 lines, the padding twice, and the 1px rule, since box-sizing is
+	   border-box. overflow is hidden because the box is always exactly as
+	   tall as its content; a scrollbar would only ever show for the one frame
+	   before it grows. */
 	resize: none;
-	min-height: clamp(116px, 14vh, 132px);
+	overflow: hidden;
+	min-height: calc(3.2em + 2 * clamp(10px, 1.3vh, 13px) + 1px);
 }
 
 /* Was 0.38 on a grey panel; on white that measured 2.3:1 — unreadable, and
    the placeholders are real guidance, not decoration. 0.62 is 4.5:1, still
    four stops lighter than a typed value, so it can't be mistaken for one.
 
-   The message's placeholder is three bulleted lines, carried in the
-   attribute's own newlines. Its leading is tightened here so the three sit
-   as a list inside the box rather than filling it: the typed text keeps the
-   field's 1.6, which is what the answer should be set on. */
+   The message's placeholder is two bulleted lines, carried in the
+   attribute's own newlines, and title case so each prompt reads as a heading
+   for what goes there. Its leading is tightened here so the pair sits as a
+   list rather than as two paragraphs: the typed text keeps the field's 1.6,
+   which is what an answer should be set on. */
 .field input::placeholder,
 .field textarea::placeholder { color: rgba(23, 35, 48, 0.62); }
 

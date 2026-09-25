@@ -308,6 +308,9 @@
 	     · hands the finished message to the visitor's own mail app, and says
 	       plainly that nothing was sent. THE FORM POSTS NOWHERE — see the
 	       note in index.html for how to point it at an endpoint.
+	     · keeps the message box exactly as tall as what is in it, so its rule
+	       sits the same distance under the last line as every other field's
+	       does. Without JS the box stays at its two-row floor.
 
 	   Two quiet spam checks that cost a person nothing: a honeypot field no
 	   one can reach, and the time taken — a bot fills and submits in
@@ -321,6 +324,41 @@
 		var MIN_SECONDS = 2000;   // faster than this is not a person
 		var openedAt = Date.now();
 		var status = form.querySelector('.enquiry__status');
+
+		/* --- the message box grows -------------------------------------
+		   A textarea with a fixed height puts empty lines between the last
+		   word typed and the rule under it, which reads as a gap rather than
+		   as room — the single-line fields above have no such gap, and this
+		   one should not either. So the box is always exactly as tall as what
+		   is in it, and its rule sits the same distance under the last line
+		   as Name's does under its own. */
+
+		var messageBox = form.querySelector('#f-message');
+
+		if (messageBox) {
+			var grow = function () {
+				/* auto first, so the box can SHRINK again when text is
+				   deleted — scrollHeight can never report less than the
+				   height already set. The two-line floor is min-height, in
+				   11 CONTACT, which the browser clamps this against: nothing
+				   here has to know what a line is worth. The addition is the
+				   1px rule, which scrollHeight leaves out and border-box
+				   counts in. */
+				messageBox.style.height = 'auto';
+				messageBox.style.height =
+					(messageBox.scrollHeight + messageBox.offsetHeight - messageBox.clientHeight) + 'px';
+			};
+
+			messageBox.addEventListener('input', grow);
+
+			/* A narrower box wraps the same words onto more lines. Without
+			   this the height set before the turn is kept, and overflow is
+			   hidden, so the last lines of a long message would simply
+			   vanish on rotation. */
+			window.addEventListener('resize', grow);
+
+			grow();
+		}
 
 		/* --- checking --------------------------------------------------- */
 
