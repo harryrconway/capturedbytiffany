@@ -1195,35 +1195,26 @@ main {
 	   box now sits exactly as close to its rule as Name, Email and Location
 	   do, and grows a line at a time as it is filled (main.js 06 ENQUIRY).
 
-	   The floor is TWO LINES, and it is set here rather than measured in JS:
-	   min-height is what the browser clamps an explicit height against, so
-	   the script can set whatever it likes and never take the box below the
-	   two prompts in the placeholder. (It was measured from the DOM at first
-	   run for one version of this, and WebKit answered 32px — the element had
-	   not settled — which left the box stuck a line short until something was
-	   typed.) The calc is the same three numbers the rule above sets: two
-	   1.6 lines, the padding twice, and the 1px rule, since box-sizing is
-	   border-box. overflow is hidden because the box is always exactly as
-	   tall as its content; a scrollbar would only ever show for the one frame
-	   before it grows. */
+	   The floor is ONE LINE — rows="1", and the same height as Name, Email
+	   and Location beside it, which is exactly what it should look like when
+	   it is empty. It grows a line at a time as it is filled (main.js 06
+	   ENQUIRY). There is no placeholder to hold room for any more than that.
+	   overflow is hidden because the box is always exactly as tall as its
+	   content; a scrollbar would only ever show for the one frame before it
+	   grows. */
 	resize: none;
 	overflow: hidden;
-	min-height: calc(3.2em + 2 * clamp(10px, 1.3vh, 13px) + 1px);
 }
 
 /* Was 0.38 on a grey panel; on white that measured 2.3:1 — unreadable, and
    the placeholders are real guidance, not decoration. 0.62 is 4.5:1, still
    four stops lighter than a typed value, so it can't be mistaken for one.
 
-   The message's placeholder is two bulleted lines, carried in the
-   attribute's own newlines, and title case so each prompt reads as a heading
-   for what goes there. Its leading is tightened here so the pair sits as a
-   list rather than as two paragraphs: the typed text keeps the field's 1.6,
-   which is what an answer should be set on. */
+   No field carries a placeholder today. The rule stays because the alpha is
+   the finding, not the rule: 0.62 is the lowest that still clears 4.5:1 on
+   this ground, and anything fainter is furniture rather than guidance. */
 .field input::placeholder,
 .field textarea::placeholder { color: rgba(23, 35, 48, 0.62); }
-
-.field textarea::placeholder { line-height: 1.45; }
 
 /* NOTHING on hover and nothing on focus. The doubled line that used to sit
    here on both was read as a box opening under the cursor, which is exactly
@@ -1318,11 +1309,11 @@ main {
 	background: none;
 	border: none;
 	font-size: var(--tick-size);
-	/* Lowercased HERE, not in the markup: the title case in the DOM is what
-	   the mail hand-off sends (main.js collect() reads the value attribute),
-	   and "found me via: instagram" would read as a typo. 0.22em is a CAPS
-	   setting; 0.06em is its lowercase equivalent. */
-	text-transform: lowercase;
+	/* No transform: each option is shown in the case it is written in, which
+	   is also the case the mail hand-off sends (main.js collect() reads the
+	   value attribute). One string, one spelling. 0.06em of tracking, not the
+	   0.22em the page's labels use — that is a CAPS setting, and these are
+	   sentence case. */
 	letter-spacing: 0.06em;
 	line-height: 1;
 	/* Unticked 5.3:1, ticked 15.6:1. The step up is the second half of the
@@ -1819,6 +1810,19 @@ body.is-ready main {
 	.about__grid {
 		grid-template-columns: minmax(0, 1fr);
 		gap: clamp(34px, 6vh, 56px);
+	}
+
+	/* Stacked, the copy is no longer a column beside a picture — it is the
+	   page, under a statement that is centred. So it centres too, block and
+	   line alike: margin-inline for the block (at 768 the 50ch cap is 520px
+	   in a 743px page, which left it visibly off to one side) and text-align
+	   for the lines. The credit under it follows, or it would hang off the
+	   left of a centred paragraph. The insets are the section's own, so all
+	   three sit on the same two edges. */
+	.about__body,
+	.about__meta {
+		margin-inline: auto;
+		text-align: center;
 	}
 
 	/* Stacked, so there is no copy beside it to match: 4:5 keeps it to 462px

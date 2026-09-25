@@ -95,7 +95,7 @@
 		<img src="logo.png" alt="" width="225" height="174" decoding="async">
 	</a>
 
-	<a class="brand" href="#top" aria-label="Capturedbytiffany — back to top">CapturedByTiffany</a>
+	<a class="brand" href="#top" aria-label="Capturedbytiffany — back to top">Captured By Tiffany</a>
 
 	<button
 		class="nav-toggle"
@@ -519,8 +519,7 @@
 						<label for="f-message">Message</label>
 						<span class="field__req" aria-hidden="true">required</span>
 					</span>
-					<textarea id="f-message" name="message" rows="2" maxlength="1200"
-						placeholder="&#183; Message&#10;&#183; Date" required></textarea>
+					<textarea id="f-message" name="message" rows="1" maxlength="1200" required></textarea>
 				</p>
 
 				<!-- One answer, like the group below it: radios, so the browser
@@ -555,15 +554,15 @@
 				     groups behave differently is worse than one in which they
 				     all behave alike.
 
-				     The chips keep their title case in the DOM: that case is
-				     what the mail hand-off sends (main.js collect() reads the
-				     value attribute), and "found me via: instagram" would read
-				     as a typo. Only the RENDERING is lowercased. -->
+				     The chips are shown in the case they are written in, which
+				     is also the case the mail hand-off sends (main.js collect()
+				     reads the value attribute) — one string, one spelling, no
+				     transform in between. -->
 				<fieldset class="enquiry__block" data-group="heard">
 					<legend>How did you find me <span class="field__req">required</span></legend>
 					<ul class="ticks ticks--column">
 						<li><input id="h-ig" type="radio" name="heard" value="Instagram"><label for="h-ig">Instagram</label></li>
-						<li><input id="h-ref" type="radio" name="heard" value="A referral"><label for="h-ref">A referral</label></li>
+						<li><input id="h-ref" type="radio" name="heard" value="Referral"><label for="h-ref">Referral</label></li>
 						<li><input id="h-search" type="radio" name="heard" value="Search"><label for="h-search">Search</label></li>
 						<li><input id="h-print" type="radio" name="heard" value="Print"><label for="h-print">Print</label></li>
 						<li><input id="h-other" type="radio" name="heard" value="Somewhere else"><label for="h-other">Somewhere else</label></li>
