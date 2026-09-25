@@ -28,7 +28,7 @@
 	<!-- PLACEHOLDER positioning, carried over from the previous build — confirm
 	     Tiffany's real location and fields before publishing -->
 	<meta name="description" content="Capturedbytiffany — architecture, lifestyle &amp; people, travel &amp; hotels. Based on the Gold Coast, working throughout Australia and internationally.">
-	<meta name="theme-color" content="#FFFFFF">
+	<meta name="theme-color" content="#FFFCF8">
 
 	<!-- PREVIEW BUILD: kept out of search engines while the copy, credits and
 	     photographs are still placeholders. Remove this line at launch. -->
@@ -49,20 +49,23 @@
 	     states only apply when JS is actually there to reveal them -->
 	<script>document.documentElement.className = 'js';</script>
 
-	<!-- Favicon: the letter C in Tenor Sans, the wordmark's own face. Rendered
-	     from the TTF to raster — an SVG favicon cannot rely on a web font.
+	<!-- Favicon: the letter C in Cormorant Garamond, the wordmark's own face.
+	     Rendered from the TTF to raster — an SVG favicon cannot rely on a
+	     web font.
 	     Relative paths, so they resolve under the GitHub Pages project path
 	     (/capturedbytiffany/) as well as at the root of a custom domain. -->
 	<link rel="icon" href="favicon.ico" sizes="any">
 	<link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32">
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-	<!-- The hero's stacked name is set large in Tenor Sans. Fetch it during
-	     head parsing so it arrives before the photograph decodes and the name
-	     never swaps faces as the page fades in. crossorigin is required even
+	<!-- Both faces: the hero's stacked name is set large in Cormorant
+	     Garamond, and Source Sans 3 carries everything under it. Fetch both
+	     during head parsing so they arrive before the photograph decodes and
+	     nothing swaps face as the page fades in. crossorigin is required even
 	     same-origin: fonts always fetch in CORS mode, and a preload without it
 	     doesn't match — it downloads twice. -->
-	<link rel="preload" as="font" type="font/woff2" href="fonts/tenor-sans-latin.woff2" crossorigin>
+	<link rel="preload" as="font" type="font/woff2" href="fonts/cormorant-garamond-latin.woff2" crossorigin>
+	<link rel="preload" as="font" type="font/woff2" href="fonts/source-sans-3-latin.woff2" crossorigin>
 
 	<!-- One hero photograph, and it is the LCP element: start its fetch during
 	     head parsing. imagesrcset/imagesizes match the <img> below exactly, so
@@ -79,12 +82,21 @@
 <body>
 
 <!-- ==========================================================================
-	 HEADER — name + hamburger, fixed top right. Comes up with the page as it
-	 fades in (style.css 13 PAGE FADE). Clicks pass through its box to the
-	 hero beneath (style.css 03 HEADER).
+	 HEADER — logo left, name + hamburger right, fixed across the top. Comes
+	 up with the page as it fades in (style.css 13 PAGE FADE). Clicks pass
+	 through its box to the hero beneath, except on the logo and the toggle
+	 (style.css 03 HEADER).
+
+	 The logo's alt is empty and the NAME lives on the link: the image is the
+	 link's only content, so one accessible name on the <a> is what a screen
+	 reader should hear — an alt as well would say it twice.
 	 ========================================================================== -->
 <header class="site-header">
-	<a class="brand" href="#top" aria-label="Capturedbytiffany — back to top">Capturedbytiffany</a>
+	<a class="emblem" href="#top" aria-label="Capturedbytiffany — back to top">
+		<img src="logo.png" alt="" width="225" height="174" decoding="async">
+	</a>
+
+	<a class="brand" href="#top" aria-label="Capturedbytiffany — back to top">CapturedByTiffany</a>
 
 	<button
 		class="nav-toggle"
@@ -449,7 +461,17 @@
 		</h2>
 
 		<div class="contact__inner">
-			<p class="contact__lede">Tell me about the work. The place, the date and what the pictures are for are the three things that shape a quote.</p>
+			<!-- Lowercase in the MARKUP, not in CSS. A text-transform on authored
+			     prose would silently flatten the next proper noun someone types
+			     into it, and the fix would be invisible to whoever is editing the
+			     copy. The exceptions, both deliberate: the chapter marker above,
+			     and the six field labels — they are the questions, and a question
+			     in lowercase reads as an aside. The chips are lowercased in CSS
+			     instead, because their title case is what the mail hand-off sends.
+
+			     Every string here is written around the missing first person: a
+			     lowercase "I" looks like a mistake, so no sentence contains one. -->
+			<p class="contact__lede">tell me about the work. the place, the timing and what the pictures are for are the three things that shape a quote.</p>
 
 			<form class="enquiry" method="post" novalidate>
 				<!-- Honeypot: off-screen, never announced, never tab-stopped. A
@@ -460,24 +482,45 @@
 					<input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
 				</div>
 
+				<!-- ALL SIX PARTS ARE REQUIRED, so "required" is a reminder rather
+				     than a distinction — which is why it is set small and quiet
+				     (style.css 11 CONTACT) rather than loud. On the FIELDS it is
+				     aria-hidden: the required attribute already announces the same
+				     thing and two announcements is noise. On the two FIELDSETS it is
+				     NOT hidden, because no attribute can carry "one of these" —
+				     there the word joins the group's accessible name, which is the
+				     only place it can live. -->
 				<div class="enquiry__pair">
 					<p class="field">
-						<label for="f-name">Name</label>
+						<span class="field__label">
+							<label for="f-name">Name</label>
+							<span class="field__req" aria-hidden="true">required</span>
+						</span>
 						<input id="f-name" name="name" type="text" maxlength="80" autocomplete="name" required>
 					</p>
 					<p class="field">
-						<label for="f-email">Email</label>
+						<span class="field__label">
+							<label for="f-email">Email</label>
+							<span class="field__req" aria-hidden="true">required</span>
+						</span>
 						<input id="f-email" name="email" type="email" maxlength="120" autocomplete="email" required>
 					</p>
 				</div>
 
 				<p class="field">
-					<label for="f-place">Location</label>
-					<input id="f-place" name="location" type="text" maxlength="120" autocomplete="address-level2" placeholder="Where is the shoot?">
+					<span class="field__label">
+						<label for="f-place">Location</label>
+						<span class="field__req" aria-hidden="true">required</span>
+					</span>
+					<input id="f-place" name="location" type="text" maxlength="120" autocomplete="address-level2" placeholder="where is the shoot?" required>
 				</p>
 
-				<fieldset class="enquiry__block">
-					<legend>What kind of work</legend>
+				<!-- A checkbox's own `required` means THAT box, not one of the set,
+				     so putting it here would demand all four. The rule lives in
+				     main.js 06 ENQUIRY instead, and data-group is what it finds the
+				     pair by. -->
+				<fieldset class="enquiry__block" data-group="work">
+					<legend>What kind of work <span class="field__req">required</span></legend>
 					<ul class="ticks">
 						<li><input id="k-arch" type="checkbox" name="work" value="Architecture"><label for="k-arch">Architecture</label></li>
 						<li><input id="k-life" type="checkbox" name="work" value="Lifestyle &amp; People"><label for="k-life">Lifestyle &amp; People</label></li>
@@ -486,20 +529,25 @@
 					</ul>
 				</fieldset>
 
-				<!-- The date module is built by main.js so it can count real
-				     months; without JS this plain field takes its place. -->
-				<fieldset class="enquiry__block" data-date>
-					<legend>When</legend>
-					<p class="field field--plain">
-						<label for="f-date">Date</label>
-						<input id="f-date" name="date" type="text" maxlength="40" autocomplete="off" placeholder="e.g. March 2027, or flexible">
-					</p>
-				</fieldset>
+				<p class="field">
+					<span class="field__label">
+						<label for="f-message">Message</label>
+						<span class="field__req" aria-hidden="true">required</span>
+					</span>
+					<textarea id="f-message" name="message" rows="5" maxlength="1200" required></textarea>
+				</p>
 
-
-				<fieldset class="enquiry__block">
-					<legend>How did you find me</legend>
-					<ul class="ticks">
+				<!-- Last, and one to a line. It is the question that matters least
+				     to the visitor and most to the diary, so it comes after the
+				     message rather than interrupting it — and a column, because it
+				     is a list answered once, where the group above is a set of tags
+				     picked from. The chips keep their title case in the DOM: that
+				     case is what the mail hand-off sends (main.js collect() reads
+				     the value attribute), and "found me via: instagram" would read
+				     as a typo. Only the RENDERING is lowercased, in 11 CONTACT. -->
+				<fieldset class="enquiry__block" data-group="heard">
+					<legend>How did you find me <span class="field__req">required</span></legend>
+					<ul class="ticks ticks--column">
 						<li><input id="h-ig" type="checkbox" name="heard" value="Instagram"><label for="h-ig">Instagram</label></li>
 						<li><input id="h-ref" type="checkbox" name="heard" value="A referral"><label for="h-ref">A referral</label></li>
 						<li><input id="h-search" type="checkbox" name="heard" value="Search"><label for="h-search">Search</label></li>
@@ -508,19 +556,17 @@
 					</ul>
 				</fieldset>
 
-				<p class="field">
-					<label for="f-message">Message</label>
-					<textarea id="f-message" name="message" rows="5" maxlength="1200" required></textarea>
-				</p>
-
 				<div class="enquiry__send">
-					<button class="button" type="submit">Send</button>
+					<button class="button" type="submit">submit</button>
 					<!-- Filled by main.js: the outcome, and a mail-app hand-off -->
 					<p class="enquiry__status" role="status" aria-live="polite"></p>
 				</div>
 			</form>
 
-			<p class="contact__fallback">Or write straight to <a href="mailto:hello@capturedbytiffany.com.au">hello@capturedbytiffany.com.au</a></p>
+			<!-- This line is the whole no-JS path: with JS the form is
+			     intercepted, without it the CSP's form-action 'none' stops the
+			     post dead, and this is what a visitor is left with. -->
+			<p class="contact__fallback">or write straight to <a href="mailto:hello@capturedbytiffany.com.au">hello@capturedbytiffany.com.au</a></p>
 		</div>
 
 		<!-- Sits in its own bottom grid row, not inside the centred block —

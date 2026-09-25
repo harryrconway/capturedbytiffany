@@ -298,14 +298,13 @@
 
 	/* ======================================================================
 	   06  ENQUIRY
-	   The contact form (index.html 05, style.css 11 CONTACT). Three jobs:
+	   The contact form (index.html 05, style.css 11 CONTACT). Two jobs:
 
-	     · builds the date module — a strip of the next twelve months, a day
-	       grid for whichever is chosen, and a "flexible" option — over a
-	       hidden field. Without JS the markup keeps a plain text field, so
-	       the form is still complete.
 	     · checks the form before anything else happens, and says what is
-	       wrong in the page rather than in a browser dialog.
+	       wrong in the page rather than in a browser dialog. All six parts
+	       are required, and the two chip groups are checked HERE rather than
+	       in the markup, because a checkbox's own `required` means THAT box
+	       rather than one of a set.
 	     · hands the finished message to the visitor's own mail app, and says
 	       plainly that nothing was sent. THE FORM POSTS NOWHERE — see the
 	       note in index.html for how to point it at an endpoint.
@@ -319,165 +318,9 @@
 		var form = document.querySelector('.enquiry');
 		if (!form) return;
 
-		var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
-			'July', 'August', 'September', 'October', 'November', 'December'];
-		var DOW = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 		var MIN_SECONDS = 2000;   // faster than this is not a person
 		var openedAt = Date.now();
 		var status = form.querySelector('.enquiry__status');
-
-		/* --- the date module ------------------------------------------- */
-
-		function buildDates() {
-			var wrap = form.querySelector('[data-date]');
-			if (!wrap) return;
-
-			var plain = wrap.querySelector('.field--plain');
-			if (plain) plain.parentNode.removeChild(plain);
-
-			var today = new Date();
-			today.setHours(0, 0, 0, 0);
-
-			var dates = document.createElement('div');
-			dates.className = 'dates';
-
-			var strip = document.createElement('div');
-			strip.className = 'dates__months';
-			strip.setAttribute('role', 'group');
-			strip.setAttribute('aria-label', 'Month');
-
-			var grid = document.createElement('div');
-			grid.className = 'dates__days';
-			grid.hidden = true;
-
-			var chosen = document.createElement('p');
-			chosen.className = 'dates__chosen';
-			chosen.setAttribute('aria-live', 'polite');
-
-			var value = document.createElement('input');
-			value.type = 'hidden';
-			value.name = 'date';
-
-			var flex = document.createElement('button');
-			flex.type = 'button';
-			flex.className = 'dates__flex';
-			flex.setAttribute('aria-pressed', 'false');
-			flex.appendChild(document.createTextNode('Flexible'));
-			strip.appendChild(flex);
-
-			function press(node, on) {
-				node.setAttribute('aria-pressed', on ? 'true' : 'false');
-			}
-
-			function clearPressed(selector) {
-				Array.prototype.forEach.call(dates.querySelectorAll(selector), function (n) {
-					press(n, false);
-				});
-			}
-
-			function say(text) {
-				chosen.textContent = text;
-				value.value = text;
-			}
-
-			flex.addEventListener('click', function () {
-				clearPressed('.dates__month');
-				grid.hidden = true;
-				press(flex, true);
-				say('Flexible');
-			});
-
-			// Twelve months from this one
-			for (var i = 0; i < 12; i++) {
-				(function (offset) {
-					var when = new Date(today.getFullYear(), today.getMonth() + offset, 1);
-					var button = document.createElement('button');
-					button.type = 'button';
-					button.className = 'dates__month';
-					button.setAttribute('aria-pressed', 'false');
-					button.setAttribute('aria-label', MONTHS[when.getMonth()] + ' ' + when.getFullYear());
-					/* The full year, not two digits. The strip runs twelve
-					   months from this one, so it always crosses a new year:
-					   "OCT 26" beside "JAN 27" asks the reader to do
-					   arithmetic on the one thing they came here to state.
-					   The aria-label below already said "October 2026"; the
-					   two now agree. */
-					button.appendChild(document.createTextNode(
-						MONTHS[when.getMonth()].slice(0, 3) + ' ' + when.getFullYear()
-					));
-
-					button.addEventListener('click', function () {
-						clearPressed('.dates__month');
-						press(flex, false);
-						press(button, true);
-						buildDays(when);
-						say(MONTHS[when.getMonth()] + ' ' + when.getFullYear());
-					});
-
-					strip.appendChild(button);
-				})(i);
-			}
-
-			function buildDays(month) {
-				/* Emptied by hand rather than with innerHTML: the pages turn
-				   on Trusted Types (index.html CSP), where an assignment to
-				   innerHTML throws even when the string is empty. Nothing
-				   typed ever reached this line — but the rule is worth more
-				   than the line it costs, because it stops the NEXT person
-				   reaching for innerHTML with something that isn't empty. */
-				while (grid.firstChild) grid.removeChild(grid.firstChild);
-				grid.hidden = false;
-
-				DOW.forEach(function (letter, n) {
-					var head = document.createElement('span');
-					head.className = 'dates__dow';
-					head.setAttribute('aria-hidden', 'true');
-					head.appendChild(document.createTextNode(letter));
-					grid.appendChild(head);
-					return n;
-				});
-
-				// Monday-first: JS makes Sunday 0, so shift it to the end
-				var first = new Date(month.getFullYear(), month.getMonth(), 1);
-				var lead = (first.getDay() + 6) % 7;
-				var days = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
-
-				for (var b = 0; b < lead; b++) {
-					grid.appendChild(document.createElement('span'));
-				}
-
-				for (var d = 1; d <= days; d++) {
-					(function (day) {
-						var date = new Date(month.getFullYear(), month.getMonth(), day);
-						var button = document.createElement('button');
-						button.type = 'button';
-						button.className = 'dates__day';
-						button.appendChild(document.createTextNode(String(day)));
-
-						if (date < today) {
-							button.disabled = true;
-						} else {
-							var label = day + ' ' + MONTHS[month.getMonth()] + ' ' + month.getFullYear();
-							button.setAttribute('aria-pressed', 'false');
-							button.setAttribute('aria-label', label);
-							button.addEventListener('click', function () {
-								clearPressed('.dates__day');
-								press(button, true);
-								say(label);
-							});
-						}
-
-						grid.appendChild(button);
-					})(d);
-				}
-			}
-
-			dates.appendChild(strip);
-			dates.appendChild(grid);
-			dates.appendChild(chosen);
-			dates.appendChild(value);
-			wrap.appendChild(dates);
-		}
 
 		/* --- checking --------------------------------------------------- */
 
@@ -512,20 +355,88 @@
 			field.appendChild(note);
 		}
 
+		/* --- the two chip groups ----------------------------------------
+		   The error hangs on the FIELDSET, which is what the question is,
+		   rather than on any one box: the group's legend already names it,
+		   and aria-describedby means a screen reader hears the question and
+		   then the problem, in that order. The note goes inside the fieldset
+		   so it lands under the chips, on the 0.9em gap the block sets. */
+
+		function groupOf(name) {
+			return form.querySelector('[data-group="' + name + '"]');
+		}
+
+		function clearGroupError(group) {
+			group.removeAttribute('aria-describedby');
+			var note = group.querySelector('.field__note');
+			if (note) note.parentNode.removeChild(note);
+		}
+
+		function setGroupError(group, message) {
+			clearGroupError(group);
+
+			var note = document.createElement('p');
+			note.className = 'field__note';
+			note.id = group.getAttribute('data-group') + '-note';
+			note.appendChild(document.createTextNode(message));
+
+			/* The attribute is also the CSS hook: 11 CONTACT turns the drawn
+			   boxes --warn while it is set, so the group reads as wrong from
+			   across the form, not only from the line of red under it. */
+			group.setAttribute('aria-describedby', note.id);
+			group.appendChild(note);
+		}
+
 		function check() {
 			var problems = [];
 
-			[
-				[form.querySelector('#f-name'), function (v) { return v.length > 1; }, 'Your name, so the reply has somewhere to go.'],
-				[form.querySelector('#f-email'), function (v) { return EMAIL.test(v); }, 'An address I can reach you at.'],
-				[form.querySelector('#f-message'), function (v) { return v.length > 9; }, 'A line or two about the work.']
-			].forEach(function (rule) {
-				var input = rule[0];
-				if (!input) return;
-				if (rule[1](input.value.trim())) clearError(input);
+			/* One list, in DOM ORDER — so problems[0] is the first thing on
+			   the page that needs attention, and the focus() in the submit
+			   handler lands where the eye would go anyway. An array rather
+			   than an object: ES5 makes no promise about key order.
+
+			   Every message is lowercase, like the rest of the form, and
+			   written around the first person: a lowercase "i" reads as a
+			   mistake, so no message contains one. */
+			var RULES = [
+				['field', '#f-name',    function (v) { return v.length > 1; },  'your name, so the reply has somewhere to go.'],
+				['field', '#f-email',   function (v) { return EMAIL.test(v); }, 'an address the reply can go to.'],
+				['field', '#f-place',   function (v) { return v.length > 1; },  'where the shoot is, even roughly.'],
+				['group', 'work',       null,                                   'tick at least one, so the quote has something to stand on.'],
+				['field', '#f-message', function (v) { return v.length > 9; },  'a line or two about the work.'],
+				['group', 'heard',      null,                                   'tick at least one — it says where the next month should come from.']
+			];
+
+			RULES.forEach(function (rule) {
+				if (rule[0] === 'field') {
+					var input = form.querySelector(rule[1]);
+					if (!input) return;
+					if (rule[2](input.value.trim())) clearError(input);
+					else {
+						setError(input, rule[3]);
+						problems.push(input);
+					}
+					return;
+				}
+
+				var group = groupOf(rule[1]);
+				if (!group) return;
+
+				var boxes = group.querySelectorAll('input[type="checkbox"]');
+				var any = Array.prototype.some.call(boxes, function (b) { return b.checked; });
+
+				if (any) clearGroupError(group);
 				else {
-					setError(input, rule[2]);
-					problems.push(input);
+					setGroupError(group, rule[3]);
+					/* The focus target is the FIRST box in the group — the one
+					   a keyboard reaches first, and the one the page scrolls
+					   to. It is visually hidden but absolutely positioned
+					   inside its own <li>, so the browser scrolls to the chip
+					   rather than to the top of the form. Note that with focus
+					   indication removed (style.css 11 CONTACT) this move is
+					   SILENT for a sighted keyboard user; it still reaches a
+					   screen reader. */
+					problems.push(boxes[0]);
 				}
 			});
 
@@ -535,6 +446,18 @@
 		Array.prototype.forEach.call(form.querySelectorAll('input, textarea'), function (input) {
 			input.addEventListener('input', function () {
 				if (input.getAttribute('aria-invalid')) clearError(input);
+			});
+		});
+
+		/* Ticking anything in a group answers its complaint immediately — the
+		   same courtesy the text fields get from `input` above. closest() is
+		   guarded the way fieldOf() guards it. */
+		Array.prototype.forEach.call(form.querySelectorAll('.ticks input'), function (box) {
+			box.addEventListener('change', function () {
+				var group = box.closest
+					? box.closest('[data-group]')
+					: box.parentNode.parentNode.parentNode;
+				if (group && group.getAttribute('aria-describedby')) clearGroupError(group);
 			});
 		});
 
@@ -576,7 +499,7 @@
 			var lines = [];
 			var data = new FormData(form);
 
-			[['name', 'Name'], ['email', 'Email'], ['location', 'Location'], ['date', 'When']].forEach(function (pair) {
+			[['name', 'Name'], ['email', 'Email'], ['location', 'Location']].forEach(function (pair) {
 				var v = (data.get(pair[0]) || '').toString().trim();
 				if (v) lines.push(pair[1] + ': ' + oneLine(v));
 			});
@@ -613,7 +536,7 @@
 
 			// A bot: say the same thing a person would see, do nothing at all
 			if ((trap && trap.value) || tooQuick) {
-				tell('Thank you — that has been noted.');
+				tell('thank you — that has been noted.');
 				return;
 			}
 
@@ -621,8 +544,8 @@
 			if (problems.length) {
 				status.className = 'enquiry__status enquiry__status--warn';
 				status.textContent = problems.length === 1
-					? 'One field needs a moment.'
-					: problems.length + ' fields need a moment.';
+					? 'one part needs a moment.'
+					: problems.length + ' parts need a moment.';
 				problems[0].focus();
 				return;
 			}
@@ -639,15 +562,14 @@
 			   open a truncated draft without saying so. Better to open an
 			   empty one and say what happened than to lose half a message. */
 			if (href.length > 1900) {
-				tell('This form is not connected yet, so nothing was sent — and this message is longer than a mail link can carry, so copy it across once your mail app opens.',
-					'Open your mail app', MAILTO + '?subject=' + encodeURIComponent(subject));
+				tell('this form is not connected yet, so nothing was sent — and this message is longer than a mail link can carry, so copy it across once your mail app opens.',
+					'open your mail app', MAILTO + '?subject=' + encodeURIComponent(subject));
 				return;
 			}
 
-			tell('This form is not connected yet, so nothing was sent.', 'Send it from your mail app instead', href);
+			tell('this form is not connected yet, so nothing was sent.', 'send it from your mail app instead', href);
 		});
 
-		buildDates();
 	}
 
 	/* ======================================================================

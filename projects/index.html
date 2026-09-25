@@ -26,7 +26,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Projects — Capturedbytiffany</title>
 	<meta name="description" content="Selected commissions — Capturedbytiffany. Architecture, lifestyle &amp; people, travel &amp; hotels.">
-	<meta name="theme-color" content="#FFFFFF">
+	<meta name="theme-color" content="#FFFCF8">
 
 	<!-- PREVIEW BUILD: kept out of search engines while the copy, credits and
 	     photographs are still placeholders. Remove this line at launch. -->
@@ -45,7 +45,7 @@
 	     states only apply when JS is actually there to reveal them -->
 	<script>document.documentElement.className = 'js';</script>
 
-	<!-- Favicon: the letter C in Tenor Sans, the wordmark's own face. Rendered
+	<!-- Favicon: the letter C in Cormorant Garamond, the wordmark's face. Rendered
 	     from the TTF to raster — an SVG favicon cannot rely on a web font.
 	     Relative paths, so they resolve under the GitHub Pages project path
 	     (/capturedbytiffany/) as well as at the root of a custom domain. -->
@@ -53,10 +53,11 @@
 	<link rel="icon" type="image/png" href="../favicon-32.png" sizes="32x32">
 	<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
-	<!-- Same self-hosted face as the homepage. crossorigin is required even
-	     same-origin: fonts always fetch in CORS mode, and a preload without
-	     it doesn't match — it downloads twice. -->
-	<link rel="preload" as="font" type="font/woff2" href="../fonts/tenor-sans-latin.woff2" crossorigin>
+	<!-- Same two self-hosted faces as the homepage. crossorigin is required
+	     even same-origin: fonts always fetch in CORS mode, and a preload
+	     without it doesn't match — it downloads twice. -->
+	<link rel="preload" as="font" type="font/woff2" href="../fonts/cormorant-garamond-latin.woff2" crossorigin>
+	<link rel="preload" as="font" type="font/woff2" href="../fonts/source-sans-3-latin.woff2" crossorigin>
 
 	<!-- Shared with the homepage: a visitor arriving from there has both
 	     cached, so this page costs one request -->
@@ -65,7 +66,11 @@
 <body>
 
 <header class="site-header">
-	<a class="brand" href="../" aria-label="Capturedbytiffany — home">Capturedbytiffany</a>
+	<a class="emblem" href="../" aria-label="Capturedbytiffany — home">
+		<img src="../logo.png" alt="" width="225" height="174" decoding="async">
+	</a>
+
+	<a class="brand" href="../" aria-label="Capturedbytiffany — home">CapturedByTiffany</a>
 
 	<button
 		class="nav-toggle"

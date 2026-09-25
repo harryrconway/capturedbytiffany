@@ -28,12 +28,16 @@
    ========================================================================== */
 
 :root {
-	/* Palette — a white ground, so the photographs carry all the colour, with
-	   a deep navy ink. Each ink tone's alpha keeps the contrast ratio it had
-	   in the original cream-on-near-black palette (dim 5.3:1, quiet 6.4:1,
-	   soft 8.2:1), so the typographic hierarchy reads exactly as it did. */
-	--bg:            #FFFFFF;
-	--bg-raise:      #F1F3F5;                     /* image ground, just off the page */
+	/* Palette — a warm off-white ground, so the photographs carry all the
+	   colour, with a deep navy ink. Each ink tone's alpha keeps the contrast
+	   ratio it had in the original cream-on-near-black palette, and the
+	   ground costs it almost nothing: measured here, ink 15.6:1, soft 8.2:1,
+	   quiet 6.3:1, dim 5.3:1 — within 0.4 of the same alphas on pure white.
+	   --bg-raise is the same lightness step below the page that the old cool
+	   grey was (0.89 of the ground's luminance), rewarmed to sit under it: a
+	   cool panel on a cream page reads as a rendering fault, not as depth. */
+	--bg:            #FFFCF8;
+	--bg-raise:      #F5EFE7;                     /* image ground, just off the page */
 	--ink:           #172330;
 	--ink-dim:       rgba(23, 35, 48, 0.67);
 	--ink-quiet:     rgba(23, 35, 48, 0.72);      /* credit labels */
@@ -41,20 +45,35 @@
 
 	/* Colour over photographs — the hover notes on the row plates. Navy would
 	   sink into an image; this is ansonsmart's cream (#ECEAE3), carried by the
-	   notes' text-shadow. Never use it on the white ground, where it all but
+	   notes' text-shadow. Never use it on the page ground, where it all but
 	   disappears (1.2:1) — which is exactly why the hamburger is no longer
 	   drawn in it (04 NAV TOGGLE). */
 	--on-photo:      #ECEAE3;
 
-	/* Type — Tenor Sans 400: reference logoFont / menuFont / thumbnailTitleFont */
-	--font: 'Tenor Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	--logo-size:    clamp(19px, 2vw, 36px);       /* reference logoFontSize: 36 */
+	/* Type — two faces, and which one a thing takes is a question of JOB, not
+	   of size. --font-head is the voice: the hero masthead, the corner
+	   wordmark, the chapter markers, the statement and lede, the project
+	   titles. --font-body is everything read rather than looked at.
+	   Cormorant Garamond's cap height is 0.625 against Tenor Sans's 0.700 and
+	   its x-height 0.386 against 0.500, so every size token below was
+	   RE-DERIVED, not kept: caps ×1.12, lowercase ×1.26. A token moved here
+	   is a token whose face changed — none of them is a taste adjustment. */
+	--font-head: 'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+	--font-body: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	--logo-size:    clamp(21px, 2.24vw, 40px);    /* corner wordmark — cap parity with the old 19/36 */
 	--nav-size:     clamp(1.75rem, 5.2vw, 3.5rem);
 	--cap-size:     clamp(0.68rem, 1.05vw, 0.85rem);
 	--credit-size:  clamp(0.56rem, 0.72vw, 0.68rem);
 	--spec-size:    clamp(0.5rem, 0.6vw, 0.58rem);
-	--chapter-size: clamp(0.62rem, 0.85vw, 0.78rem);
+	--chapter-size: clamp(0.70rem, 0.95vw, 0.88rem);
 	--about-size:   clamp(0.95rem, 1.5vw, 1.2rem);
+
+	/* The statement and the enquiry's lede — the two places the head face
+	   speaks in sentences rather than in labels. Their own token because they
+	   are no longer set as body copy: a serif at the body's size, with a
+	   0.386 x-height, reads a full step smaller than the paragraph beside it,
+	   so it has to be set larger to weigh the same. */
+	--statement-size: clamp(1.2rem, 1.9vw, 1.5rem);
 
 	/* The enquiry form's own two sizes (11 CONTACT). The form is the one
 	   place on the page a visitor has to read and type rather than look, so
@@ -69,13 +88,15 @@
 	/* Hero masthead (06 HERO). cqi is 1% of the TYPE COLUMN's width — that
 	   column is the size container — so the name is measured against its own
 	   box: half the window on a landscape screen, all of it on a phone, from
-	   one token. CAPTURED is the widest line: 5.576em of capitals plus eight
-	   0.14em tracks, 6.696em. At 12.5cqi it fills 84% of the column, leaving
-	   the rest as air before the gap. The vh term only bites on short windows
-	   (844×390 and below), where it hands height back to the photograph; the
-	   rem cap stops a 2560px column from shouting. Browsers without container
-	   units fall back to inherited 16px type — plain, but it fits. */
-	--mark-size: min(12.5cqi, 13vh, 9.5rem);
+	   one token. CAPTURED is the widest line: in Cormorant Garamond 4.760em of
+	   capitals plus eight 0.16em tracks, 6.040em — a narrower face, so the
+	   token goes UP to hold the same optical size, and the tracking with it.
+	   At 13cqi it fills 79% of the column, leaving the rest as air before the
+	   gap. The vh term only bites on short windows (844×390 and below), where
+	   it hands height back to the photograph; the rem cap stops a 2560px
+	   column from shouting. Browsers without container units fall back to
+	   inherited 16px type — plain, but it fits. */
+	--mark-size: min(13cqi, 13vh, 10rem);
 	--tag-size:  clamp(0.68rem, 1.9cqi, 0.9rem);
 	--hero-step: clamp(16px, 2.6cqi, 34px);       /* the type column's one vertical step */
 
@@ -102,10 +123,20 @@
 	--gutter: clamp(20px, 3.4vw, 70px);
 	--edge:   clamp(18px, 2.6vw, 44px);
 
+	/* The logo's HEIGHT in the corner (03 HEADER) — 30px on a phone, 49px at
+	   1440, 56px at 2560. The width follows from the file's own proportion,
+	   so this is the only number to change. It is also what the first project
+	   title on the projects page clears itself against (12 PROJECTS). */
+	--emblem-size: clamp(30px, 3.4vw, 56px);
+
 	/* Motion — reference transitionDuration 0.5, landingMediaTransitionDuration 1.8 */
 	--dur:       0.5s;
 	--dur-slow:  1.8s;
 	--dur-intro: 0.9s;
+	/* The tick's own beat (11 CONTACT). With no fill behind it, the drawn
+	   tick IS the whole selected state, and --dur's half-second makes a
+	   checkbox look like it is thinking about it. */
+	--dur-fast:  0.18s;
 	--ease: cubic-bezier(0.22, 1, 0.36, 1);
 
 	/* Last resort if main.js never runs — see 13 PAGE FADE. Behind the JS
@@ -132,16 +163,36 @@
    02  RESET & BASE
    ========================================================================== */
 
-/* Tenor Sans, self-hosted — the latin subset Google Fonts serves to Windows
-   (hinted; macOS and iOS ignore hints, so it renders as it did from their CDN
-   everywhere). No render-blocking third-party stylesheet, no extra
-   connections. swap, as before. Licence: fonts/OFL.txt */
+/* Both faces self-hosted — the latin subsets Google Fonts serves, no
+   render-blocking third-party stylesheet and no extra connections. swap, as
+   before. Licences: fonts/cormorant-garamond-OFL.txt, fonts/source-sans-3-OFL.txt
+
+   Both files are VARIABLE, and the weight RANGE in each declaration is
+   load-bearing rather than decorative: Cormorant Garamond's variable file
+   defaults to 300, so a `font-weight: 400` declaration here would make every
+   400 on the page synthesise from a light master instead of instancing the
+   axis. Declaring 300 700 hands the axis to the browser and 400 is then the
+   real 400. Source Sans 3 carries 200 900 for the same reason — the chapter
+   markers ask for 600 and nothing else does.
+
+   Source Sans 3 stands in for Adelle Sans, which is licensed per-domain and
+   not ours to serve. The swap, when the licence is bought, is this block and
+   the --font-body token. */
 @font-face {
-	font-family: 'Tenor Sans';
+	font-family: 'Cormorant Garamond';
 	font-style: normal;
-	font-weight: 400;
+	font-weight: 300 700;
 	font-display: swap;
-	src: url('fonts/tenor-sans-latin.woff2') format('woff2');
+	src: url('fonts/cormorant-garamond-latin.woff2') format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+	font-family: 'Source Sans 3';
+	font-style: normal;
+	font-weight: 200 900;
+	font-display: swap;
+	src: url('fonts/source-sans-3-latin.woff2') format('woff2');
 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
@@ -160,15 +211,16 @@ body {
 	min-height: 100%;
 	background: var(--bg);
 	color: var(--ink);
-	font-family: var(--font);
+	font-family: var(--font-body);
 	font-weight: 400;
 	overflow-x: hidden;
 
-	/* Reference fontRenderingOptions — the 0.3 stroke is what gives the
-	   original its hairline refinement at small sizes */
+	/* The 0.3px stroke that used to sit here is gone. It existed to give
+	   Tenor Sans a hairline weight at small sizes; on a high-contrast serif
+	   it thickens the thins and closes the counters, which is the opposite of
+	   what it was for. */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	-webkit-text-stroke-width: 0.3px;
 	text-rendering: optimizeLegibility;
 }
 
@@ -201,6 +253,10 @@ ul { list-style: none; }
 .site-header {
 	position: fixed;
 	top: 0;
+	/* Both edges now: the logo sits at one end of this bar and the wordmark
+	   and hamburger at the other, so the header spans the page rather than
+	   hugging the right corner. */
+	left: 0;
 	right: 0;
 	z-index: 120;
 	display: flex;
@@ -212,15 +268,52 @@ ul { list-style: none; }
 	   included — lies over the hero's photograph. Nothing under it is a link
 	   any more, but a 300px-wide invisible <a> would still swallow hovers and
 	   text selection across the top of the picture, so clicks fall through;
-	   the toggle opts back in, and the corner name once it has woken
-	   (body.past-hero). */
+	   the toggle opts back in, and the logo, and the corner name once it has
+	   woken (body.past-hero). */
 	pointer-events: none;
 }
 
+/* --- the logo ------------------------------------------------------------
+   Top left of every page, linking home (the projects page) or to the top of
+   this one — the same destination its wordmark opposite has, so the two
+   corners never disagree.
+
+   It lives INSIDE the header rather than being a second fixed thing: it then
+   fades up with the page for free (13 PAGE FADE names .site-header), it
+   cannot drift out of alignment with the hamburger, and one auto margin is
+   all it takes to push the rest of the bar to the far edge.
+
+   Contrast: on a landscape screen it sits on the page ground (11.4:1
+   measured). Below 768 the hero stacks photograph-first and the logo lands
+   on the picture — measured there against the current photograph, worst
+   pixel 4.0:1 at 375 and 6.3:1 at 768, both clear of the 3:1 that a
+   non-text graphic needs (and a logotype is exempt from that anyway). This
+   is the same bet the hamburger makes one rule down: IF A DARK PHOTOGRAPH
+   EVER REPLACES THE HERO'S, RE-MEASURE BOTH. */
+.emblem {
+	margin-right: auto;          /* pushes the wordmark and toggle to the far edge */
+	flex: none;
+	pointer-events: auto;        /* the header lets everything else through */
+}
+
+/* Height is the token; the width follows from the file's own proportion
+   (225x174), which the intrinsic attributes in the markup also carry, so the
+   box never reflows as the image decodes. */
+.emblem img {
+	display: block;
+	height: var(--emblem-size);
+	width: auto;
+}
+
 .brand {
+	/* The head face, like the hero masthead — the two are on screen together
+	   between a third and a half of the way down the page, and one word set
+	   in two faces reads as a bug rather than as a hierarchy. */
+	font-family: var(--font-head);
 	font-size: var(--logo-size);
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
+	/* Mixed case, so the tracking comes down with it: 0.14em is a CAPS
+	   setting and on lowercase it reads as damage, not as air. */
+	letter-spacing: 0.06em;
 	line-height: 1;
 	white-space: nowrap;
 
@@ -308,7 +401,7 @@ body.nav-open .nav-toggle__bar:nth-child(2) { transform: translateY(-3px) rotate
 
 	/* The ground, translucent. Denser than a dark veil needs to be: navy links
 	   must hold their contrast over whatever photograph is blurred behind. */
-	background: rgba(255, 255, 255, 0.72);
+	background: rgba(255, 252, 248, 0.72);
 	-webkit-backdrop-filter: blur(28px) saturate(120%);
 	backdrop-filter: blur(28px) saturate(120%);
 
@@ -471,15 +564,20 @@ body.nav-open .nav-ig {
 
    The negative right margin pulls back the trailing letter-space that
    tracking adds after the last glyph of every line, so the INK lands flush
-   on the column's edge rather than 0.14em short of it. */
+   on the column's edge rather than 0.16em short of it. */
 .hero__mark {
 	margin-top: auto;
-	margin-right: -0.14em;
+	margin-right: -0.16em;
+	font-family: var(--font-head);
 	font-size: var(--mark-size);
 	font-weight: 400;
-	letter-spacing: 0.14em;
+	/* Wider than the old 0.14em: capitals in a high-contrast serif need more
+	   air between them than in a sans, or the stems close the counters up. */
+	letter-spacing: 0.16em;
 	text-transform: uppercase;
-	line-height: 1;
+	/* 0.9, not 1: a 0.625 cap height in a full line box leaves a visible gap
+	   between the three stacked words that the sans never had. */
+	line-height: 0.9;
 	color: var(--ink);
 }
 
@@ -613,8 +711,17 @@ body.nav-open .nav-ig {
 	/* Without this a nav jump lands the heading flush to the viewport edge */
 	scroll-margin-top: clamp(24px, 6vh, 64px);
 
+	font-family: var(--font-head);
 	font-size: var(--chapter-size);
-	font-weight: 400;
+	/* 600, not 400: at this size, tracked this wide, the head face's thins
+	   disappear on a low-DPI screen. The weight is what keeps the marker a
+	   mark rather than a whisper — and the variable file instances it, so it
+	   costs nothing. */
+	font-weight: 600;
+	/* Lining, not the face's default old-style figures: "01" beside "05" has
+	   to read as a series, and an old-style 0 sits below the baseline while
+	   the 1 stands on it — the pair looks broken rather than lettered. */
+	font-variant-numeric: lining-nums;
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1;
@@ -800,7 +907,7 @@ main {
    column of copy on the left and a tall photograph on the right.
 
    The copy and the photograph are a PAIR, centred on the page together:
-   each column is sized to its own content — the copy's 46ch measure, the
+   each column is sized to its own content — the copy's 50ch measure, the
    picture's own width — with one --gutter between them, so they sit beside
    each other rather than at opposite edges of the page. (Tracks sized in fr
    left ~330px of dead air in the middle, which read as two unrelated
@@ -811,23 +918,32 @@ main {
 	padding: 0 var(--inset) clamp(80px, 16vh, 180px);
 }
 
-/* Set exactly as the copy below it — same size, leading and weight — and
-   centred under the marker, with the 52ch measure keeping it to a readable
-   line however wide the page gets. */
+/* No longer set as the copy below it: the head face is what separates the
+   statement from the paragraph, and the size follows from the face rather
+   than from taste — a 0.386 x-height at the body's size reads a step
+   smaller than the body beside it. 54ch here, not 52: the measure is in
+   `ch`, and the head face's 1ch is 0.477em against the sans's 0.597, so the
+   same 52 would have pulled the line 20% shorter than it was. */
 .about__statement {
-	max-width: 52ch;
+	font-family: var(--font-head);
+	max-width: 54ch;
 	margin: 0 auto clamp(40px, 7vh, 84px);
 	text-align: center;
-	font-size: var(--about-size);
-	line-height: 1.75;
-	color: rgba(23, 35, 48, 0.83);
+	font-size: var(--statement-size);
+	/* 1.5, not 1.75: a small x-height floats in a tall line box, and the
+	   statement is short enough that the air belongs around it, not in it. */
+	line-height: 1.5;
+	/* Full ink, not 0.83. This is a heading now, and a high-contrast serif
+	   held back to 83% reads as washed rather than as quiet: 15.6:1 against
+	   9.1:1. */
+	color: var(--ink);
 	text-wrap: balance;
 }
 
 .about__grid {
 	display: grid;
 	/* Content-sized tracks, centred as a pair by justify-content */
-	grid-template-columns: minmax(0, 46ch) minmax(0, clamp(320px, 34vw, 560px));
+	grid-template-columns: minmax(0, 50ch) minmax(0, clamp(320px, 34vw, 560px));
 	gap: var(--gutter);
 	justify-content: center;
 	/* stretch, not center: the copy sets the row's height and the photograph
@@ -836,7 +952,10 @@ main {
 }
 
 .about__body {
-	max-width: 46ch;
+	/* 50ch, not 46: Source Sans 3's 1ch is 0.497em against Tenor Sans's
+	   0.597, so the same number would have set a measure a fifth short of
+	   the 60-75 characters this column is meant to hold. */
+	max-width: 50ch;
 	font-size: var(--about-size);
 	line-height: 1.75;
 	/* Stronger than --ink-dim: this is body copy meant to be read, not a
@@ -850,7 +969,7 @@ main {
 /* Place and availability are a credit, not a paragraph — set in the credit
    band's own language, spaced off the copy that closes above it */
 .about__meta {
-	max-width: 46ch;
+	max-width: 50ch;
 	margin-top: clamp(28px, 4.5vh, 52px);
 	font-size: var(--credit-size);
 	letter-spacing: var(--track-wide);
@@ -885,27 +1004,29 @@ main {
 /* ==========================================================================
    11  CONTACT
    The close: one centred enquiry form. What is TYPED into carries a single
-   true-black underline (--line, 01 TOKENS); what is CHOSEN from carries no
-   line at all until it is hovered or chosen — no boxes, no fills. The grey panels this replaces were --bg-raise, the ground the
-   photographs sit on while they load, which made the form read as pieces of
-   loading furniture; a full outline then drew six boxes on a page that has
-   no rules anywhere else. One line under each control says the same thing
-   and keeps the white ground continuous from the last photograph down to
-   the colophon.
+   true-black underline (--line, 01 TOKENS); what is CHOSEN from carries a
+   drawn box and nothing else. There are NO FILLS anywhere in this form, in
+   either group: the box, the tick inside it and the label's ink stepping up
+   behind them are the entire state language. Two changes, one of them a
+   shape, so a choice never rests on colour alone and never reflows.
 
-   Because there are no side borders, the text fields carry no side padding
-   either: what is typed starts on the same vertical as the label above it
-   and as every other element on the page. The chips keep theirs — there the
-   padding is the hit area, and the underline spans it.
+   Every control starts on the SAME left edge — the labels, the typed text,
+   both chip groups. The chips used to carry side padding because a hover
+   underline had to span a hit area; there is no hover underline any more,
+   so the reason went with it and the chips join the column. Their hit area
+   is the vertical padding, which still measures 33-40px.
 
-   Chosen is filled: a ticked box, a pressed month, a picked day and the Send
-   button are solid --line with white type, 21:1. Everything else is a line.
-   That is the whole state language — outline offered, solid chosen.
+   ALL SIX PARTS ARE REQUIRED, and the word says so beside each label, set
+   small and quiet because it is a reminder rather than a distinction. The
+   two chip groups are enforced in main.js 06 ENQUIRY: a checkbox's own
+   `required` means THAT box, not one of a set.
 
-   The tick boxes and the date module are built from real inputs: a native
-   checkbox under a drawn box, and (in 06 ENQUIRY) real buttons for months
-   and days feeding a hidden field. Nothing here depends on JS to be usable
-   except the date module, which falls back to a plain text field.
+   FOCUS IS DELIBERATELY INVISIBLE INSIDE THIS FORM — see the block below,
+   which states what that costs and who it costs it to.
+
+   The tick boxes are real inputs: a native checkbox, visually hidden, under
+   a drawn box. Nothing here needs JS to be usable; the form's no-JS path is
+   .contact__fallback, the mailto under it.
    ========================================================================== */
 
 .contact {
@@ -931,13 +1052,18 @@ main {
 	padding: 0 var(--inset);
 }
 
+/* Set as the statement in 10 BEHIND THE LENS is, and for the same reason:
+   it opens a section in the head face rather than reading as the form's
+   first paragraph. 54ch because the measure is in `ch` and the head face's
+   1ch is a fifth narrower. */
 .contact__lede {
-	max-width: 52ch;
+	font-family: var(--font-head);
+	max-width: 54ch;
 	margin: 0 auto clamp(36px, 6vh, 64px);
 	text-align: center;
-	font-size: var(--about-size);
-	line-height: 1.75;
-	color: rgba(23, 35, 48, 0.83);
+	font-size: var(--statement-size);
+	line-height: 1.5;
+	color: var(--ink);
 	text-wrap: balance;
 }
 
@@ -974,16 +1100,42 @@ main {
 
 /* The labels are set as the page's body copy, not as the credit marks the
    rest of the site uses for small type: same size, leading and colour as 10
-   BEHIND THE LENS, and sentence case rather than capitals (the markup was
-   always sentence case — only text-transform was shouting). Each one now
-   reads as a question asked in the same voice as the writing above, with the
-   field or the chips answering it underneath. */
+   BEHIND THE LENS, and sentence case rather than capitals. Each one reads as
+   a question asked in the same voice as the writing above, with the field or
+   the chips answering it underneath. THE LABELS AND THE CHAPTER MARKER ARE
+   THE ONLY THINGS IN THIS SECTION THAT KEEP THEIR CAPITALS — everything else
+   is lowercase, and lowercased in the markup rather than here, so that the
+   next proper noun someone types into the copy survives. */
 .field label,
 .enquiry legend {
 	font-size: var(--about-size);
 	letter-spacing: 0.01em;
 	line-height: 1.75;
 	color: rgba(23, 35, 48, 0.83);
+}
+
+/* The label and its hint are one baseline-aligned row, so the word sits
+   BESIDE the label rather than under it, and wraps at the narrowest widths
+   rather than pushing the field wider. */
+.field__label {
+	display: flex;
+	align-items: baseline;
+	gap: 0.6em;
+	flex-wrap: wrap;
+}
+
+/* All six parts are required, so this is a reminder, not a distinction: it
+   has to recede without disappearing. The size does most of that (9-11px
+   against the label's 15-19px); the alpha does the rest. 0.62 is the LOWEST
+   alpha that still clears 4.5:1 on this ground — measured 4.53:1, where 0.55
+   is 3.66:1 and fails. It is the placeholder's alpha, for the same reason:
+   guidance you cannot read is furniture. */
+.field__req {
+	font-size: var(--credit-size);
+	letter-spacing: 0.08em;
+	text-transform: lowercase;
+	line-height: 1;
+	color: rgba(23, 35, 48, 0.62);
 }
 
 .field input,
@@ -995,7 +1147,7 @@ main {
 	background: none;
 	border: none;
 	border-bottom: 1px solid var(--line);
-	font-family: var(--font);
+	font-family: var(--font-body);
 	font-size: var(--field-size);
 	letter-spacing: 0.04em;
 	line-height: 1.6;
@@ -1022,24 +1174,11 @@ main {
 .field input::placeholder,
 .field textarea::placeholder { color: rgba(23, 35, 48, 0.62); }
 
-/* There is no fill left to deepen, so the line doubles. An INSET shadow,
-   never a 2px border: a border would shift the text a pixel on hover. Inside
-   the pointer query, because on a phone the old rule stuck after a tap and
-   left a field looking permanently hovered. */
-/* The line doubles rather than drawing a box: a second pixel under the
-   first. An INSET shadow, never a 2px border — a border would shift the
-   text a pixel on hover. */
-@media (hover: hover) and (pointer: fine) {
-	.field input:hover,
-	.field textarea:hover { box-shadow: inset 0 -1px 0 var(--line); }
-}
-
-/* The ring is the page's own (15 A11Y): 1px ink, 6px clear of the black
-   outline, so the two read as two rings rather than one thick smear. The
-   field doubles its own line as well, so a focused control is still obvious
-   where the ring is suppressed (forced colours, print). */
-.field input:focus-visible,
-.field textarea:focus-visible { box-shadow: inset 0 -1px 0 var(--line); }
+/* NOTHING on hover and nothing on focus. The doubled line that used to sit
+   here on both was read as a box opening under the cursor, which is exactly
+   what this form is not meant to do — the single line is the whole field.
+   The caret is the only thing that marks the focused field now; see the
+   focus block below for what that costs. */
 
 /* iOS Safari zooms the page the moment a focused field is under 16px, and it
    does not zoom back — the visitor is left dragging a layout viewport wider
@@ -1084,7 +1223,10 @@ main {
 .ticks {
 	display: flex;
 	flex-wrap: wrap;
-	gap: clamp(8px, 1vw, 12px);
+	/* The chips carry no side padding any more, so the GAP does all the
+	   separating: 20-34px across, 18-28px down. Row gap first, column
+	   second. */
+	gap: clamp(18px, 2vw, 28px) clamp(20px, 2.4vw, 34px);
 }
 
 /* The real checkbox, kept where it is for the keyboard and for screen
@@ -1105,49 +1247,61 @@ main {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.7em;
-	padding: clamp(11px, 1.45vh, 14px) clamp(14px, 1.4vw, 18px);
+	/* Vertical padding only. It is the hit area — 33.5px tall at 375 and
+	   40.5px at 2560, both clear of the 24px WCAG 2.2 target minimum — and
+	   with the hover underline gone there is nothing left for side padding to
+	   span. Removing it puts every chip on the form's left edge, where the
+	   labels and the typed text already are. */
+	padding: clamp(11px, 1.45vh, 14px) 0;
 	background: none;
 	border: none;
 	font-size: var(--tick-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
+	/* Lowercased HERE, not in the markup: the title case in the DOM is what
+	   the mail hand-off sends (main.js collect() reads the value attribute),
+	   and "found me via: instagram" would read as a typo. 0.22em is a CAPS
+	   setting; 0.06em is its lowercase equivalent. */
+	text-transform: lowercase;
+	letter-spacing: 0.06em;
 	line-height: 1;
-	color: var(--ink);           /* 15.9:1 — was --ink-soft on a panel */
+	/* Unticked 5.3:1, ticked 15.6:1. The step up is the second half of the
+	   state — the tick is the first — so a choice never rests on colour alone
+	   (WCAG 1.4.1) and never reflows, which a weight change would. */
+	color: var(--ink-dim);
 	cursor: pointer;
-	transition:
-		background var(--dur) var(--ease),
-		box-shadow var(--dur) var(--ease),
-		color      var(--dur) var(--ease);
+	transition: color var(--dur-fast) var(--ease);
 }
 
 /* The box itself: drawn, not a glyph, so it lands on the same pixel at
-   every size. The tick inside is a rotated corner — two borders of a square
-   — which needs no SVG and no font. */
+   every size. IDENTICAL in both states — it is the tick that arrives, not
+   the frame that changes. */
 .ticks label::before {
 	content: '';
 	flex: none;
 	width: 1em;
 	height: 1em;
+	background: none;
 	box-shadow: inset 0 0 0 1px var(--line);
-	transition:
-		background  var(--dur) var(--ease),
-		box-shadow  var(--dur) var(--ease);
 }
 
+/* The tick: a rotated corner, two borders of a square, no SVG and no font.
+   Drawn in --line inside an empty box now, rather than in --bg on a solid
+   one. The 0.24em margin is what centres the 0.52em mark in the 1em box —
+   measured against the label's CONTENT box, which losing the side padding
+   did not move, so it stays exactly as it was. */
 .ticks label::after {
 	content: '';
 	position: absolute;
 	width: 0.52em;
 	height: 0.28em;
 	margin-left: 0.24em;
-	border-left: 1.5px solid var(--bg);
-	border-bottom: 1.5px solid var(--bg);
+	border-left: 1.5px solid var(--line);
+	border-bottom: 1.5px solid var(--line);
 	transform: rotate(-45deg) scale(0.4);
 	transform-origin: center;
 	opacity: 0;
 	transition:
-		opacity   var(--dur) var(--ease),
-		transform var(--dur) var(--ease);
+		opacity   var(--dur-fast) var(--ease),
+		transform var(--dur-fast) var(--ease);
 }
 
 .ticks li {
@@ -1155,165 +1309,78 @@ main {
 	display: flex;
 }
 
-.ticks input:checked + label {
-	background: var(--line);
-	color: var(--bg);            /* 21:1 */
-}
-
-.ticks input:checked + label::before {
-	background: transparent;
-	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
-}
+/* CHOSEN. No fill, in either group: the tick appears and the word comes up
+   to full ink. */
+.ticks input:checked + label { color: var(--ink); }
 
 .ticks input:checked + label::after {
 	opacity: 1;
 	transform: rotate(-45deg) scale(1);
 }
 
-/* The page's ring is 1px ink at 6px offset (15 A11Y) — 7px of clearance. The
-   gutters here are 10px between months and 7px between day cells at 1440, and
-   6px and 4px at 375, so an outward ring would cross its neighbour's outline
-   at every width below desktop. Draw it INSIDE instead: black outline, then
-   the same ink ring 5px in. A doubled frame, same colour, same weight — only
-   the sign of the offset changes, and it can never reach a neighbour. On a
-   chosen chip the ground is black, so the ring flips to the page white. */
-.ticks input:focus-visible + label,
-.dates__month:focus-visible,
-.dates__flex:focus-visible,
-.dates__day:focus-visible {
-	outline: 1px solid var(--ink);
-	outline-offset: -5px;
-}
-
-.ticks input:checked:focus-visible + label,
-.dates__month[aria-pressed="true"]:focus-visible,
-.dates__flex[aria-pressed="true"]:focus-visible,
-.dates__day[aria-pressed="true"]:focus-visible { outline-color: var(--bg); }
-
-/* --- the date module (built by main.js 06 ENQUIRY) ---------------------- */
-
-.dates {
-	display: flex;
-	flex-direction: column;
-	gap: 0.9em;
-}
-
-/* The months WRAP; they do not scroll sideways. A horizontal scroller here
-   measured about 1300px of chips, and on a phone that dragged the layout
-   viewport out with it — innerWidth 712 on a 390px screen, the whole page
-   with it. Wrapping also means no month is ever hidden off the edge.
-
-   The strip starts on the form's LEFT edge, with the legend above it and the
-   Name, Location and Message fields either side — it is a row of controls
-   like any other, and it fills the width, so there is no stranded white to
-   answer for. The day grid below it is the exception and stays centred: seven
-   columns cap at 496px inside a 716px column, and left-aligned that leaves
-   220px of white beside it that reads as a mistake rather than as rag. */
-.dates__months {
-	display: flex;
-	flex-wrap: wrap;
-	gap: clamp(6px, 0.7vw, 10px);
-}
-
-.dates__month,
-.dates__day,
-.dates__flex {
-	flex: none;
-	background: none;
-	border: none;
-	font-family: var(--font);
-	font-size: var(--tick-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
-	line-height: 1;
-	color: var(--ink);
-	cursor: pointer;
-	transition:
-		background var(--dur) var(--ease),
-		box-shadow var(--dur) var(--ease),
-		color      var(--dur) var(--ease);
-}
-
-.dates__month,
-.dates__flex { padding: clamp(11px, 1.45vh, 14px) clamp(12px, 1.15vw, 16px); }
-
-/* The chip groups — what kind of work, when, how did you find me — carry no
-   resting line at all: the ticked box, the drawn checkbox and the solid
-   chosen state say everything, and three grids of underlines under words
-   that are already set in caps read as ruled paper. Hover DRAWS the line
-   instead, so a pointer still gets an answer from each one; chosen chips
-   are already solid, so they fade the way the Send button does. A day that
-   has been and gone answers nothing at all. */
+/* Hover BRIGHTENS rather than drawing a line. The line is gone everywhere in
+   this form, and an opacity fade would take an unticked label from 5.3:1 to
+   3.2:1, under the floor — stepping the ink up to the chosen colour previews
+   the choice and can only improve contrast. */
 @media (hover: hover) and (pointer: fine) {
-	.ticks label:hover,
-	.dates__month:hover,
-	.dates__flex:hover,
-	.dates__day:not([disabled]):hover { box-shadow: inset 0 -1px 0 var(--line); }
+	.ticks label:hover { color: var(--ink); }
+}
 
-	.ticks input:checked + label:hover,
-	.dates__month[aria-pressed="true"]:hover,
-	.dates__flex[aria-pressed="true"]:hover,
-	.dates__day[aria-pressed="true"]:hover {
-		opacity: var(--hover-alpha);
-		box-shadow: none;
+/* One to a line: "how did you find me" is a list answered once, where the
+   group above it is a set of tags picked from. Gap 0 — the chips' own
+   11-14px of vertical padding already puts 22-28px of white between adjacent
+   words, and a gap on top of that would stretch five options over 230px. */
+.ticks--column {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0;
+}
+
+/* A group in error, driven by the attribute main.js 06 ENQUIRY sets and
+   clears. The drawn boxes go --warn (8.1:1) so the group reads as wrong from
+   across the form, not only from the line of red under it. */
+.enquiry__block[aria-describedby] .ticks label::before {
+	box-shadow: inset 0 0 0 1px var(--warn);
+}
+
+/* --- focus: none, inside this form only ---------------------------------
+   THIS DELIBERATELY FAILS WCAG 2.1 SC 2.4.7 (Focus Visible, AA) and 2.2 SC
+   2.4.13 (Focus Appearance, AAA). It is the owner's explicit instruction,
+   made in full knowledge of the consequence, and it is written down here so
+   that nobody later "fixes" it by accident.
+
+   What is lost, precisely: a sighted keyboard, switch or voice-control user
+   tabbing this form cannot see where they are. The text fields keep an
+   accidental cue — the caret — so the failure lands hardest on the NINE
+   checkboxes and the submit button, which have no cue of any kind. Screen
+   reader users are unaffected: the AT announces focus regardless of how it
+   is painted, and the validation in 06 ENQUIRY still moves focus to the
+   first problem.
+
+   Scoped to .enquiry, NOT removed site-wide. The page's own ring (15 A11Y)
+   is what makes the invisible corner wordmark findable (.brand:focus-visible
+   in 03 HEADER), and it serves the nav toggle, the nav links, the logo,
+   every plate link and the mailto below this form. None of that was asked
+   about, and all of it stays. */
+.enquiry :focus,
+.enquiry :focus-visible { outline: none; }
+
+/* One exception inside the form's box: the mail-app hand-off that the status
+   line grows is a LINK, not a form control — it is the way out of the page,
+   and it keeps the page's ring. */
+.enquiry__status a:focus-visible {
+	outline: 1px solid var(--ink);
+	outline-offset: 6px;
+}
+
+/* The one mitigation that costs the design nothing: someone who has asked
+   their OS for high contrast has told us they need the indicator, and this
+   is invisible to everyone else. */
+@media (forced-colors: active) {
+	.enquiry :focus-visible {
+		outline: 1px solid CanvasText;
+		outline-offset: 4px;
 	}
-}
-
-.dates__month[aria-pressed="true"],
-.dates__day[aria-pressed="true"],
-.dates__flex[aria-pressed="true"] {
-	background: var(--line);
-	color: var(--bg);            /* 21:1 */
-}
-
-/* Seven across, capped: left to the form's full width the cells would be
-   122px squares and the month would swallow the page */
-.dates__days {
-	display: grid;
-	grid-template-columns: repeat(7, minmax(0, 1fr));
-	gap: clamp(4px, 0.5vw, 8px);
-
-	/* width, not max-width, and a margin rather than align-self: this is a
-	   flex item in a COLUMN flex container, where an auto cross-axis margin
-	   cancels `stretch`. With max-width alone the grid falls back to its
-	   content width and every cell collapses. 31em is seven 64px cells plus
-	   six gutters; the 100% keeps it inside a 370px phone column. */
-	width: min(31em, 100%);
-	margin-inline: auto;
-}
-
-.dates__dow {
-	padding-bottom: 0.3em;
-	font-size: var(--spec-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
-	text-align: center;
-	color: var(--ink-quiet);
-}
-
-.dates__day {
-	aspect-ratio: 1;
-	display: grid;
-	place-items: center;
-	/* A day number is a value, not a label — set like the typed text beside
-	   it rather than like the chip it sits under */
-	font-size: var(--field-size);
-	letter-spacing: 0.04em;
-}
-
-/* A day that has already been and gone: no hover, and quiet enough to scan
-   past. It is exempt from the contrast minimum, being disabled. */
-.dates__day[disabled] {
-	color: rgba(23, 35, 48, 0.35);
-	cursor: default;
-}
-
-.dates__chosen {
-	text-align: center;
-	font-size: var(--tick-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
-	color: var(--ink-quiet);
 }
 
 /* --- send --------------------------------------------------------------- */
@@ -1333,12 +1400,14 @@ main {
 	padding: clamp(16px, 2.1vh, 21px) clamp(39px, 5.75vw, 62px);
 	background: var(--line);
 	border: none;
-	font-family: var(--font);
+	font-family: var(--font-body);
 	font-size: var(--tick-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
+	/* No transform: the word in the markup IS the word on the button, and
+	   lowercase at 0.22em falls apart — 0.12em is enough to hold the block
+	   together without shouting. */
+	letter-spacing: 0.12em;
 	line-height: 1;
-	color: var(--bg);
+	color: var(--bg);            /* 20.5:1 */
 	cursor: pointer;
 	transition: opacity var(--dur) var(--ease);
 }
@@ -1348,7 +1417,7 @@ main {
 }
 
 .enquiry__status {
-	max-width: 46ch;
+	max-width: 50ch;
 	text-align: center;
 	font-size: var(--credit-size);
 	letter-spacing: 0.08em;
@@ -1369,8 +1438,9 @@ main {
 	margin-top: clamp(28px, 5vh, 52px);
 	text-align: center;
 	font-size: var(--credit-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
+	/* Lowercased in the markup, so the tracking comes down with it — the same
+	   0.08em the status line beside it uses. */
+	letter-spacing: 0.08em;
 	color: var(--ink-quiet);
 }
 
@@ -1418,12 +1488,29 @@ main {
 
 .project__title {
 	padding: clamp(40px, 7vh, 90px) var(--inset) clamp(18px, 2.6vh, 34px);
+	/* Set as the homepage's chapter markers are — same face, same weight,
+	   same figures — because that is what they are on this page. */
+	font-family: var(--font-head);
 	font-size: var(--chapter-size);
-	font-weight: 400;
+	font-weight: 600;
+	font-variant-numeric: lining-nums;
 	letter-spacing: var(--track-wide);
 	text-transform: uppercase;
 	line-height: 1;
 	color: var(--ink);
+}
+
+/* The first title, and only the first, has the corner logo above it: this
+   page has no hero, so the header's box lands directly on it. Measured at
+   1440 the title's text started at 74px against a logo bottom of 86px. max()
+   rather than a bigger constant — on every other screen the title keeps the
+   padding it had, and the clearance is derived from the logo's own token, so
+   the two can never drift apart. */
+.project:first-of-type .project__title {
+	padding-top: max(
+		clamp(40px, 7vh, 90px),
+		calc(var(--edge) + var(--emblem-size) + clamp(18px, 2.6vh, 34px))
+	);
 }
 
 .project__grid {
@@ -1553,9 +1640,11 @@ body.is-ready main {
 		--nav-size:  clamp(1.15rem, 5.6vw, 1.9rem);
 		--cap-size:  clamp(0.62rem, 2.5vw, 0.78rem);
 
-		/* The corner name plus the hamburger must fit a 320px phone; 19px would
-		   clip it by ~21px. Back to the desktop floor from ~414px up. */
-		--logo-size: clamp(14px, 4.6vw, 19px);
+		/* The corner name, the logo and the hamburger must all fit a 320px
+		   phone. Same cap parity as the desktop token (×1.12), and mixed case
+		   is narrower than the capitals this replaced, so the fit improves.
+		   Back to the desktop floor from ~414px up. */
+		--logo-size: clamp(16px, 5.15vw, 21px);
 
 		/* Taller band: the project line stacks to two lines and the three
 		   credit columns collapse to one, so the band has more to hold */
@@ -1578,7 +1667,8 @@ body.is-ready main {
 	.frame__spec dd { margin-top: 0; }
 
 	/* .about__meta rides along: at 375px it measures 343px of a 355px column
-	   at 0.22em and would break to two lines */
+	   at 0.22em and would break to two lines. Re-measured on the body face,
+	   which is narrower — it clears at 0.16em with room to spare. */
 	.frame__credit,
 	.about__meta { letter-spacing: 0.16em; }
 
@@ -1611,17 +1701,6 @@ body.is-ready main {
 		height: 46svh;
 	}
 
-	/* "OCT 2026" is eight characters where "OCT 26" was six. At the form's
-	   0.22em tracking that is a 102px chip — three to a 355px phone row. At
-	   0.08em with a tighter inset it is 79px: four to a row. Tracking is the
-	   first thing that should give when the data gets longer, and a date is
-	   data. */
-	.dates__month,
-	.dates__flex {
-		letter-spacing: 0.08em;
-		padding-inline: 9px;
-	}
-
 	/* One column: side by side the photograph would be a 299px sliver */
 	.about__grid {
 		grid-template-columns: minmax(0, 1fr);
@@ -1635,7 +1714,7 @@ body.is-ready main {
 		aspect-ratio: 4 / 5;
 	}
 
-	.brand { letter-spacing: 0.12em; }
+	.brand { letter-spacing: 0.05em; }
 
 	.nav-list { gap: clamp(0.8rem, 2.4vh, 1.4rem); }
 	.nav-list a { letter-spacing: 0.12em; }
