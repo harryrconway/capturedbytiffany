@@ -1851,20 +1851,20 @@ body.is-ready main {
 		gap: clamp(34px, 6vh, 56px);
 	}
 
-	/* The photograph moves INTO the copy here: first paragraph, picture,
-	   second paragraph, then the credit. Two wrappers stand between the grid
-	   and the words, so both are dissolved with display: contents and the
-	   four pieces become grid items in their own right. The order is set
-	   here, not in the markup: source order is all the words and then the
-	   picture, which is what a screen reader should hear and what the desktop
-	   layout needs, and it stays that way. */
+	/* The photograph opens the section here: picture, then both paragraphs,
+	   then the credit. Two wrappers stand between the grid and the words, so
+	   both are dissolved with display: contents and the four pieces become
+	   grid items in their own right. The order is set here, not in the
+	   markup: source order is all the words and then the picture, which is
+	   what a screen reader should hear and what the desktop layout needs, and
+	   it stays that way. */
 	.about__col,
 	.about__body { display: contents; }
 
-	.about__body > p:first-child { order: 1; }
-	.about__portrait             { order: 2; }
+	.about__portrait              { order: 1; }
+	.about__body > p:first-child  { order: 2; }
 	.about__body > p:nth-child(2) { order: 3; }
-	.about__meta                 { order: 4; }
+	.about__meta                  { order: 4; }
 
 	/* display: contents takes the box away and its width with it, so the
 	   measure and the centring move onto the paragraphs themselves. Stacked,
@@ -1879,10 +1879,9 @@ body.is-ready main {
 		text-align: center;
 	}
 
-	/* The grid's own row gap does all the separating now — the paragraphs are
-	   no longer adjacent on the page, and both of these would stack on top of
-	   it. They are still adjacent in the DOM, which is why the first one has
-	   to be turned off rather than simply not matching. */
+	/* The grid's own row gap does all the separating now: every piece is a
+	   grid item, so both of these margins would stack on top of it and set
+	   one pair of paragraphs further apart than the rest of the section. */
 	.about__body p + p { margin-top: 0; }
 	.about__meta       { margin-top: 0; }
 
