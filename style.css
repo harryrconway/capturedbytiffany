@@ -1303,53 +1303,13 @@ main {
 	min-width: 0;
 }
 
-/* The two chosen-from questions, side by side, with one hairline between
-   them. The rule is drawn on the RIGHT-HAND column's left edge and both
-   columns carry half the gutter as padding, so it lands exactly halfway
-   between the two lists rather than up against one of them. Grid stretches
-   both cells, so it runs the full height of the taller question without
-   anything being measured.
-
-   1px --line, the same weight and colour as every field's underline: this
-   is the only vertical rule on the site, and it earns its place by being
-   identical to the horizontal ones.
-
-   Two columns at EVERY width, phones included. Measured rather than assumed:
-   the longest option is 107.7px of ink at phone sizes, and a 320px screen
-   gives each column 150px, of which 14 go to the gutter and 19 to the box
-   and its gap — 9px to spare, with every option on one line at 320, 375,
-   768, 1440 and 2560. The gutter is what gives first, hence the 14px floor
-   on a clamp whose top end is three times that. */
-.enquiry__groups {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-}
-
-.enquiry__groups > :first-child  { padding-right: clamp(14px, 3vw, 44px); }
-
-.enquiry__groups > :last-child {
-	padding-left: clamp(14px, 3vw, 44px);
-	border-left: 1px solid var(--line);
-	/* Mirrored, so the pair is symmetrical about the rule: this question's
-	   lines range right, its boxes go to the OUTSIDE edge and its words read
-	   inward, exactly as the left-hand question's do. */
-	text-align: right;
-}
-
-.enquiry__groups > :last-child .ticks { align-items: flex-end; }
-
-/* row-reverse moves the drawn box to the far side of the word. Only the
-   drawing moves: the DOM keeps input then label, so a screen reader hears
-   this question exactly as it hears the one beside it. */
-.enquiry__groups > :last-child .ticks label { flex-direction: row-reverse; }
-
-/* The tick is absolutely positioned, and its default placement assumes a box
-   on the left. Pin it to the other edge with the same 0.24em that centres a
-   0.52em mark in a 1em box. */
-.enquiry__groups > :last-child .ticks label::after {
-	right: 0;
-	margin-left: 0;
-	margin-right: 0.24em;
+/* A chip group is followed by a FIELD: its last chips carry 13px of bottom
+   padding that is hit area rather than air, and stacked on the form's own gap
+   it sets the next question further from this one than every other pair of
+   parts — 39.5px where the rest of the form has 29. Pull back exactly that
+   padding, in the chips' own token, so the two can never drift apart. */
+.enquiry__block + .field {
+	margin-top: calc(-1 * clamp(11px, 1.45vh, 14px));
 }
 
 
