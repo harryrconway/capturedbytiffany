@@ -1851,18 +1851,40 @@ body.is-ready main {
 		gap: clamp(34px, 6vh, 56px);
 	}
 
-	/* Stacked, the copy is no longer a column beside a picture — it is the
-	   page, under a statement that is centred. So it centres too, block and
-	   line alike: margin-inline for the block (at 768 the 50ch cap is 520px
-	   in a 743px page, which left it visibly off to one side) and text-align
-	   for the lines. The credit under it follows, or it would hang off the
-	   left of a centred paragraph. The insets are the section's own, so all
-	   three sit on the same two edges. */
-	.about__body,
+	/* The photograph moves INTO the copy here: first paragraph, picture,
+	   second paragraph, then the credit. Two wrappers stand between the grid
+	   and the words, so both are dissolved with display: contents and the
+	   four pieces become grid items in their own right. The order is set
+	   here, not in the markup: source order is all the words and then the
+	   picture, which is what a screen reader should hear and what the desktop
+	   layout needs, and it stays that way. */
+	.about__col,
+	.about__body { display: contents; }
+
+	.about__body > p:first-child { order: 1; }
+	.about__portrait             { order: 2; }
+	.about__body > p:nth-child(2) { order: 3; }
+	.about__meta                 { order: 4; }
+
+	/* display: contents takes the box away and its width with it, so the
+	   measure and the centring move onto the paragraphs themselves. Stacked,
+	   the copy is no longer a column beside a picture — it is the page, under
+	   a statement that is centred, so it centres too, block and line alike.
+	   (At 768 the 50ch cap is 520px in a 743px page, which left it visibly
+	   off to one side without the auto margins.) */
+	.about__body > p,
 	.about__meta {
+		max-width: 50ch;
 		margin-inline: auto;
 		text-align: center;
 	}
+
+	/* The grid's own row gap does all the separating now — the paragraphs are
+	   no longer adjacent on the page, and both of these would stack on top of
+	   it. They are still adjacent in the DOM, which is why the first one has
+	   to be turned off rather than simply not matching. */
+	.about__body p + p { margin-top: 0; }
+	.about__meta       { margin-top: 0; }
 
 	/* Stacked, so there is no copy beside it to match: 4:5 keeps it to 462px
 	   at full phone width, where 2:3 would be 555px — over half the screen */
