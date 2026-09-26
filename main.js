@@ -35,14 +35,25 @@
 		// arrive while the big one is still at half strength and the two
 		// would read as a duplicate rather than as a handover.
 		//
-		// The photograph's 1.25 is deliberately past the end of the hero: at
-		// a full hero height scrolled it is still a fifth visible, and by
-		// then it is off the top of the screen, so the last of the fade is
-		// spent where no one has to watch it finish.
-		heroFadeEnd:    0.85,    // hero TYPE fully gone by here
-		heroMediaEnd:   1.25,    // the PHOTOGRAPH lingers, gone by here
-		brandFadeStart: 0.55,    // corner mark starts appearing here
-		brandFadeEnd:   0.95     // …and is fully opaque by here
+		// Both ends are deliberately past 1, which is the whole hero height
+		// and therefore the moment the hero leaves the screen: neither fade
+		// finishes while anyone can see it, which is what makes them gentle.
+		// The masthead is at 0.13 and the photograph at 0.38 as they go, and
+		// the rest of each fade is spent above the top of the window.
+		//
+		// This is close to the floor for "slower". The type column sits at
+		// the hero's vertical centre and clears the top of the screen at
+		// about two thirds of a hero height, so anything much beyond this
+		// stops reading as a fade at all — the name simply scrolls away at
+		// half strength.
+		//
+		// brandFadeEnd, by contrast, MUST stay at or under 1. p is clamped
+		// there, so an end past it would leave the corner wordmark stuck
+		// part-way lit for the rest of the page.
+		heroFadeEnd:    1.15,    // hero TYPE, still at 0.13 as it leaves
+		heroMediaEnd:   1.6,     // the PHOTOGRAPH lingers longer still
+		brandFadeStart: 0.6,     // corner mark starts appearing here
+		brandFadeEnd:   1        // …and is fully opaque exactly as the hero goes
 	};
 
 	var body = document.body;
