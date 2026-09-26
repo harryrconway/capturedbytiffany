@@ -23,14 +23,26 @@
 		// the visitor looking at a blank screen.
 		fadeFailsafe: 2000,
 
-		// Wordmark crossfade, as a fraction of hero height scrolled.
-		// The corner mark starts well before the hero mark is gone — without
+		// Wordmark crossfade, as a fraction of hero height scrolled. Nothing
+		// here is timed in seconds: the fade is tied to the scroll, so these
+		// are DISTANCES, and making one slower means spending more of the
+		// hero's height on it.
+		//
+		// The corner mark still starts before the hero mark is gone — without
 		// that overlap there's a dead patch mid-scroll where neither is
-		// really on screen, which reads as a flicker rather than a handoff.
-		heroFadeEnd:    0.55,    // hero TYPE fully gone by here
-		heroMediaEnd:   0.85,    // the PHOTOGRAPH lingers, gone by here
-		brandFadeStart: 0.35,    // corner mark starts appearing here
-		brandFadeEnd:   0.75     // …and is fully opaque by here
+		// really on screen, which reads as a flicker rather than a handoff —
+		// but it now starts later than it used to, or the small name would
+		// arrive while the big one is still at half strength and the two
+		// would read as a duplicate rather than as a handover.
+		//
+		// The photograph's 1.25 is deliberately past the end of the hero: at
+		// a full hero height scrolled it is still a fifth visible, and by
+		// then it is off the top of the screen, so the last of the fade is
+		// spent where no one has to watch it finish.
+		heroFadeEnd:    0.85,    // hero TYPE fully gone by here
+		heroMediaEnd:   1.25,    // the PHOTOGRAPH lingers, gone by here
+		brandFadeStart: 0.55,    // corner mark starts appearing here
+		brandFadeEnd:   0.95     // …and is fully opaque by here
 	};
 
 	var body = document.body;

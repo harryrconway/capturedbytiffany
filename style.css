@@ -1232,6 +1232,39 @@ main {
 	.field textarea { font-size: max(16px, var(--field-size)); }
 }
 
+/* --- autofill -----------------------------------------------------------
+   Safari and Chrome repaint a field they have filled in their own colours —
+   a pale yellow ground, their own ink — which turns one field in a form made
+   of hairlines into a filled box. The background cannot simply be set: the
+   browser's own style wins. An inset shadow 1000px deep paints the page's
+   ground over it INSIDE the padding box, which leaves the underline alone
+   (that is a border, and borders sit outside it), and -webkit-text-fill-color
+   puts the ink back. The absurd transition delay is for the moment of
+   filling itself, where both browsers animate their colour in before a
+   static rule has anything to say about it.
+
+   Two rules, not one list: `:autofill` is the standard selector and
+   `:-webkit-autofill` the older one, and a browser that does not know a
+   selector drops the WHOLE list it appears in. Split, each browser keeps
+   the one it understands. */
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus {
+	box-shadow: inset 0 0 0 1000px var(--bg);
+	-webkit-text-fill-color: var(--ink);
+	caret-color: var(--ink);
+	transition: background-color 0s 600000s, color 0s 600000s;
+}
+
+.field input:autofill,
+.field input:autofill:hover,
+.field input:autofill:focus {
+	box-shadow: inset 0 0 0 1000px var(--bg);
+	-webkit-text-fill-color: var(--ink);
+	caret-color: var(--ink);
+	transition: background-color 0s 600000s, color 0s 600000s;
+}
+
 /* Set by 06 ENQUIRY, cleared as soon as the field is touched again. No panel
    to tint any more: the line changes colour and doubles instead — two pixels
    of warn, read at a glance, and nothing moves. 8.2:1 on white. */
@@ -1239,6 +1272,16 @@ main {
 .field textarea[aria-invalid="true"] {
 	border-bottom-color: var(--warn);
 	box-shadow: inset 0 -1px 0 var(--warn);
+}
+
+/* Filled by the browser AND wrong — an autofilled address that isn't one.
+   Both shadows, in one declaration: the cover first, the warn line over it. */
+.field input[aria-invalid="true"]:-webkit-autofill {
+	box-shadow: inset 0 0 0 1000px var(--bg), inset 0 -1px 0 var(--warn);
+}
+
+.field input[aria-invalid="true"]:autofill {
+	box-shadow: inset 0 0 0 1000px var(--bg), inset 0 -1px 0 var(--warn);
 }
 
 .field__note {
