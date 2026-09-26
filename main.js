@@ -323,6 +323,9 @@
 	   06  ENQUIRY
 	   The contact form (index.html 05, style.css 11 CONTACT). Two jobs:
 
+	     · lets a chosen option be un-chosen. A radio group allows one answer
+	       and the browser keeps it that way, but it will not give the answer
+	       back: clicking the option already ticked clears it here.
 	     · checks the form before anything else happens, and says what is
 	       wrong in the page rather than in a browser dialog. All six parts
 	       are required, and the two chip groups are checked HERE rather than
@@ -519,8 +522,34 @@
 		   guarded the way fieldOf() guards it.
 
 		   Both groups are radios, so nothing here has to keep one answer to a
-		   question — the browser does that. */
+		   question — the browser does that. What the browser will NOT do is
+		   let go: a radio can be swapped but never cleared, so a visitor who
+		   ticks the wrong option has no way back to nothing chosen. Clicking
+		   the one already chosen clears it here.
+
+		   The catch is that by the time a click reaches the input the browser
+		   has already ticked it, so the previous state has to be read before
+		   that. The inputs are visually hidden and every real click lands on
+		   the LABEL, so mousedown there is the moment — and keydown on the
+		   input itself covers the space bar, which is how a keyboard reaches
+		   the same control. */
 		Array.prototype.forEach.call(form.querySelectorAll('.ticks input'), function (box) {
+			var wasChecked = false;
+			var label = box.parentNode.querySelector('label');
+
+			function remember() { wasChecked = box.checked; }
+
+			if (label) label.addEventListener('mousedown', remember);
+
+			box.addEventListener('keydown', function (e) {
+				if (e.key === ' ' || e.keyCode === 32) remember();
+			});
+
+			box.addEventListener('click', function () {
+				if (wasChecked) box.checked = false;
+				wasChecked = false;
+			});
+
 			box.addEventListener('change', function () {
 				var group = box.closest
 					? box.closest('[data-group]')

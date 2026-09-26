@@ -69,7 +69,11 @@
 	--cap-size:     clamp(0.68rem, 1.05vw, 0.85rem);
 	--credit-size:  clamp(0.56rem, 0.72vw, 0.68rem);
 	--spec-size:    clamp(0.5rem, 0.6vw, 0.58rem);
-	--chapter-size: clamp(0.70rem, 0.95vw, 0.88rem);
+	/* Set in sentence case, where it used to be capitals, and a title face
+	   with a 0.386 x-height loses much of its presence in that change: the
+	   marker is read by its lowercase now, not by its caps. 1.2 of the caps
+	   size puts it back without turning a label into a heading. */
+	--chapter-size: clamp(0.84rem, 1.14vw, 1.06rem);
 	--about-size:   clamp(0.95rem, 1.5vw, 1.2rem);
 
 	/* The enquiry form's own two sizes (11 CONTACT). The form is the one
@@ -750,8 +754,9 @@ body.nav-open .nav-ig {
 	   has to read as a series, and an old-style 0 sits below the baseline
 	   while the 1 stands on it — the pair looks broken rather than lettered. */
 	font-variant-numeric: lining-nums;
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
+	/* 0.06em: --track-wide is 0.22, which is a CAPITALS setting. These are
+	   cased in the markup now — "Behind the Lens", not BEHIND THE LENS. */
+	letter-spacing: 0.06em;
 	line-height: 1;
 }
 
@@ -839,8 +844,8 @@ main {
 	width: min(84%, 26ch);
 
 	font-size: var(--cap-size);
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
+	/* Sentence case, and the tracking down with it — see 09's credit band. */
+	letter-spacing: 0.05em;
 	text-align: center;      /* half-width frames wrap — keep both lines centred */
 	text-wrap: balance;
 	line-height: 1.7;
@@ -881,8 +886,13 @@ main {
 	overflow: hidden;           /* fixed band height — never let text spill */
 	padding-top: clamp(9px, 1.2vh, 14px);
 	font-size: var(--credit-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
+	/* Sentence case, as the markup writes it: the project names, the places
+	   and the clients are proper nouns, and small caps-tracked capitals were
+	   flattening all three into one texture. 0.05em, not --track-wide's 0.22:
+	   that is a CAPITALS setting, and on lowercase it reads as damage. The
+	   band is a fixed height with overflow hidden, and sentence case is the
+	   narrower of the two, so nothing that fitted before can stop fitting. */
+	letter-spacing: 0.05em;
 	line-height: 1.5;
 }
 
@@ -903,14 +913,14 @@ main {
 
 .frame__spec dt {
 	font-size: var(--spec-size);
-	letter-spacing: var(--track-wide);
+	letter-spacing: 0.05em;
 	color: var(--ink-quiet);
 }
 
 .frame__spec dd {
 	margin-top: 0.5em;
 	font-size: var(--credit-size);
-	letter-spacing: 0.1em;
+	letter-spacing: 0.05em;
 	color: var(--ink-soft);
 }
 
@@ -1003,8 +1013,7 @@ main {
 	max-width: 50ch;
 	margin-top: clamp(28px, 4.5vh, 52px);
 	font-size: var(--credit-size);
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
+	letter-spacing: 0.05em;
 	line-height: 1.7;
 	color: var(--ink-quiet);
 }
@@ -1605,8 +1614,7 @@ main {
 	margin: clamp(18px, 2.6vh, 34px) auto 0;
 	padding: 0 var(--inset);
 	font-size: var(--credit-size);
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
+	letter-spacing: 0.05em;
 	text-align: center;
 	text-wrap: balance;
 	line-height: 1.9;
@@ -1636,13 +1644,12 @@ main {
 .project__title {
 	padding: clamp(40px, 7vh, 90px) var(--inset) clamp(18px, 2.6vh, 34px);
 	/* Set as the homepage's chapter markers are — same face, same weight,
-	   same figures — because that is what they are on this page. */
+	   same figures, same case — because that is what they are on this page. */
 	font-family: var(--font-title);
 	font-size: var(--chapter-size);
 	font-weight: 600;
 	font-variant-numeric: lining-nums;
-	letter-spacing: var(--track-wide);
-	text-transform: uppercase;
+	letter-spacing: 0.06em;
 	line-height: 1;
 	color: var(--ink);
 }
@@ -1813,12 +1820,6 @@ body.is-ready main {
 	.frame__spec dt { flex: 0 0 auto; min-width: 7em; }
 	.frame__spec dd { margin-top: 0; }
 
-	/* .about__meta rides along: at 375px it measures 343px of a 355px column
-	   at 0.22em and would break to two lines. Re-measured on the body face,
-	   which is narrower — it clears at 0.16em with room to spare. */
-	.frame__credit,
-	.about__meta { letter-spacing: 0.16em; }
-
 	/* The project line stacks rather than running off the edge. These belong on
 	   .frame__line, not .frame__credit — the credit band is a block now, so
 	   flex properties on it would be inert. */
@@ -1915,7 +1916,7 @@ body.is-ready main {
 
 	.frame__note {
 		width: min(84%, 28ch);
-		letter-spacing: 0.12em;
+		letter-spacing: 0.04em;
 	}
 }
 
