@@ -518,12 +518,11 @@
 				     voice is worth more than one attribute. -->
 				<fieldset class="enquiry__block" data-group="work">
 					<legend>What kind of work <span class="field__req">required</span></legend>
-					<!-- A row that wraps, where the question at the foot of the
-					     form is a column: four short options across a 716px
-					     form is one line, and four lines of one word each
-					     would give this question more of the page than the
-					     three fields around it. -->
-					<ul class="ticks">
+					<!-- One to a line, like the question at the foot of the form:
+					     both are answered once, and two lists set the same way
+					     read as a pair of questions rather than as a row of
+					     tags and a list. -->
+					<ul class="ticks ticks--column">
 						<li><input id="k-arch" type="radio" name="work" value="Architecture"><label for="k-arch">Architecture</label></li>
 						<li><input id="k-life" type="radio" name="work" value="Lifestyle &amp; People"><label for="k-life">Lifestyle &amp; People</label></li>
 						<li><input id="k-trav" type="radio" name="work" value="Travel / Hotels"><label for="k-trav">Travel / Hotels</label></li>
